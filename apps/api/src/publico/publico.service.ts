@@ -29,6 +29,7 @@ export class PublicoService {
       slug: salao.slug,
       fusoHorario: salao.fusoHorario,
       horizonteDias: HORIZONTE_PUBLICO_DIAS,
+      aceitaAgendamentos: await this.agenda.agendaAberta(),
       profissionais: profissionais.map((p) => ({
         id: p.id,
         nome: p.nome,
@@ -40,11 +41,13 @@ export class PublicoService {
   }
 
   async dias(profissionalId: string, servicoId: string): Promise<DiaDisponivelDto[]> {
+    await this.agenda.exigirAgendaAberta();
     const [salao, servico] = await Promise.all([this.agenda.salao(), this.agenda.servicoDoProfissional(profissionalId, servicoId)]);
     return this.agenda.diasDisponiveis(salao, { profissionalId, duracaoMin: servico.duracaoMin, regime: 'PUBLICO' });
   }
 
   async horarios(profissionalId: string, servicoId: string, data: string): Promise<SlotDto[]> {
+    await this.agenda.exigirAgendaAberta();
     const [salao, servico] = await Promise.all([this.agenda.salao(), this.agenda.servicoDoProfissional(profissionalId, servicoId)]);
     return this.agenda.horarios(salao, { profissionalId, duracaoMin: servico.duracaoMin, regime: 'PUBLICO' }, data);
   }

@@ -9,6 +9,8 @@ export class EstabelecimentoStore {
 
   readonly dados = signal<EstabelecimentoDto | null>(null);
   readonly cadastroConcluido = computed(() => this.dados()?.onboardingConcluido ?? false);
+  /** Assinatura bloqueada: o painel é só consulta e a agenda não recebe clientes novos. */
+  readonly restrito = computed(() => this.dados()?.assinatura?.acesso === 'RESTRITO');
 
   async carregar(forcar = false): Promise<EstabelecimentoDto> {
     const atual = this.dados();

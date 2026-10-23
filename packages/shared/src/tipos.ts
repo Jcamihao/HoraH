@@ -1,5 +1,6 @@
 import type { FaixaHorario } from './horario';
 import type { ConfirmacaoAgendamento, OrigemAgendamento, StatusAgendamento } from './agenda';
+import { CODIGO_FAIXA_MUDA, type StatusCobranca } from './assinatura';
 import type { Papel, StatusAssinatura } from './papel';
 
 export interface UsuarioLogado {
@@ -27,7 +28,9 @@ export interface EstabelecimentoDto {
   prazoCancelamentoMin: number;
   onboardingConcluido: boolean;
   /** Nulo para profissional: assinatura é assunto do dono. */
-  assinatura: { status: StatusAssinatura; testeFimEm: string | null } | null;
+  assinatura: { status: StatusAssinatura; acesso: 'LIBERADO' | 'RESTRITO'; testeFimEm: string | null; toleranciaFimEm: string | null } | null;
+  /** Recebe e-mail quando alguém marca ou cancela um horário. */
+  emailAgendamentos: boolean;
 }
 
 export interface ProfissionalDto {
@@ -119,6 +122,8 @@ export interface SalaoPublicoDto {
   slug: string;
   fusoHorario: string;
   horizonteDias: number;
+  /** Falso quando a assinatura do salão está bloqueada: a página mostra que a agenda está fechada. */
+  aceitaAgendamentos: boolean;
   profissionais: ProfissionalPublicoDto[];
 }
 
@@ -142,4 +147,46 @@ export interface MeuAgendamentoDto {
 export interface AgendamentoCriadoPublicoDto extends MeuAgendamentoDto {
   /** Token do link único; o front monta /agendamento/{token}. */
   token: string;
+}
+
+export interface CobrancaDto {
+  id: string;
+  valorCentavos: number;
+  /** "YYYY-MM-DD" */
+  vencimento: string;
+  status: StatusCobranca;
+  pagaEm: string | null;
+  /** Página do Asaas onde o dono paga (Pix, cartão ou boleto). */
+  url: string | null;
+}
+
+/** Tela de assinatura do dono. `acesso` já considera o relógio: não depende de o job ter rodado. */
+export interface AssinaturaDetalheDto {
+  status: StatusAssinatura;
+  /** RESTRITO = novos agendamentos bloqueados e painel só para consulta. */
+  acesso: 'LIBERADO' | 'RESTRITO';
+  testeFimEm: string | null;
+  toleranciaFimEm: string | null;
+  profissionaisAtivos: number;
+  /** Faixa e valor pelo número de profissionais ativos agora. */
+  faixa: number;
+  valorCentavos: number;
+  /** Já existe assinatura criada no Asaas. */
+  contratada: boolean;
+  /** Faixa e valor da assinatura no Asaas (valem a partir da próxima cobrança). */
+  faixaContratada: number | null;
+  valorContratadoCentavos: number | null;
+  proximaCobrancaEm: string | null;
+  cancelaEm: string | null;
+  pagamentoUrl: string | null;
+  cobrancas: CobrancaDto[];
+  /** Falso quando a chave do Asaas não está configurada neste ambiente. */
+  cobrancaConfigurada: boolean;
+}
+
+export interface FaixaMudaDto {
+  code: typeof CODIGO_FAIXA_MUDA;
+  message: string;
+  de: { faixa: number; valorCentavos: number };
+  para: { faixa: number; valorCentavos: number };
 }

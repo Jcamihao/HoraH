@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import type { ConviteCriadoDto, FaixaHorario, ProfissionalDto, ServicoDto } from '@hora-h/shared';
+import type { ConviteCriadoDto, FaixaHorario, FaixaMudaDto, ProfissionalDto, ServicoDto } from '@hora-h/shared';
 import { Api } from '../../core/api';
-import { mensagemDeErro } from '../../core/errors';
+import { faixaMuda, mensagemDeErro } from '../../core/errors';
 import { SemanaCampos, faixasParaSemana, formatarDuracao, semanaParaFaixas } from '../../core/horarios';
 import { HorarioEditorComponent } from '../../shared/horario-editor.component';
 import { IconComponent } from '../../shared/icon.component';
@@ -97,6 +97,15 @@ interface Item {
             }
           } @else {
             <button type="button" class="btn btn--block" [disabled]="salvando()" (click)="alterarAtivo(true)">Reativar profissional</button>
+            @if (faixaAviso(); as f) {
+              <div class="banner banner--wait" style="margin-top: 12px" role="alertdialog" aria-label="Confirmar mudança de plano">
+                <p>{{ f.message }}</p>
+                <div class="cluster" style="margin-top: 12px">
+                  <button type="button" class="btn btn--filled" [disabled]="salvando()" (click)="alterarAtivo(true, true)">Confirmar e reativar</button>
+                  <button type="button" class="btn" (click)="faixaAviso.set(null)">Agora não</button>
+                </div>
+              </div>
+            }
           }
         </div>
       } @else {
@@ -117,6 +126,7 @@ export class ProfissionalPage {
   protected readonly erro = signal('');
   protected readonly aviso = signal('');
   protected readonly confirmando = signal(false);
+  protected readonly faixaAviso = signal<FaixaMudaDto | null>(null);
   protected readonly copiado = signal(false);
   protected readonly convite = signal<ConviteCriadoDto | null>(null);
 
@@ -197,9 +207,12 @@ export class ProfissionalPage {
     return this.executar('Horário salvo.', async () => this.aplicar(await this.api.put<ProfissionalDto>(`/profissionais/${this.id()}/horarios`, { faixas: r.faixas })));
   }
 
-  protected alterarAtivo(ativo: boolean): Promise<void> {
+  protected alterarAtivo(ativo: boolean, confirmouFaixa = false): Promise<void> {
     this.confirmando.set(false);
-    return this.executar(ativo ? 'Profissional reativado.' : 'Profissional desativado.', async () => this.aplicar(await this.api.patch<ProfissionalDto>(`/profissionais/${this.id()}`, { ativo })));
+    this.faixaAviso.set(null);
+    return this.executar(ativo ? 'Profissional reativado.' : 'Profissional desativado.', async () =>
+      this.aplicar(await this.api.patch<ProfissionalDto>(`/profissionais/${this.id()}`, { ativo, confirmarFaixa: confirmouFaixa || undefined })),
+    );
   }
 
   protected gerarConvite(): Promise<void> {
@@ -226,7 +239,9 @@ export class ProfissionalPage {
       await acao();
       this.aviso.set(sucesso);
     } catch (e) {
-      this.erro.set(mensagemDeErro(e));
+      const faixa = faixaMuda(e);
+      if (faixa) this.faixaAviso.set(faixa);
+      else this.erro.set(mensagemDeErro(e));
     } finally {
       this.salvando.set(false);
     }

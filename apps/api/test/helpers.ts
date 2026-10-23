@@ -5,6 +5,7 @@ import request from 'supertest';
 import type { PrismaService } from '../src/prisma/prisma.service';
 
 export const SENHA = 'Senha-forte-123';
+export const TOKEN_WEBHOOK = 'token-do-webhook-de-teste';
 
 export interface Ambiente {
   app: INestApplication;
@@ -19,6 +20,11 @@ export async function subirApp(env: Record<string, string> = {}): Promise<Ambien
   process.env.JWT_SECRET = 'segredo-de-teste-com-mais-de-trinta-e-dois-caracteres';
   process.env.THROTTLE_ENABLED = 'false';
   process.env.COOKIE_SECURE = 'false';
+  process.env.MAIL_PROVIDER = 'memory';
+  process.env.ASAAS_WEBHOOK_TOKEN = TOKEN_WEBHOOK;
+  delete process.env.ASAAS_API_KEY;
+  delete process.env.ASAAS_BASE_URL;
+  delete process.env.REDIS_URL;
   Object.assign(process.env, env);
 
   // Carrega a aplicação só agora: o ConfigModule valida o ambiente no momento do import.
@@ -40,7 +46,7 @@ export async function subirApp(env: Record<string, string> = {}): Promise<Ambien
 
 export async function limparBanco(prisma: PrismaService): Promise<void> {
   await prisma.semTenant.$executeRawUnsafe(
-    `TRUNCATE TABLE refresh_tokens, convites, agendamentos, bloqueios, clientes, horarios_trabalho, horarios_funcionamento,
+    `TRUNCATE TABLE refresh_tokens, convites, agendamentos, bloqueios, clientes, cobrancas, asaas_eventos, avisos_email, horarios_trabalho, horarios_funcionamento,
      profissional_servicos, servicos, profissionais, usuarios, assinaturas, estabelecimentos CASCADE`,
   );
 }

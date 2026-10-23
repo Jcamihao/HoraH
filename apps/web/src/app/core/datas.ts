@@ -106,3 +106,19 @@ export function fusoDoAparelho(): string {
 export function nomeDoFuso(fuso: string): string {
   return (fuso.split('/').pop() ?? fuso).replace(/_/g, ' ');
 }
+
+/** "2026-11-10" -> "10/11/2026". */
+export function dataBR(data: string): string {
+  const { ano, mes, dia } = partes(data);
+  return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${ano}`;
+}
+
+/** Instante (ISO) -> "10/11/2026" no calendário do salão. */
+export function dataBRDoInstante(iso: string, fuso: string): string {
+  return dataBR(dataDoInstante(iso, fuso));
+}
+
+/** Quantos dias inteiros faltam até o instante (0 = hoje ainda vale; negativo = já passou). */
+export function diasAte(iso: string, agora: Date = new Date()): number {
+  return Math.ceil((new Date(iso).getTime() - agora.getTime()) / 86_400_000);
+}

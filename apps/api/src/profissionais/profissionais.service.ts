@@ -6,6 +6,7 @@ import { Prisma } from '@prisma/client';
 import { Papel, validarFaixas, type ConviteCriadoDto, type FaixaHorario, type ProfissionalDto } from '@hora-h/shared';
 import { UsuarioAutenticado } from '../common/decorators';
 import type { Env } from '../config/env';
+import { AssinaturaService } from '../assinatura/assinatura.service';
 import { hashToken, novoTokenOpaco } from '../auth/sessao.service';
 import { comTenant, PrismaService } from '../prisma/prisma.service';
 import { AtualizarProfissionalDto, CriarProfissionalDto, ServicoDoProfissionalDto } from './dto';
@@ -41,6 +42,7 @@ export class ProfissionaisService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService<Env, true>,
+    private readonly assinatura: AssinaturaService,
   ) {}
 
   async listar(): Promise<ProfissionalDto[]> {
@@ -65,6 +67,7 @@ export class ProfissionaisService {
     if (dto.vincularAoDono && usuario.profissionalId) {
       throw new ConflictException('Você já está cadastrado como profissional.');
     }
+    await this.assinatura.exigirConfirmacaoDeFaixa((await this.prisma.db.profissional.count({ where: { ativo: true } })) + 1, !!dto.confirmarFaixa);
     try {
       const id = await this.prisma.db.$transaction(async (tx) => {
         const criado = await tx.profissional.create({
@@ -81,6 +84,7 @@ export class ProfissionaisService {
         }
         return criado.id;
       });
+      await this.assinatura.aoMudarProfissionais();
       return this.obter(id);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
@@ -90,8 +94,12 @@ export class ProfissionaisService {
     }
   }
 
-  async atualizar(id: string, dto: AtualizarProfissionalDto): Promise<ProfissionalDto> {
+  async atualizar(id: string, { confirmarFaixa, ...dto }: AtualizarProfissionalDto): Promise<ProfissionalDto> {
     const atual = await this.carregar(id);
+    const mudaAtivo = dto.ativo !== undefined && dto.ativo !== atual.ativo;
+    if (mudaAtivo && dto.ativo) {
+      await this.assinatura.exigirConfirmacaoDeFaixa((await this.prisma.db.profissional.count({ where: { ativo: true } })) + 1, !!confirmarFaixa);
+    }
     await this.prisma.db.$transaction(async (tx) => {
       await tx.profissional.update({ where: { id }, data: { ...dto } });
       // Profissional desativado não consegue mais entrar. O dono nunca é travado por aqui.
@@ -102,6 +110,7 @@ export class ProfissionaisService {
         });
       }
     });
+    if (mudaAtivo) await this.assinatura.aoMudarProfissionais();
     return this.obter(id);
   }
 

@@ -1,5 +1,5 @@
 import {
-  BadRequestException, ConflictException, Injectable, NotFoundException,
+  BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {
@@ -7,8 +7,10 @@ import {
   normalizarWhatsapp, OrigemAgendamento, StatusAgendamento,
   type AgendamentoDto, type AgendaDto, type BloqueioDto, type DiaDisponivelDto, type MeuAgendamentoDto, type SlotDto,
 } from '@hora-h/shared';
+import { AssinaturaService } from '../assinatura/assinatura.service';
 import { novoTokenOpaco } from '../auth/sessao.service';
 import { TenantContext } from '../common/tenant-context';
+import { NotificacoesService } from '../notificacoes/notificacoes.service';
 import { comTenant, PrismaService } from '../prisma/prisma.service';
 import { slotsDoDia, type Slot } from './disponibilidade';
 import { dataLocal, dataValida, diaDaSemana, diasEntre, hojeNoFuso, limitesDoDia, somarDias } from './tempo';
@@ -104,7 +106,23 @@ export class AgendaService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly tenant: TenantContext,
+    private readonly assinatura: AssinaturaService,
+    private readonly notificacoes: NotificacoesService,
   ) {}
+
+  /** Assinatura bloqueada: nenhum agendamento novo, venha de onde vier (link, bot ou painel). */
+  async exigirAgendaAberta(origem: 'LINK' | 'BOT' | 'MANUAL' = 'LINK'): Promise<void> {
+    if ((await this.assinatura.acesso()).acesso === 'LIBERADO') return;
+    throw new ForbiddenException(
+      origem === 'MANUAL'
+        ? 'A assinatura do salão está pendente. Regularize o pagamento para voltar a marcar horários.'
+        : 'Este salão não está recebendo agendamentos online no momento. Fale direto com o salão.',
+    );
+  }
+
+  async agendaAberta(): Promise<boolean> {
+    return (await this.assinatura.acesso()).acesso === 'LIBERADO';
+  }
 
   async salao(): Promise<Salao> {
     const id = this.tenant.atual();
@@ -237,6 +255,7 @@ export class AgendaService {
     const whatsapp = normalizarWhatsapp(p.whatsapp);
     if (!whatsapp) throw new BadRequestException('Informe o WhatsApp com DDD. Exemplo: (11) 99999-8888.');
 
+    await this.exigirAgendaAberta(p.origem);
     const salao = await this.salao();
     const { precoCentavos, duracaoMin } = await this.servicoDoProfissional(p.profissionalId, p.servicoId);
     const regime: Regime = p.origem === OrigemAgendamento.LINK ? 'PUBLICO' : 'MANUAL';
@@ -264,7 +283,7 @@ export class AgendaService {
     }
 
     try {
-      return await this.prisma.db.agendamento.create({
+      const criado = await this.prisma.db.agendamento.create({
         data: comTenant({
           profissionalId: p.profissionalId,
           servicoId: p.servicoId,
@@ -279,6 +298,9 @@ export class AgendaService {
         }),
         include: INCLUIR,
       });
+      // Quem lançou no painel já sabe; o dono só é avisado do que veio de fora (link, bot).
+      if (p.origem !== OrigemAgendamento.MANUAL) this.notificacoes.agendamentoCriado(criado);
+      return criado;
     } catch (e) {
       // Duas marcações no mesmo instante passam pela checagem acima; quem decide é o banco.
       if (ehConflitoDeHorario(e)) throw new ConflictException(INDISPONIVEL);
@@ -371,7 +393,9 @@ export class AgendaService {
     const [salao, atual] = await Promise.all([this.salao(), this.obterAgendamento(id)]);
     const agora = new Date();
     this.exigirPodeAlterar(atual, salao, agora);
-    return this.gravarStatus(atual, StatusAgendamento.CANCELADO, CanceladoPor.CLIENTE, agora);
+    const cancelado = await this.gravarStatus(atual, StatusAgendamento.CANCELADO, CanceladoPor.CLIENTE, agora);
+    this.notificacoes.agendamentoCancelado(cancelado, CanceladoPor.CLIENTE);
+    return cancelado;
   }
 
   /** Cliente pelo link único: muda só o dia e a hora (mesmo profissional e serviço), dentro do prazo. */

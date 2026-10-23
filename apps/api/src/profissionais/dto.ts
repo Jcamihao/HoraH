@@ -12,6 +12,10 @@ export class CriarProfissionalDto {
   /** O dono também atende: liga este profissional à conta dele (agenda própria). */
   @IsOptional() @IsBoolean()
   vincularAoDono?: boolean;
+
+  /** O dono já viu e aceitou que o plano muda de faixa (só vale numa assinatura ativa). */
+  @IsOptional() @IsBoolean()
+  confirmarFaixa?: boolean;
 }
 
 export class AtualizarProfissionalDto {
@@ -20,6 +24,10 @@ export class AtualizarProfissionalDto {
 
   @IsOptional() @IsBoolean()
   ativo?: boolean;
+
+  /** Ao reativar um profissional que muda a faixa do plano: confirmação do dono. */
+  @IsOptional() @IsBoolean()
+  confirmarFaixa?: boolean;
 }
 
 export class ServicoDoProfissionalDto {

@@ -3,9 +3,16 @@ import type { Papel } from '@hora-h/shared';
 
 export const PUBLICO_KEY = 'publico';
 export const PAPEIS_KEY = 'papeis';
+export const PERMITE_RESTRITO_KEY = 'permiteRestrito';
 
 /** Rota aberta, sem login. Tudo que não tem este decorator exige token. */
 export const Publico = () => SetMetadata(PUBLICO_KEY, true);
+
+/**
+ * Rota que continua funcionando com a assinatura vencida e bloqueada (modo restrito): é por elas que o dono
+ * regulariza o pagamento e que o atendimento já marcado se resolve. Todo o resto que escreve fica bloqueado.
+ */
+export const PermiteRestrito = () => SetMetadata(PERMITE_RESTRITO_KEY, true);
 
 /**
  * Papéis aceitos na rota. Sem este decorator a rota é só do DONO (padrão restritivo:

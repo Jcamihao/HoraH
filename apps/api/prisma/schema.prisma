@@ -1,4 +1,4 @@
-// Hora H — schema (Fase 1: fundação; Fase 2: clientes, agendamentos e bloqueios).
+// Hora H — schema (Fase 1: fundação; Fase 2: clientes, agendamentos e bloqueios; Fase 3: assinatura e cobrança).
 //
 // ISOLAMENTO MULTI-TENANT
 //  - Toda tabela de negócio carrega `estabelecimentoId`.
@@ -49,6 +49,14 @@ enum CanceladoPor {
   AUTOMATICO
 }
 
+enum StatusCobranca {
+  PENDENTE
+  PAGA
+  VENCIDA
+  ESTORNADA
+  CANCELADA
+}
+
 enum StatusAssinatura {
   TESTE
   ATIVA
@@ -62,6 +70,8 @@ model Estabelecimento {
   nome                 String
   slug                 String    @unique
   fusoHorario          String    @default("America/Sao_Paulo")
+  /// O dono recebe e-mail quando alguém marca ou cancela um horário (spec 8.3).
+  emailAgendamentos    Boolean   @default(true)
   /// Antecedência mínima para marcar, em minutos. Padrão: 1 hora.
   antecedenciaMinMin   Int       @default(60)
   /// Prazo para o cliente cancelar, em minutos antes do horário. Padrão: 2 horas.
@@ -81,6 +91,8 @@ model Estabelecimento {
   clientes             Cliente[]
   agendamentos         Agendamento[]
   bloqueios            Bloqueio[]
+  cobrancas            Cobranca[]
+  avisosEmail          AvisoEmail[]
 
   @@map("estabelecimentos")
 }
@@ -235,16 +247,30 @@ model Convite {
   @@map("convites")
 }
 
-/// Na Fase 1 só guarda o teste grátis; a Fase 3 acrescenta faixa, ids do Asaas e datas de cobrança.
+/// Situação do salão no plano. `status` é o último estado gravado; o acesso de verdade é calculado
+/// com o relógio (ver `calcularAcesso`), então um atraso do job nunca libera nem bloqueia errado.
 model Assinatura {
-  id                String           @id @default(uuid()) @db.Uuid
-  estabelecimentoId String           @unique @db.Uuid
-  status            StatusAssinatura @default(TESTE)
-  testeFimEm        DateTime?        @db.Timestamptz(3)
-  createdAt         DateTime         @default(now()) @db.Timestamptz(3)
-  updatedAt         DateTime         @updatedAt @db.Timestamptz(3)
+  id                      String           @id @default(uuid()) @db.Uuid
+  estabelecimentoId       String           @unique @db.Uuid
+  status                  StatusAssinatura @default(TESTE)
+  testeFimEm              DateTime?        @db.Timestamptz(3)
+  /// Até quando um salão em atraso (ou com o teste vencido) segue com tudo liberado.
+  toleranciaFimEm         DateTime?        @db.Timestamptz(3)
+  asaasCustomerId         String?
+  asaasSubscriptionId     String?          @unique
+  /// Faixa (1 a 3) pelo número de profissionais ativos: o que deve ser cobrado.
+  faixaContratada         Int?
+  /// Última faixa que o Asaas confirmou. Diferente da anterior = falta enviar (o job reenvia).
+  faixaSincronizada       Int?
+  proximaCobrancaEm       DateTime?        @db.Date
+  /// Fim do período já pago de uma assinatura cancelada: depois disso o acesso fecha.
+  cancelaEm               DateTime?        @db.Timestamptz(3)
+  /// Última vez que o job conferiu a situação com o Asaas (recupera webhook perdido).
+  ultimaReconciliacaoEm   DateTime?        @db.Timestamptz(3)
+  createdAt               DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt               DateTime         @updatedAt @db.Timestamptz(3)
 
-  estabelecimento   Estabelecimento  @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  estabelecimento         Estabelecimento  @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
 
   @@map("assinaturas")
 }
@@ -321,4 +347,53 @@ model Bloqueio {
   @@index([estabelecimentoId])
   @@index([profissionalId, inicio])
   @@map("bloqueios")
+}
+
+/// Cobrança mensal do Asaas (uma por vencimento). Atualizada por webhook e por reconciliação.
+model Cobranca {
+  id                String         @id @default(uuid()) @db.Uuid
+  estabelecimentoId String         @db.Uuid
+  asaasPaymentId    String         @unique
+  valorCentavos     Int
+  vencimento        DateTime       @db.Date
+  status            StatusCobranca @default(PENDENTE)
+  pagaEm            DateTime?      @db.Timestamptz(3)
+  /// Página do Asaas para pagar com Pix, cartão ou boleto.
+  url               String?
+  createdAt         DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime       @updatedAt @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+
+  @@index([estabelecimentoId, vencimento])
+  @@map("cobrancas")
+}
+
+/// Registro de todo webhook recebido do Asaas (spec 11.2). `eventoId` único = reentrega não repete efeito.
+model AsaasEvento {
+  id                String    @id @default(uuid()) @db.Uuid
+  eventoId          String    @unique
+  tipo              String
+  asaasPaymentId    String?
+  estabelecimentoId String?   @db.Uuid
+  payload           Json
+  recebidoEm        DateTime  @default(now()) @db.Timestamptz(3)
+  processadoEm      DateTime? @db.Timestamptz(3)
+
+  @@index([asaasPaymentId])
+  @@map("asaas_eventos")
+}
+
+/// E-mail já enviado (ou reservado para envio). A chave única garante que re-executar um job não reenvia.
+model AvisoEmail {
+  id                String   @id @default(uuid()) @db.Uuid
+  estabelecimentoId String   @db.Uuid
+  chave             String
+  tipo              String
+  enviadoEm         DateTime @default(now()) @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+
+  @@unique([estabelecimentoId, chave])
+  @@map("avisos_email")
 }

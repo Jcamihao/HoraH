@@ -1,4 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import type { FaixaMudaDto } from '@hora-h/shared';
 
 /** Traduz erro de rede ou da API para uma frase que diz o problema e o que fazer. */
 export function mensagemDeErro(e: unknown, padrao = 'Não deu certo. Tente de novo.'): string {
@@ -11,4 +12,10 @@ export function mensagemDeErro(e: unknown, padrao = 'Não deu certo. Tente de no
     if (typeof msg === 'string' && msg) return msg;
   }
   return padrao;
+}
+
+/** Adicionar ou reativar um profissional muda a faixa do plano: o servidor pede a confirmação do dono (409). */
+export function faixaMuda(e: unknown): FaixaMudaDto | null {
+  if (e instanceof HttpErrorResponse && e.status === 409 && e.error?.code === 'FAIXA_MUDA') return e.error as FaixaMudaDto;
+  return null;
 }

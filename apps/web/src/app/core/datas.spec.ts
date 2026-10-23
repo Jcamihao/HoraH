@@ -1,5 +1,5 @@
 import {
-  dataDoInstante, diaCurto, diaDaSemana, diaLongo, horaDoInstante, hojeNoFuso, inicioDaSemana, intervaloCurto, rotuloDoDia, somarDias,
+  dataBR, dataBRDoInstante, dataDoInstante, diasAte, diaCurto, diaDaSemana, diaLongo, horaDoInstante, hojeNoFuso, inicioDaSemana, intervaloCurto, rotuloDoDia, somarDias,
 } from './datas';
 
 describe('datas', () => {
@@ -36,5 +36,19 @@ describe('datas', () => {
     expect(rotuloDoDia('2026-10-23', '2026-10-22')).toBe('Amanhã');
     expect(rotuloDoDia('2026-10-21', '2026-10-22')).toBe('Ontem');
     expect(rotuloDoDia('2026-10-30', '2026-10-22')).toBe('sex, 30 out');
+  });
+
+  it('data em formato brasileiro, no calendário do salão', () => {
+    expect(dataBR('2026-11-10')).toBe('10/11/2026');
+    expect(dataBRDoInstante('2026-11-10T02:00:00Z', 'America/Sao_Paulo')).toBe('09/11/2026');
+    expect(dataBRDoInstante('2026-11-10T02:00:00Z', 'Asia/Tokyo')).toBe('10/11/2026');
+  });
+
+  it('dias até um instante, arredondando para cima', () => {
+    const agora = new Date('2026-10-23T12:00:00Z');
+    expect(diasAte('2026-10-23T18:00:00Z', agora)).toBe(1);
+    expect(diasAte('2026-10-25T12:00:00Z', agora)).toBe(2);
+    expect(diasAte('2026-10-23T11:00:00Z', agora)).toBe(0);
+    expect(diasAte('2026-10-20T12:00:00Z', agora)).toBe(-3);
   });
 });

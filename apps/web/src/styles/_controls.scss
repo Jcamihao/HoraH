@@ -135,6 +135,11 @@ select.input {
   color: var(--bad);
 }
 
+.banner--wait {
+  background: var(--wait-bg);
+  color: var(--wait);
+}
+
 .banner--ok {
   background: var(--ok-bg);
   color: var(--ok);

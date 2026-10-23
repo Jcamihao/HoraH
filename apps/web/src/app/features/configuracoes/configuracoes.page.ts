@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { slugificar, validarSlug, type EstabelecimentoDto, type FaixaHorario } from '@hora-h/shared';
 import { Api } from '../../core/api';
 import { AuthStore } from '../../core/auth.store';
@@ -28,7 +29,7 @@ const PRAZOS: [number, string][] = [[0, 'Até a hora'], [60, '1 hora antes'], [1
 
 @Component({
   selector: 'app-configuracoes',
-  imports: [ReactiveFormsModule, HorarioEditorComponent, NavbarComponent],
+  imports: [ReactiveFormsModule, RouterLink, HorarioEditorComponent, NavbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <hh-navbar titulo="Ajustes" />
@@ -86,6 +87,22 @@ const PRAZOS: [number, string][] = [[0, 'Até a hora'], [60, '1 hora antes'], [1
         <hh-horario-editor [(semana)]="semana" />
         <button type="button" class="btn btn--block" style="margin-top: 12px" [disabled]="salvando()" (click)="salvarHorario()">Salvar horário</button>
 
+        <p class="group__header">Avisos</p>
+        <div class="group">
+          <div class="row">
+            <span class="row__main"><span class="row__title">E-mail de novo agendamento</span><span class="row__sub">Receba um e-mail quando alguém marcar ou cancelar pelo link.</span></span>
+            <button type="button" class="switch" role="switch" aria-label="E-mail de novo agendamento" [attr.aria-checked]="avisoEmail()" (click)="alternarAvisoEmail()"></button>
+          </div>
+        </div>
+
+        <p class="group__header">Plano</p>
+        <div class="group">
+          <a class="row row--link" routerLink="/painel/assinatura">
+            <span class="row__main"><span class="row__title">Assinatura</span><span class="row__sub">Plano, cobranças e forma de pagamento.</span></span>
+            <span class="row__detail">{{ situacaoPlano() }}</span>
+          </a>
+        </div>
+
         <p class="group__header">Conta</p>
         <div class="group">
           <div class="row"><span class="row__main"><span class="row__title">{{ auth.usuario()?.nome }}</span><span class="row__sub">{{ auth.usuario()?.email }}</span></span></div>
@@ -110,6 +127,11 @@ export class ConfiguracoesPage {
   protected readonly aviso = signal('');
   protected readonly slugErro = signal('');
   protected readonly semana = signal<SemanaCampos>(faixasParaSemana([]));
+  protected readonly avisoEmail = signal(true);
+  protected readonly situacaoPlano = computed(() => {
+    const a = this.store.dados()?.assinatura;
+    return a ? ({ TESTE: 'Teste grátis', ATIVA: 'Em dia', TOLERANCIA: 'Atrasada', BLOQUEADA: 'Bloqueada', CANCELADA: 'Cancelada' }[a.status] ?? '') : '';
+  });
 
   protected readonly form = this.fb.group({
     nome: ['', [Validators.required, Validators.minLength(2)]],
@@ -130,6 +152,7 @@ export class ConfiguracoesPage {
   private async carregar(): Promise<void> {
     try {
       const [e, h] = await Promise.all([this.store.carregar(true), this.api.get<FaixaHorario[]>('/estabelecimento/horarios')]);
+      this.avisoEmail.set(e.emailAgendamentos);
       this.form.patchValue({
         nome: e.nome,
         slug: e.slug,
@@ -183,6 +206,18 @@ export class ConfiguracoesPage {
       this.erro.set(mensagemDeErro(e));
     } finally {
       this.salvando.set(false);
+    }
+  }
+
+  protected async alternarAvisoEmail(): Promise<void> {
+    const novo = !this.avisoEmail();
+    this.avisoEmail.set(novo);
+    this.erro.set('');
+    try {
+      this.store.definir(await this.api.patch<EstabelecimentoDto>('/estabelecimento', { emailAgendamentos: novo }));
+    } catch (e) {
+      this.avisoEmail.set(!novo);
+      this.erro.set(mensagemDeErro(e));
     }
   }
 }

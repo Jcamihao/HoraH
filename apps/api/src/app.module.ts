@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AgendaModule } from './agenda/agenda.module';
+import { AcessoGuard } from './assinatura/acesso.guard';
+import { AssinaturaModule } from './assinatura/assinatura.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './common/jwt-auth.guard';
 import { RolesGuard } from './common/roles.guard';
@@ -10,9 +12,11 @@ import { TenantMiddleware } from './common/tenant.middleware';
 import { Env, validateEnv } from './config/env';
 import { EstabelecimentoModule } from './estabelecimento/estabelecimento.module';
 import { HealthController } from './health/health.controller';
+import { MailModule } from './mail/mail.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProfissionaisModule } from './profissionais/profissionais.module';
 import { PublicoModule } from './publico/publico.module';
+import { RotinasModule } from './rotinas/rotinas.module';
 import { ServicosModule } from './servicos/servicos.module';
 
 @Module({
@@ -44,13 +48,17 @@ import { ServicosModule } from './servicos/servicos.module';
     ProfissionaisModule,
     AgendaModule,
     PublicoModule,
+    MailModule,
+    AssinaturaModule,
+    RotinasModule,
   ],
   controllers: [HealthController],
   providers: [
-    // Ordem importa: limite de taxa -> autenticação (define o tenant) -> papel.
+    // Ordem importa: limite de taxa -> autenticação (define o tenant) -> papel -> modo restrito da assinatura.
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
+    { provide: APP_GUARD, useClass: AcessoGuard },
   ],
 })
 export class AppModule implements NestModule {

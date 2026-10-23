@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthStore } from '../../core/auth.store';
 import { EstabelecimentoStore } from '../../core/estabelecimento.store';
+import { AssinaturaAvisoComponent } from '../../shared/assinatura-aviso.component';
 import { IconComponent, IconeNome } from '../../shared/icon.component';
 
 interface Aba {
@@ -13,10 +14,11 @@ interface Aba {
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, IconComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, IconComponent, AssinaturaAvisoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app" [class.app--tabbed]="abas().length > 0">
+      @if (auth.ehDono() && salao.cadastroConcluido()) { <hh-assinatura-aviso /> }
       <router-outlet />
     </div>
     @if (abas().length) {
@@ -35,7 +37,7 @@ interface Aba {
 })
 export class ShellComponent {
   protected readonly auth = inject(AuthStore);
-  private readonly salao = inject(EstabelecimentoStore);
+  protected readonly salao = inject(EstabelecimentoStore);
 
   protected readonly abas = computed<Aba[]>(() => {
     if (!this.auth.ehDono()) {

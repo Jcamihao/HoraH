@@ -6,6 +6,8 @@ import { join, relative, sep } from 'node:path';
  * nesta lista de propósito: adicionar uso novo exige mexer aqui, ou seja, passar por revisão.
  */
 const PERMITIDOS_SEM_TENANT = [
+  'assinatura/webhook.controller.ts', // webhook do Asaas: descobre o salão pelo id da assinatura
+  'rotinas/rotinas.service.ts', // job: percorre todos os salões (cada um roda depois no seu próprio contexto)
   'auth/auth.service.ts',      // cadastro, login e convite acontecem antes de existir tenant
   'auth/sessao.service.ts',    // refresh tokens são consultados antes do tenant
   'common/jwt-auth.guard.ts',  // é quem descobre o tenant a partir do usuário do token

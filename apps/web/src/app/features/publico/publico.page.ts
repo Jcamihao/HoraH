@@ -49,7 +49,11 @@ const ETAPAS: Etapa[] = ['quem', 'servico', 'quando', 'dados', 'pronto'];
         } @else if (erroGeral()) {
           <main class="pub-main"><p class="pub-aviso pub-aviso--erro" role="alert">{{ erroGeral() }}</p><button type="button" class="pub-btn pub-btn--suave" (click)="carregarSalao()">Tentar de novo</button></main>
         } @else if (salao(); as s) {
-          @if (!s.profissionais.length) {
+          @if (!s.aceitaAgendamentos) {
+            <main class="pub-main">
+              <div class="pub-vazio"><strong>Agenda fechada por enquanto</strong>{{ s.nome }} não está recebendo agendamentos online agora. Fale direto com o salão.</div>
+            </main>
+          } @else if (!s.profissionais.length) {
             <main class="pub-main">
               <div class="pub-vazio"><strong>Ainda sem horários online</strong>{{ s.nome }} ainda não abriu a agenda pela internet. Fale direto com o salão.</div>
             </main>

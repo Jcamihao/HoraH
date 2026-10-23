@@ -1,4 +1,4 @@
-import { formatarWhatsapp, hhmmParaMinutos, minutosParaHHmm, normalizarWhatsapp, slugificar, validarFaixas, validarSlug } from '@hora-h/shared';
+import { faixaDe, formatarWhatsapp, planoDaFaixa, tipoCpfCnpj, hhmmParaMinutos, minutosParaHHmm, normalizarWhatsapp, slugificar, validarFaixas, validarSlug } from '@hora-h/shared';
 
 describe('slug', () => {
   it.each([
@@ -77,5 +77,33 @@ describe('WhatsApp', () => {
     expect(formatarWhatsapp('5511999998888')).toBe('(11) 99999-8888');
     expect(normalizarWhatsapp(formatarWhatsapp('5521988887777'))).toBe('5521988887777');
     expect(formatarWhatsapp('lixo')).toBe('lixo');
+  });
+});
+
+describe('faixas do plano', () => {
+  it.each([
+    [0, 1, 2990], [1, 1, 2990], [2, 2, 5990], [5, 2, 5990], [6, 3, 9990], [40, 3, 9990],
+  ])('%i profissionais ativos -> faixa %i (%i centavos)', (n, faixa, valor) => {
+    expect(faixaDe(n)).toMatchObject({ faixa, valorCentavos: valor });
+  });
+
+  it('planoDaFaixa cai na faixa 1 para valor desconhecido', () => {
+    expect(planoDaFaixa(2).valorCentavos).toBe(5990);
+    expect(planoDaFaixa(99).faixa).toBe(1);
+  });
+});
+
+describe('CPF e CNPJ', () => {
+  it.each([
+    ['529.982.247-25', 'cpf'],
+    ['52998224725', 'cpf'],
+    ['11.222.333/0001-81', 'cnpj'],
+    ['11222333000181', 'cnpj'],
+  ])('%s é %s', (entrada, tipo) => {
+    expect(tipoCpfCnpj(entrada)).toBe(tipo);
+  });
+
+  it.each(['', '123', '529.982.247-26', '111.111.111-11', '00000000000000', '11.222.333/0001-82', 'abc'])('recusa %s', (entrada) => {
+    expect(tipoCpfCnpj(entrada)).toBeNull();
   });
 });

@@ -24,7 +24,7 @@ const A_CADA_MINUTO = 60_000;
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <hh-navbar titulo="Agenda">
-      <a routerLink="/painel/agenda/novo"><hh-icon nome="plus" /> Novo</a>
+      @if (!restrito()) { <a routerLink="/painel/agenda/novo"><hh-icon nome="plus" /> Novo</a> }
     </hh-navbar>
     <main class="page page--tabbed">
       <h1 class="large-title">Agenda</h1>
@@ -112,12 +112,14 @@ const A_CADA_MINUTO = 60_000;
         }
       }
 
-      <p class="group__header">Folgas</p>
-      <div class="group">
-        <a class="row row--link" routerLink="/painel/agenda/bloquear">
-          <span class="row__main"><span class="row__title">Bloquear horário</span><span class="row__sub">Folga, almoço extra, consulta: o cliente deixa de ver esses horários.</span></span>
-        </a>
-      </div>
+      @if (!restrito()) {
+        <p class="group__header">Folgas</p>
+        <div class="group">
+          <a class="row row--link" routerLink="/painel/agenda/bloquear">
+            <span class="row__main"><span class="row__title">Bloquear horário</span><span class="row__sub">Folga, almoço extra, consulta: o cliente deixa de ver esses horários.</span></span>
+          </a>
+        </div>
+      }
     </main>
   `,
 })
@@ -133,6 +135,7 @@ export class AgendaPage {
   protected readonly equipe = signal<ProfissionalDto[]>([]);
   protected readonly removendoId = signal('');
 
+  protected readonly restrito = this.salaoStore.restrito;
   protected readonly fuso = computed(() => this.salaoStore.dados()?.fusoHorario ?? 'America/Sao_Paulo');
   private readonly agora = signal(new Date());
   protected readonly hoje = computed(() => hojeNoFuso(this.fuso(), this.agora()));

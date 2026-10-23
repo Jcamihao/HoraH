@@ -1,8 +1,9 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, type Assinatura } from '@prisma/client';
 import { Papel, validarFaixas, validarSlug, type EstabelecimentoDto, type FaixaHorario, type StatusAssinatura } from '@hora-h/shared';
 import { UsuarioAutenticado } from '../common/decorators';
 import { TenantContext } from '../common/tenant-context';
+import { calcularAcesso } from '../assinatura/acesso';
 import { comTenant, PrismaService } from '../prisma/prisma.service';
 import { AtualizarEstabelecimentoDto } from './dto';
 
@@ -42,10 +43,19 @@ export class EstabelecimentoService {
       antecedenciaMinMin: e.antecedenciaMinMin,
       prazoCancelamentoMin: e.prazoCancelamentoMin,
       onboardingConcluido: e.onboardingConcluidoEm !== null,
+      emailAgendamentos: e.emailAgendamentos,
       assinatura:
-        usuario.papel === Papel.DONO && e.assinatura
-          ? { status: e.assinatura.status as StatusAssinatura, testeFimEm: e.assinatura.testeFimEm?.toISOString() ?? null }
-          : null,
+        usuario.papel === Papel.DONO && e.assinatura ? this.resumoAssinatura(e.assinatura) : null,
+    };
+  }
+
+  private resumoAssinatura(a: Assinatura): NonNullable<EstabelecimentoDto['assinatura']> {
+    const estado = calcularAcesso(a, new Date());
+    return {
+      status: estado.status as StatusAssinatura,
+      acesso: estado.acesso,
+      testeFimEm: a.testeFimEm?.toISOString() ?? null,
+      toleranciaFimEm: estado.toleranciaFimEm?.toISOString() ?? null,
     };
   }
 

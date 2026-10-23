@@ -256,3 +256,43 @@
     }
   }
 }
+
+// Faixa de aviso da assinatura, no topo do painel (só quando há o que fazer)
+.avisobar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px var(--gutter);
+  background: var(--tint-bg);
+  font-size: var(--fs-small);
+  text-align: center;
+}
+
+.avisobar p {
+  max-width: 46ch;
+}
+
+.avisobar a {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.avisobar--espera {
+  background: var(--wait-bg);
+  color: var(--wait);
+}
+
+.avisobar--espera a {
+  color: var(--wait);
+}
+
+.avisobar--ruim {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.avisobar--ruim a {
+  color: var(--bad);
+}

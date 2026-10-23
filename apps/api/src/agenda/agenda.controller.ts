@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   OrigemAgendamento, Papel, type AgendamentoDto, type AgendaDto, type BloqueioCriadoDto, type BloqueioDto, type SlotDto,
 } from '@hora-h/shared';
-import { Papeis, UsuarioAtual, UsuarioAutenticado } from '../common/decorators';
+import { Papeis, PermiteRestrito, UsuarioAtual, UsuarioAutenticado } from '../common/decorators';
 import type { Env } from '../config/env';
 import { AgendaService, paraAgendamentoDto } from './agenda.service';
 import { BloqueiosService } from './bloqueios.service';
@@ -49,6 +49,8 @@ export class AgendaController {
     return paraAgendamentoDto(await this.agenda.obterAgendamento(id, escopoDoProfissional(u)));
   }
 
+  /** Resolver o atendimento que já estava marcado (concluir, faltou, cancelar) segue valendo no modo restrito. */
+  @PermiteRestrito()
   @Patch('agendamentos/:id/status')
   async status(
     @UsuarioAtual() u: UsuarioAutenticado,

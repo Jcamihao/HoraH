@@ -5,6 +5,7 @@ import { TenantContext } from '../common/tenant-context';
 /**
  * Coluna que prende cada modelo a um estabelecimento. Estabelecimento é o próprio tenant (`id`).
  * RefreshToken fica de fora de propósito: é consultado ANTES de existir tenant (renovação de sessão).
+ * AsaasEvento também: o webhook chega sem login e é gravado antes de descobrir de qual salão é.
  */
 const CAMPO_TENANT: Record<string, string> = {
   Estabelecimento: 'id',
@@ -19,6 +20,8 @@ const CAMPO_TENANT: Record<string, string> = {
   Cliente: 'estabelecimentoId',
   Agendamento: 'estabelecimentoId',
   Bloqueio: 'estabelecimentoId',
+  Cobranca: 'estabelecimentoId',
+  AvisoEmail: 'estabelecimentoId',
 };
 
 const LEITURA_E_ALTERACAO_EM_MASSA = new Set([

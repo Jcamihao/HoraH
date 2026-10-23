@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import type { ProfissionalDto } from '@hora-h/shared';
+import type { FaixaMudaDto, ProfissionalDto } from '@hora-h/shared';
 import { Api } from '../../core/api';
 import { AuthStore } from '../../core/auth.store';
-import { mensagemDeErro } from '../../core/errors';
+import { faixaMuda, mensagemDeErro } from '../../core/errors';
 import { resumoSemana } from '../../core/horarios';
 import { IconComponent } from '../../shared/icon.component';
 import { NavbarComponent } from '../../shared/navbar.component';
@@ -61,6 +61,15 @@ import { NavbarComponent } from '../../shared/navbar.component';
         </div>
         <button type="submit" class="btn btn--block" [disabled]="salvando() || form.controls.nome.value.trim().length < 2"><hh-icon nome="plus" /> Adicionar</button>
       </form>
+      @if (faixaAviso(); as f) {
+        <div class="banner banner--wait" style="margin-top: 16px" role="alertdialog" aria-label="Confirmar mudança de plano">
+          <p>{{ f.message }}</p>
+          <div class="cluster" style="margin-top: 12px">
+            <button type="button" class="btn btn--filled" [disabled]="salvando()" (click)="adicionar(true)">Confirmar e adicionar</button>
+            <button type="button" class="btn" (click)="faixaAviso.set(null)">Não adicionar</button>
+          </div>
+        </div>
+      }
     </main>
   `,
 })
@@ -75,6 +84,7 @@ export class ProfissionaisPage {
   protected readonly carregando = signal(true);
   protected readonly salvando = signal(false);
   protected readonly erro = signal('');
+  protected readonly faixaAviso = signal<FaixaMudaDto | null>(null);
   protected readonly form = this.fb.group({ nome: [''], euTambem: [false] });
 
   constructor() {
@@ -95,17 +105,21 @@ export class ProfissionaisPage {
     }
   }
 
-  protected async adicionar(): Promise<void> {
+  protected async adicionar(confirmouFaixa = false): Promise<void> {
     const v = this.form.getRawValue();
     if (v.nome.trim().length < 2) return;
     this.salvando.set(true);
     this.erro.set('');
     try {
-      const novo = await this.api.post<ProfissionalDto>('/profissionais', { nome: v.nome.trim(), vincularAoDono: v.euTambem || undefined });
+      const novo = await this.api.post<ProfissionalDto>('/profissionais', {
+        nome: v.nome.trim(), vincularAoDono: v.euTambem || undefined, confirmarFaixa: confirmouFaixa || undefined,
+      });
       if (v.euTambem) this.auth.definirProfissional(novo.id);
       await this.router.navigate(['/painel/profissionais', novo.id]);
     } catch (e) {
-      this.erro.set(mensagemDeErro(e));
+      const faixa = faixaMuda(e);
+      if (faixa) this.faixaAviso.set(faixa);
+      else this.erro.set(mensagemDeErro(e));
     } finally {
       this.salvando.set(false);
     }

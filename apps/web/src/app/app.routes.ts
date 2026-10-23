@@ -93,6 +93,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/configuracoes/configuracoes.page').then((m) => m.ConfiguracoesPage),
       },
       {
+        path: 'assinatura',
+        canActivate: [soDono, cadastroConcluido],
+        title: 'Assinatura | Hora H',
+        loadComponent: () => import('./features/assinatura/assinatura.page').then((m) => m.AssinaturaPage),
+      },
+      {
         path: 'meu-perfil',
         title: 'Meu perfil | Hora H',
         loadComponent: () => import('./features/profissionais/meu-perfil.page').then((m) => m.MeuPerfilPage),

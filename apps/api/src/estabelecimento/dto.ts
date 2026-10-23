@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Length, Matches, Max, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString, Length, Matches, Max, Min } from 'class-validator';
 import { SLUG_MAX, SLUG_MIN, SLUG_REGEX } from '@hora-h/shared';
 
 export class AtualizarEstabelecimentoDto {
@@ -20,4 +20,7 @@ export class AtualizarEstabelecimentoDto {
 
   @IsOptional() @IsInt() @Min(0) @Max(43_200)
   prazoCancelamentoMin?: number;
+
+  @IsOptional() @IsBoolean()
+  emailAgendamentos?: boolean;
 }
