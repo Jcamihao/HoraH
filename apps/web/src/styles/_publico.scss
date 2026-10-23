@@ -1,0 +1,535 @@
+// Página pública do salão (cliente final, celular primeiro). Identidade própria, separada do painel:
+// o salão é o personagem, então o nome dele é o maior elemento da tela e a cor vem em campos inteiros.
+// Sem filetes, sem sombras em repouso, sem degradês: a separação é degrau de tom e espaço.
+body:has(.pub) {
+  background: #f1f3f0;
+}
+
+.pub {
+  --p-bg: #f1f3f0;
+  --p-surface: #ffffff;
+  --p-soft: #e1e8e4;
+  --p-soft-press: #d2dcd7;
+  --p-ink: #15181a;
+  --p-ink-2: #48514f;
+  --p-accent: #0e5c57;
+  --p-accent-press: #0a4743;
+  --p-on-accent: #ffffff;
+  --p-bad: #a8231b;
+  --p-bad-bg: #f7dedb;
+
+  min-height: 100dvh;
+  background: var(--p-bg);
+  color: var(--p-ink);
+  font-family: var(--font);
+}
+
+.pub-wrap {
+  width: min(100%, 560px);
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+// Campo de cor com o nome do salão
+.pub-hero {
+  background: var(--p-accent);
+  color: var(--p-on-accent);
+  padding: calc(env(safe-area-inset-top) + 20px) 0 28px;
+}
+
+.pub-hero--grande {
+  padding-bottom: 40px;
+}
+
+.pub-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--tap);
+  margin-left: -8px;
+  padding-right: 12px;
+  color: var(--p-on-accent);
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.pub-nome {
+  margin-top: 28px;
+  font-size: clamp(2.5rem, 12vw, 4.25rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.pub-nome--medio {
+  font-size: clamp(2rem, 9.5vw, 3.25rem);
+}
+
+.pub-nome--longo {
+  font-size: clamp(1.625rem, 7vw, 2.5rem);
+  line-height: 1.02;
+}
+
+.pub-hero--compacto .pub-nome {
+  margin-top: 4px;
+  font-size: 1.375rem;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+.pub-lead {
+  margin-top: 16px;
+  max-width: 28ch;
+  font-size: 1.1875rem;
+  line-height: 1.35;
+}
+
+.pub-main {
+  padding-block: 28px 40px;
+  animation: pub-entra 0.28s var(--ease-out) both;
+}
+
+.pub-main--dock {
+  padding-bottom: 128px;
+}
+
+@keyframes pub-entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.pub-q {
+  margin-bottom: 20px;
+  font-size: clamp(1.75rem, 7.5vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.pub-sub {
+  margin: -8px 0 20px;
+  font-size: var(--fs-body);
+  color: var(--p-ink-2);
+}
+
+// Escolhas grandes de ponta a ponta
+.pub-choice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 76px;
+  margin-bottom: 8px;
+  padding: 14px 20px;
+  background: var(--p-surface);
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  transition: background-color 0.15s var(--ease-out), transform 0.15s var(--ease-out);
+
+  &:active {
+    background: var(--p-soft);
+    transform: scale(0.99);
+  }
+}
+
+.pub-choice__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.pub-choice__title {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.pub-choice__sub {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--fs-small);
+  color: var(--p-ink-2);
+}
+
+.pub-choice__detail {
+  flex: none;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+// O que já foi escolhido, com saída para mudar
+.pub-recap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 14px 20px;
+  background: var(--p-soft);
+  font-size: var(--fs-body);
+}
+
+.pub-recap strong {
+  font-weight: 700;
+}
+
+.pub-link {
+  flex: none;
+  min-height: var(--tap);
+  padding-inline: 4px;
+  color: var(--p-accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+// Calendário
+.pub-cal {
+  margin-bottom: 24px;
+  padding: 20px 8px 12px;
+  background: var(--p-surface);
+}
+
+.pub-cal__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-inline: 12px 4px;
+}
+
+.pub-cal__mes {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.pub-cal__setas {
+  display: flex;
+  gap: 8px;
+}
+
+.pub-seta {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  border-radius: 50%;
+  background: var(--p-soft);
+
+  &:disabled {
+    opacity: 0.35;
+  }
+
+  &:active:not(:disabled) {
+    background: var(--p-soft-press);
+  }
+}
+
+.pub-cal__grade {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.pub-cal__sem {
+  padding-block: 6px;
+  text-align: center;
+  font-size: var(--fs-caption);
+  color: var(--p-ink-2);
+}
+
+.pub-dia {
+  aspect-ratio: 1;
+  width: 100%;
+  max-width: var(--tap);
+  justify-self: center;
+  border-radius: 50%;
+  font-size: 1.0625rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  transition: background-color 0.15s var(--ease-out);
+}
+
+.pub-dia.is-livre {
+  background: var(--p-soft);
+
+  &:active {
+    background: var(--p-soft-press);
+  }
+}
+
+.pub-dia[disabled] {
+  font-weight: 400;
+  color: var(--p-ink-2);
+  opacity: 0.5;
+}
+
+.pub-dia[aria-pressed='true'] {
+  background: var(--p-accent);
+  color: var(--p-on-accent);
+  opacity: 1;
+}
+
+.pub-dia.is-vazio {
+  visibility: hidden;
+}
+
+// Horários
+.pub-periodo {
+  margin: 8px 0 10px;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.pub-horarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.pub-horario {
+  min-height: 52px;
+  border-radius: 26px;
+  background: var(--p-surface);
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.15s var(--ease-out);
+
+  &:active {
+    background: var(--p-soft);
+  }
+}
+
+.pub-horario[aria-pressed='true'] {
+  background: var(--p-accent);
+  color: var(--p-on-accent);
+}
+
+// Campos
+.pub-campo {
+  display: block;
+  margin-bottom: 8px;
+  padding: 12px 20px 10px;
+  background: var(--p-surface);
+  cursor: text;
+
+  &:focus-within {
+    outline: 3px solid var(--p-accent);
+    outline-offset: -3px;
+  }
+}
+
+.pub-campo.is-invalido {
+  background: var(--p-bad-bg);
+}
+
+.pub-campo__rotulo {
+  display: block;
+  font-size: var(--fs-small);
+  color: var(--p-ink-2);
+}
+
+.pub-campo input {
+  width: 100%;
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  font-size: 1.375rem;
+  font-weight: 600;
+  outline: none;
+
+  &::placeholder {
+    color: #8b9693;
+    font-weight: 400;
+  }
+}
+
+.pub-aceite {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 16px 0 8px;
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.pub-aceite input {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  accent-color: var(--p-accent);
+}
+
+// Botões
+.pub-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 56px;
+  padding: 0 28px;
+  border-radius: 28px;
+  background: var(--p-accent);
+  color: var(--p-on-accent);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.15s var(--ease-out), transform 0.15s var(--ease-out);
+
+  &:active:not(:disabled) {
+    background: var(--p-accent-press);
+    transform: scale(0.985);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.pub-btn--suave {
+  background: var(--p-soft);
+  color: var(--p-ink);
+
+  &:active:not(:disabled) {
+    background: var(--p-soft-press);
+  }
+}
+
+.pub-btn--perigo {
+  background: var(--p-bad-bg);
+  color: var(--p-bad);
+
+  &:active:not(:disabled) {
+    background: #f0c9c5;
+  }
+}
+
+.pub-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+// Ação principal presa na base
+.pub-dock {
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+  background: var(--p-bg);
+}
+
+// Avisos
+.pub-aviso {
+  margin-bottom: 16px;
+  padding: 14px 20px;
+  background: var(--p-soft);
+  font-size: var(--fs-body);
+  line-height: 1.35;
+}
+
+.pub-aviso--erro {
+  background: var(--p-bad-bg);
+  color: var(--p-bad);
+}
+
+.pub-vazio {
+  padding: 40px 0;
+  font-size: 1.1875rem;
+  line-height: 1.4;
+}
+
+.pub-vazio strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+// Confirmação: o dia e a hora são a imagem da tela
+.pub-quando {
+  margin-bottom: 24px;
+  padding: 24px 20px;
+  background: var(--p-surface);
+}
+
+.pub-quando__dia {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+// Só a primeira letra maiúscula ("Quinta-feira, 22 de outubro"), sem capitalizar o "de"
+.pub-quando__dia::first-letter {
+  text-transform: uppercase;
+}
+
+.pub-quando__hora {
+  display: block;
+  margin-block: 4px 12px;
+  font-size: clamp(3.5rem, 20vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.pub-quando--cancelado .pub-quando__dia,
+.pub-quando--cancelado .pub-quando__hora {
+  color: var(--p-ink-2);
+  text-decoration: line-through;
+  text-decoration-thickness: 0.06em;
+}
+
+.pub-quando__detalhe {
+  font-size: var(--fs-body);
+  line-height: 1.45;
+}
+
+.pub-rodape {
+  padding-block: 8px 40px;
+  font-size: var(--fs-caption);
+  color: var(--p-ink-2);
+}
+
+.pub-skeleton {
+  height: 76px;
+  margin-bottom: 8px;
+  background: #e4e9e6;
+  animation: pub-pulso 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes pub-pulso {
+  to {
+    background: #eef1ef;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pub-main {
+    animation: none;
+  }
+
+  .pub-skeleton {
+    animation: none;
+  }
+}

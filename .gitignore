@@ -1,0 +1,11 @@
+node_modules
+dist
+.angular
+.data
+.env
+*.tsbuildinfo
+apps/web/.impeccable/mocks
+apps/web/.impeccable/review
+
+graphify-out
+.claude/

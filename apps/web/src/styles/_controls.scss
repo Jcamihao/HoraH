@@ -1,0 +1,146 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 0 20px;
+  border-radius: var(--r-ctl);
+  background: var(--tint-bg);
+  color: var(--tint);
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition:
+    background-color 0.15s var(--ease-out),
+    transform 0.15s var(--ease-out);
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.btn--filled {
+  background: var(--tint);
+  color: #fff;
+
+  &:active:not(:disabled) {
+    background: var(--tint-press);
+  }
+}
+
+.btn--plain {
+  min-height: var(--tap);
+  padding: 0 8px;
+  background: transparent;
+  color: var(--tint);
+}
+
+.btn--bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn--small {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 18px;
+  font-size: var(--fs-small);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  appearance: none;
+  outline: none;
+
+  &::placeholder {
+    color: #8e8e93;
+    opacity: 1;
+  }
+}
+
+select.input {
+  padding-right: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.5l4.5 4.5 4.5-4.5' fill='none' stroke='%236c6c70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 2px center;
+}
+
+.input--right {
+  text-align: right;
+}
+
+.input--time {
+  width: auto;
+  min-width: 6.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.input-money {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.input-money .input {
+  width: 7rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.input-money.is-pendente .input::placeholder {
+  color: var(--bad);
+  font-weight: 600;
+}
+
+.hint {
+  max-width: none;
+  font-size: var(--fs-caption);
+  color: var(--ink-2);
+}
+
+.error {
+  max-width: none;
+  font-size: var(--fs-caption);
+  color: var(--bad);
+}
+
+.banner {
+  max-width: none;
+  padding: 12px var(--gutter);
+  border-radius: var(--r-group);
+  background: var(--tint-bg);
+  font-size: var(--fs-small);
+}
+
+.banner--bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.banner--ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+// Ação sem volta: afastada das outras, sem cor até receber foco
+.danger-zone {
+  margin-top: 40px;
+}

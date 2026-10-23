@@ -1,0 +1,45 @@
+// Identidade "Lista Nativa". Cores, fonte, raios e movimento moram aqui:
+// trocar a marca do Hora H é editar este arquivo.
+:root {
+  color-scheme: light;
+
+  // Superfícies e tinta
+  --bg: #f2f2f7;
+  --surface: #ffffff;
+  --ink: #111113;
+  --ink-2: #6c6c70; // texto secundário (5:1 sobre branco)
+  --sep: #d8d8dd;
+  --sep-strong: #c6c6cb;
+  --press: #e5e5ea;
+
+  // Cor de ação: só em quem se toca
+  --tint: #0a72e8;
+  --tint-press: #0860c4;
+  --tint-bg: #e4f0fd;
+
+  // Estado: só quando há estado
+  --ok: #16693a;
+  --ok-bg: #e1f2e6;
+  --wait: #8a5200;
+  --wait-bg: #fff0d1;
+  --bad: #c7271f;
+  --bad-bg: #fde7e5;
+  --off-bg: #e9e9ee;
+
+  // Forma
+  --r-group: 12px;
+  --r-ctl: 12px;
+  --tap: 44px;
+  --gutter: 16px;
+
+  // Tipo: fonte do sistema, como no resto do aparelho
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --fs-body: 1.0625rem;
+  --fs-small: 0.9375rem;
+  --fs-caption: 0.8125rem;
+  --fs-title: 2.125rem;
+
+  // Movimento
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-push: 0.32s;
+}

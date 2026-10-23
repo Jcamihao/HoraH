@@ -1,0 +1,324 @@
+// Hora H — schema (Fase 1: fundação; Fase 2: clientes, agendamentos e bloqueios).
+//
+// ISOLAMENTO MULTI-TENANT
+//  - Toda tabela de negócio carrega `estabelecimentoId`.
+//  - As chaves estrangeiras entre tabelas de negócio são COMPOSTAS (id + estabelecimentoId):
+//    o próprio banco impede ligar, por exemplo, um profissional de um salão a um serviço de outro.
+//  - O filtro automático por tenant fica no PrismaService (src/prisma).
+//
+// Colunas de hora são minutos desde 00:00 (0..1440). Instantes (início de agendamento etc.) serão
+// sempre `timestamptz` em UTC; o fuso do estabelecimento só entra na exibição.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Papel {
+  DONO
+  PROFISSIONAL
+}
+
+enum StatusAgendamento {
+  AGENDADO
+  CONCLUIDO
+  FALTOU
+  CANCELADO
+}
+
+/// Informativo, separado do status (spec seção 3). A Fase 4 (lembretes) é quem o altera.
+enum ConfirmacaoAgendamento {
+  PENDENTE
+  CONFIRMADO
+  SEM_RESPOSTA
+}
+
+enum OrigemAgendamento {
+  LINK
+  BOT
+  MANUAL
+}
+
+enum CanceladoPor {
+  CLIENTE
+  PAINEL
+  AUTOMATICO
+}
+
+enum StatusAssinatura {
+  TESTE
+  ATIVA
+  TOLERANCIA
+  BLOQUEADA
+  CANCELADA
+}
+
+model Estabelecimento {
+  id                   String    @id @default(uuid()) @db.Uuid
+  nome                 String
+  slug                 String    @unique
+  fusoHorario          String    @default("America/Sao_Paulo")
+  /// Antecedência mínima para marcar, em minutos. Padrão: 1 hora.
+  antecedenciaMinMin   Int       @default(60)
+  /// Prazo para o cliente cancelar, em minutos antes do horário. Padrão: 2 horas.
+  prazoCancelamentoMin Int       @default(120)
+  onboardingConcluidoEm DateTime? @db.Timestamptz(3)
+  createdAt            DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime  @updatedAt @db.Timestamptz(3)
+
+  usuarios             Usuario[]
+  profissionais        Profissional[]
+  servicos             Servico[]
+  horarios             HorarioFuncionamento[]
+  horariosTrabalho     HorarioTrabalho[]
+  profissionalServicos ProfissionalServico[]
+  convites             Convite[]
+  assinatura           Assinatura?
+  clientes             Cliente[]
+  agendamentos         Agendamento[]
+  bloqueios            Bloqueio[]
+
+  @@map("estabelecimentos")
+}
+
+model Usuario {
+  id                String    @id @default(uuid()) @db.Uuid
+  estabelecimentoId String    @db.Uuid
+  /// Sempre minúsculo; único no sistema inteiro (o login não pede o salão).
+  email             String    @unique
+  nome              String
+  senhaHash         String
+  papel             Papel
+  ativo             Boolean   @default(true)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime  @updatedAt @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  profissional      Profissional?
+  refreshTokens     RefreshToken[]
+
+  @@unique([id, estabelecimentoId])
+  @@index([estabelecimentoId])
+  @@map("usuarios")
+}
+
+model RefreshToken {
+  id           String    @id @default(uuid()) @db.Uuid
+  usuarioId    String    @db.Uuid
+  /// SHA-256 do token opaco; o token em si nunca é guardado.
+  tokenHash    String    @unique
+  /// Todos os tokens de uma mesma sessão compartilham a família (detecção de reuso).
+  familia      String    @db.Uuid
+  expiraEm     DateTime  @db.Timestamptz(3)
+  revogadoEm   DateTime? @db.Timestamptz(3)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([familia])
+  @@map("refresh_tokens")
+}
+
+model Profissional {
+  id                String    @id @default(uuid()) @db.Uuid
+  estabelecimentoId String    @db.Uuid
+  nome              String
+  ativo             Boolean   @default(true)
+  /// Preenchido quando o profissional aceita o convite.
+  usuarioId         String?   @unique @db.Uuid
+  createdAt         DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime  @updatedAt @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  /// Chave composta: o usuário vinculado tem que ser do mesmo salão (NoAction: usuários são desativados, nunca apagados).
+  usuario           Usuario?  @relation(fields: [usuarioId, estabelecimentoId], references: [id, estabelecimentoId], onDelete: NoAction)
+  servicos          ProfissionalServico[]
+  horarios          HorarioTrabalho[]
+  convites          Convite[]
+  agendamentos      Agendamento[]
+  bloqueios         Bloqueio[]
+
+  @@unique([id, estabelecimentoId])
+  @@unique([usuarioId, estabelecimentoId])
+  @@index([estabelecimentoId])
+  @@map("profissionais")
+}
+
+model Servico {
+  id                String    @id @default(uuid()) @db.Uuid
+  estabelecimentoId String    @db.Uuid
+  nome              String
+  duracaoMin        Int
+  ativo             Boolean   @default(true)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime  @updatedAt @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  profissionais     ProfissionalServico[]
+  agendamentos      Agendamento[]
+
+  @@unique([id, estabelecimentoId])
+  @@index([estabelecimentoId])
+  @@map("servicos")
+}
+
+/// Qual profissional faz qual serviço, e por quanto (o preço pode variar por profissional).
+model ProfissionalServico {
+  profissionalId    String   @db.Uuid
+  servicoId         String   @db.Uuid
+  estabelecimentoId String   @db.Uuid
+  /// Em centavos, para nunca somar ponto flutuante.
+  precoCentavos     Int
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  profissional      Profissional @relation(fields: [profissionalId, estabelecimentoId], references: [id, estabelecimentoId], onDelete: Cascade)
+  servico           Servico @relation(fields: [servicoId, estabelecimentoId], references: [id, estabelecimentoId], onDelete: Cascade)
+
+  @@id([profissionalId, servicoId])
+  @@index([estabelecimentoId])
+  @@index([servicoId])
+  @@map("profissional_servicos")
+}
+
+/// Horário de funcionamento do salão. Várias linhas no mesmo dia = intervalos (ex.: almoço).
+model HorarioFuncionamento {
+  id                String   @id @default(uuid()) @db.Uuid
+  estabelecimentoId String   @db.Uuid
+  diaSemana         Int      @db.SmallInt
+  inicioMin         Int      @db.SmallInt
+  fimMin            Int      @db.SmallInt
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+
+  @@index([estabelecimentoId, diaSemana])
+  @@map("horarios_funcionamento")
+}
+
+/// Horário de trabalho de cada profissional (pré-preenchido com o do salão no cadastro).
+model HorarioTrabalho {
+  id                String   @id @default(uuid()) @db.Uuid
+  estabelecimentoId String   @db.Uuid
+  profissionalId    String   @db.Uuid
+  diaSemana         Int      @db.SmallInt
+  inicioMin         Int      @db.SmallInt
+  fimMin            Int      @db.SmallInt
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  profissional      Profissional @relation(fields: [profissionalId, estabelecimentoId], references: [id, estabelecimentoId], onDelete: Cascade)
+
+  @@index([estabelecimentoId])
+  @@index([profissionalId, diaSemana])
+  @@map("horarios_trabalho")
+}
+
+model Convite {
+  id                String    @id @default(uuid()) @db.Uuid
+  estabelecimentoId String    @db.Uuid
+  profissionalId    String    @db.Uuid
+  /// SHA-256 do token; o link com o token em claro só é mostrado uma vez, na criação.
+  tokenHash         String    @unique
+  expiraEm          DateTime  @db.Timestamptz(3)
+  usadoEm           DateTime? @db.Timestamptz(3)
+  revogadoEm        DateTime? @db.Timestamptz(3)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  profissional      Profissional @relation(fields: [profissionalId, estabelecimentoId], references: [id, estabelecimentoId], onDelete: Cascade)
+
+  @@index([estabelecimentoId])
+  @@index([profissionalId])
+  @@map("convites")
+}
+
+/// Na Fase 1 só guarda o teste grátis; a Fase 3 acrescenta faixa, ids do Asaas e datas de cobrança.
+model Assinatura {
+  id                String           @id @default(uuid()) @db.Uuid
+  estabelecimentoId String           @unique @db.Uuid
+  status            StatusAssinatura @default(TESTE)
+  testeFimEm        DateTime?        @db.Timestamptz(3)
+  createdAt         DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime         @updatedAt @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento  @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+
+  @@map("assinaturas")
+}
+
+/// Cliente final de um salão: só nome e WhatsApp (LGPD, spec seção 11.1). Sem login.
+model Cliente {
+  id                String   @id @default(uuid()) @db.Uuid
+  estabelecimentoId String   @db.Uuid
+  nome              String
+  /// Forma canônica "55" + DDD + número (só dígitos); o banco confere o formato.
+  whatsapp          String
+  createdAt         DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime @updatedAt @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  agendamentos      Agendamento[]
+
+  @@unique([id, estabelecimentoId])
+  @@unique([estabelecimentoId, whatsapp])
+  @@map("clientes")
+}
+
+/// Horário marcado. Duas garantias que moram no banco (ver migration):
+///  - nunca dois agendamentos não cancelados sobrepostos para o mesmo profissional (EXCLUDE USING gist);
+///  - profissional, serviço e cliente têm que ser do mesmo salão do agendamento (chaves compostas).
+/// Preço e duração são COPIADOS no momento da marcação: mudar o serviço depois não reescreve o passado.
+model Agendamento {
+  id                String                 @id @default(uuid()) @db.Uuid
+  estabelecimentoId String                 @db.Uuid
+  profissionalId    String                 @db.Uuid
+  servicoId         String                 @db.Uuid
+  clienteId         String                 @db.Uuid
+  inicio            DateTime               @db.Timestamptz(3)
+  fim               DateTime               @db.Timestamptz(3)
+  precoCentavos     Int
+  duracaoMin        Int
+  status            StatusAgendamento      @default(AGENDADO)
+  confirmacao       ConfirmacaoAgendamento @default(PENDENTE)
+  origem            OrigemAgendamento
+  /// Link único do cliente (cancelar/remarcar). Aleatório de 192 bits. Fica em claro de propósito:
+  /// o painel precisa reenviar o link e a Fase 4 o inclui nos lembretes.
+  token             String                 @unique
+  /// Quando o cliente aceitou o aviso de uso dos dados (página pública). Nulo no agendamento manual.
+  consentimentoEm   DateTime?              @db.Timestamptz(3)
+  canceladoEm       DateTime?              @db.Timestamptz(3)
+  canceladoPor      CanceladoPor?
+  createdAt         DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime               @updatedAt @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  profissional      Profissional    @relation(fields: [profissionalId, estabelecimentoId], references: [id, estabelecimentoId], onDelete: NoAction)
+  servico           Servico         @relation(fields: [servicoId, estabelecimentoId], references: [id, estabelecimentoId], onDelete: NoAction)
+  cliente           Cliente         @relation(fields: [clienteId, estabelecimentoId], references: [id, estabelecimentoId], onDelete: NoAction)
+
+  @@index([estabelecimentoId, inicio])
+  @@index([profissionalId, inicio])
+  @@index([clienteId])
+  @@map("agendamentos")
+}
+
+/// Folga ou bloqueio pontual de um profissional (almoço extra, médico, dia fora).
+model Bloqueio {
+  id                String   @id @default(uuid()) @db.Uuid
+  estabelecimentoId String   @db.Uuid
+  profissionalId    String   @db.Uuid
+  inicio            DateTime @db.Timestamptz(3)
+  fim               DateTime @db.Timestamptz(3)
+  motivo            String?
+  createdAt         DateTime @default(now()) @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  profissional      Profissional    @relation(fields: [profissionalId, estabelecimentoId], references: [id, estabelecimentoId], onDelete: Cascade)
+
+  @@index([estabelecimentoId])
+  @@index([profissionalId, inicio])
+  @@map("bloqueios")
+}

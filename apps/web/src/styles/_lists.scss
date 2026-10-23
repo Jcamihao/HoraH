@@ -1,0 +1,244 @@
+// Grupos de linhas: a divisão é um filete recuado, não um cartão dentro de cartão
+.group {
+  background: var(--surface);
+  border-radius: var(--r-group);
+  overflow: hidden;
+}
+
+.group__header {
+  margin: 24px 0 6px;
+  padding-inline: var(--gutter);
+  font-size: var(--fs-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+}
+
+.group__footer {
+  margin-top: 6px;
+  padding-inline: var(--gutter);
+  font-size: var(--fs-caption);
+  color: var(--ink-2);
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 10px var(--gutter);
+  color: inherit;
+  text-decoration: none;
+  text-align: left;
+  width: 100%;
+}
+
+.row + .row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--gutter);
+  right: 0;
+  height: 1px;
+  background: var(--sep);
+}
+
+.row--link {
+  cursor: pointer;
+  padding-right: 36px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: var(--gutter);
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-top: 2px solid var(--sep-strong);
+    border-right: 2px solid var(--sep-strong);
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  &:active {
+    background: var(--press);
+  }
+}
+
+.row__main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.row__title {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.row__sub {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+}
+
+.row__detail {
+  margin-left: auto;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.row__detail--bad {
+  color: var(--bad);
+  font-weight: 600;
+}
+
+// Linha com campo: rótulo à esquerda, valor à direita, como nos Ajustes do aparelho
+.row--field {
+  min-height: 52px;
+  cursor: text;
+
+  label,
+  .row__label {
+    flex: 0 0 8.5rem;
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--tint);
+    outline-offset: -2px;
+  }
+}
+
+.row--field.is-invalid {
+  background: var(--bad-bg);
+}
+
+// Controle segmentado
+.seg {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 9px;
+  background: #e3e3e8;
+}
+
+.seg [role='tab'] {
+  flex: 1 1 0;
+  min-height: 40px;
+  padding: 0 8px;
+  border-radius: 7px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s var(--ease-out),
+    box-shadow 0.2s var(--ease-out);
+}
+
+.seg [role='tab'][aria-selected='true'] {
+  background: var(--surface);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.12),
+    0 3px 1px rgba(0, 0, 0, 0.04);
+}
+
+// Interruptor
+.switch {
+  position: relative;
+  flex: none;
+  width: 51px;
+  height: 31px;
+  border-radius: 16px;
+  background: var(--sep-strong);
+  transition: background-color 0.25s var(--ease-out);
+}
+
+.switch::before {
+  content: '';
+  position: absolute;
+  inset: -9px -6px;
+}
+
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    0 1px 1px rgba(0, 0, 0, 0.16);
+  transition: transform 0.25s var(--ease-out);
+}
+
+.switch[aria-checked='true'] {
+  background: #2e9e52;
+}
+
+.switch[aria-checked='true']::after {
+  transform: translateX(20px);
+}
+
+// Etiquetas de estado
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: var(--off-bg);
+  color: var(--ink-2);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge--ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.badge--wait {
+  background: var(--wait-bg);
+  color: var(--wait);
+}
+
+.badge--bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px var(--gutter);
+  text-align: center;
+  color: var(--ink-2);
+}
+
+.empty h2 {
+  color: var(--ink);
+}
+
+.skeleton {
+  height: 56px;
+  border-radius: var(--r-group);
+  background: linear-gradient(90deg, #e6e6eb 25%, #efeff4 50%, #e6e6eb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
