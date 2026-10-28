@@ -1,6 +1,12 @@
 import { createServer, type IncomingMessage, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 
+function umMesDepois(d: string): string {
+  const [a, m, dd] = d.split('-').map(Number);
+  const ultimo = new Date(Date.UTC(a, m + 1, 0)).getUTCDate(); // último dia do mês seguinte
+  return new Date(Date.UTC(a, m, Math.min(dd, ultimo))).toISOString().slice(0, 10);
+}
+
 export const CHAVE_FAKE = 'chave-fake-do-asaas';
 
 export interface PagamentoFake {
@@ -120,6 +126,8 @@ export class AsaasFake {
       };
       this.assinaturas.set(id, a);
       this.gerarCobranca(id, a.nextDueDate);
+      // Como o Asaas de verdade (conferido no sandbox): a 1ª cobrança já nasce e `nextDueDate` passa a ser o mês seguinte.
+      a.nextDueDate = umMesDepois(a.nextDueDate);
       return enviar(200, { object: 'subscription', ...a });
     }
     if (metodo === 'GET' && rota === '/subscriptions') {

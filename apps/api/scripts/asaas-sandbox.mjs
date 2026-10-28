@@ -26,7 +26,11 @@ try {
   const sub = await chamar('POST', '/subscriptions', { customer: cliente.id, billingType: 'UNDEFINED', value: 29.9, nextDueDate: venc, cycle: 'MONTHLY', description: 'Hora H: teste de contrato', externalReference: ref });
   assinaturaId = sub.id;
   confere(typeof sub.id === 'string' && sub.id.startsWith('sub_'), `criar assinatura devolve id (${sub.id})`);
-  confere(sub.nextDueDate === venc, `nextDueDate = ${venc} (veio ${sub.nextDueDate})`);
+  const mesDepois = (d) => { const [a, m, dd] = d.split('-').map(Number);
+    const ultimo = new Date(Date.UTC(a, m + 1, 0)).getUTCDate(); // último dia do mês seguinte
+    return new Date(Date.UTC(a, m, Math.min(dd, ultimo))).toISOString().slice(0, 10); }; // 31/10 + 1 mês = 30/11, como o Asaas
+  // Conferido no sandbox: a 1ª cobrança já nasce e nextDueDate vira o vencimento SEGUINTE.
+  confere(sub.nextDueDate === mesDepois(venc), `nextDueDate = mês seguinte ao 1º vencimento (${mesDepois(venc)}; veio ${sub.nextDueDate})`);
   confere(sub.billingType === 'UNDEFINED', `billingType UNDEFINED aceito (veio ${sub.billingType})`);
 
   const pags = await chamar('GET', `/subscriptions/${sub.id}/payments?limit=50`);
@@ -49,14 +53,17 @@ try {
   confere(depois.data?.[0]?.value === 29.9, `a cobrança já gerada NÃO muda com updatePendingPayments=false (veio ${depois.data?.[0]?.value})`);
 
   const lido = await chamar('GET', `/subscriptions/${sub.id}`);
-  confere(lido.nextDueDate === venc, 'GET da assinatura devolve nextDueDate');
+  confere(lido.nextDueDate === mesDepois(venc), 'GET da assinatura devolve nextDueDate');
 } catch (e) {
   console.error('ERRO:', e.message);
   falhas += 1;
 } finally {
   if (assinaturaId) {
     try {
-      const r = await chamar('DELETE', `/subscriptions/${assinaturaId}`);
+      let r;
+      for (let i = 0; i < 4; i++) { // o sandbox às vezes responde 500 logo depois de um PUT; o cliente do Hora H também repete
+        try { r = await chamar('DELETE', `/subscriptions/${assinaturaId}`); break; } catch (e) { if (i === 3) throw e; await new Promise((ok) => setTimeout(ok, 1500)); }
+      }
       confere(r.deleted === true, 'DELETE cancela a assinatura (deleted: true)');
       const aposApagar = await chamar('GET', `/subscriptions/${assinaturaId}`);
       confere(aposApagar.deleted === true || aposApagar.status === 'INACTIVE', `assinatura apagada aparece como deleted/INACTIVE (veio deleted=${aposApagar.deleted}, status=${aposApagar.status})`);

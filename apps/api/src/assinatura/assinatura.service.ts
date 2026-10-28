@@ -60,6 +60,18 @@ export class AssinaturaService {
     return e;
   }
 
+  /**
+   * Próximo vencimento: a cobrança em aberto mais antiga. O `nextDueDate` do Asaas é o vencimento DEPOIS da
+   * cobrança que ele já gerou (conferido no sandbox), então sozinho mostraria a data errada.
+   */
+  private async proximoVencimento(): Promise<Date | null> {
+    const aberta = await this.prisma.db.cobranca.findFirst({
+      where: { status: { in: [StatusCobranca.PENDENTE, StatusCobranca.VENCIDA] } },
+      orderBy: { vencimento: 'asc' },
+    });
+    return aberta?.vencimento ?? (await this.carregar()).proximaCobrancaEm;
+  }
+
   private profissionaisAtivos(): Promise<number> {
     return this.prisma.db.profissional.count({ where: { ativo: true } });
   }
@@ -91,6 +103,7 @@ export class AssinaturaService {
     const estado = calcularAcesso(a, agora);
     const plano = faixaDe(ativos);
     const contratada = !!a.asaasSubscriptionId && !a.cancelaEm;
+    const proximo = contratada ? await this.proximoVencimento() : null;
     // Cobrança para pagar agora: a vencida mais antiga, senão a pendente mais próxima.
     const emAberto = [...cobrancas]
       .filter((c) => c.status === StatusCobranca.VENCIDA || c.status === StatusCobranca.PENDENTE)
@@ -106,7 +119,7 @@ export class AssinaturaService {
       contratada,
       faixaContratada: contratada ? a.faixaContratada : null,
       valorContratadoCentavos: contratada && a.faixaContratada ? planoDaFaixa(a.faixaContratada).valorCentavos : null,
-      proximaCobrancaEm: contratada && a.proximaCobrancaEm ? dataIso(a.proximaCobrancaEm) : null,
+      proximaCobrancaEm: proximo ? dataIso(proximo) : null,
       cancelaEm: a.cancelaEm?.toISOString() ?? null,
       pagamentoUrl: emAberto[0]?.url ?? null,
       cobrancas: cobrancas.map((c): CobrancaDto => ({
@@ -158,7 +171,7 @@ export class AssinaturaService {
       where: { estabelecimentoId: this.tenantId },
       data: {
         asaasSubscriptionId: criada.id, faixaContratada: plano.faixa, faixaSincronizada: existente ? null : plano.faixa,
-        proximaCobrancaEm: new Date(`${criada.nextDueDate}T00:00:00Z`), cancelaEm: null,
+        proximaCobrancaEm: new Date(`${existente ? criada.nextDueDate : primeiroVencimento}T00:00:00Z`), cancelaEm: null,
       },
     });
     await this.reconciliar(agora);
@@ -174,8 +187,9 @@ export class AssinaturaService {
     const estado = calcularAcesso(a, agora);
     let fim = agora;
     if (estado.acesso === 'LIBERADO') {
-      if (a.status === StatusAssinatura.ATIVA && a.proximaCobrancaEm) {
-        fim = DateTime.fromISO(dataIso(a.proximaCobrancaEm), { zone: salao.fusoHorario }).toJSDate();
+      const proximo = await this.proximoVencimento();
+      if (a.status === StatusAssinatura.ATIVA && proximo) {
+        fim = DateTime.fromISO(dataIso(proximo), { zone: salao.fusoHorario }).toJSDate();
       } else if (a.status === StatusAssinatura.TESTE && a.testeFimEm) {
         fim = a.testeFimEm;
       }
@@ -298,8 +312,9 @@ export class AssinaturaService {
     if (a.cancelaEm) return;
     const salao = await this.salao();
     const estado = calcularAcesso(a, agora);
-    const fim = estado.acesso === 'LIBERADO' && a.status === StatusAssinatura.ATIVA && a.proximaCobrancaEm
-      ? DateTime.fromISO(dataIso(a.proximaCobrancaEm), { zone: salao.fusoHorario }).toJSDate()
+    const proximo = await this.proximoVencimento();
+    const fim = estado.acesso === 'LIBERADO' && a.status === StatusAssinatura.ATIVA && proximo
+      ? DateTime.fromISO(dataIso(proximo), { zone: salao.fusoHorario }).toJSDate()
       : agora;
     await this.prisma.db.assinatura.update({ where: { estabelecimentoId: this.tenantId }, data: { cancelaEm: fim < agora ? agora : fim } });
   }
