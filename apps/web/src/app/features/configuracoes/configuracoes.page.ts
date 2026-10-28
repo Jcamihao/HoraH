@@ -95,6 +95,16 @@ const PRAZOS: [number, string][] = [[0, 'Até a hora'], [60, '1 hora antes'], [1
           </div>
         </div>
 
+        <p class="group__header">Canais</p>
+        <div class="group">
+          <a class="row row--link" routerLink="/painel/whatsapp">
+            <span class="row__main"><span class="row__title">WhatsApp</span><span class="row__sub">Confirmação, lembrete e agendamento pelo número do salão.</span></span>
+          </a>
+          <a class="row row--link" routerLink="/painel/notificacoes">
+            <span class="row__main"><span class="row__title">Notificações</span><span class="row__sub">Novos agendamentos, cancelamentos e avisos.</span></span>
+          </a>
+        </div>
+
         <p class="group__header">Plano</p>
         <div class="group">
           <a class="row row--link" routerLink="/painel/assinatura">

@@ -25,6 +25,8 @@ export async function subirApp(env: Record<string, string> = {}): Promise<Ambien
   delete process.env.ASAAS_API_KEY;
   delete process.env.ASAAS_BASE_URL;
   delete process.env.REDIS_URL;
+  delete process.env.WAAKG_URL;
+  process.env.WHATSAPP_ESPACAMENTO_MS = '0';
   Object.assign(process.env, env);
 
   // Carrega a aplicação só agora: o ConfigModule valida o ambiente no momento do import.
@@ -33,7 +35,7 @@ export async function subirApp(env: Record<string, string> = {}): Promise<Ambien
   const { PrismaService: PrismaServiceClasse } = await import('../src/prisma/prisma.service');
 
   const modulo = await Test.createTestingModule({ imports: [AppModule] }).compile();
-  const app = modulo.createNestApplication();
+  const app = modulo.createNestApplication({ rawBody: true });
   configurarApp(app);
   await app.listen(0); // porta efêmera: evita abrir um listener por requisição do supertest
   return {
@@ -46,7 +48,7 @@ export async function subirApp(env: Record<string, string> = {}): Promise<Ambien
 
 export async function limparBanco(prisma: PrismaService): Promise<void> {
   await prisma.semTenant.$executeRawUnsafe(
-    `TRUNCATE TABLE refresh_tokens, convites, agendamentos, bloqueios, clientes, cobrancas, asaas_eventos, avisos_email, horarios_trabalho, horarios_funcionamento,
+    `TRUNCATE TABLE refresh_tokens, convites, mensagens_log, notificacoes, conversas_bot, conexoes_whatsapp, agendamentos, bloqueios, clientes, cobrancas, asaas_eventos, avisos_email, horarios_trabalho, horarios_funcionamento,
      profissional_servicos, servicos, profissionais, usuarios, assinaturas, estabelecimentos CASCADE`,
   );
 }
@@ -182,4 +184,23 @@ export async function agendamentoDireto(
       ...(cancelado ? { canceladoEm: new Date(), canceladoPor: 'PAINEL' as const } : {}),
     },
   });
+}
+
+// --------------------------------------------------------------------------- WhatsApp (Fase 4)
+
+import { createHmac } from 'node:crypto';
+
+/** Env que liga o WhatsApp do app em teste, apontando para o WA-AKG de mentira. */
+export function envWhatsapp(urlDoFake: string, extra: Record<string, string> = {}): Record<string, string> {
+  return {
+    WAAKG_URL: urlDoFake, WAAKG_API_KEY: 'chave-fake-do-waakg', WAAKG_WEBHOOK_SECRET: 'segredo-do-webhook-whatsapp',
+    WAAKG_WEBHOOK_URL: 'https://api.exemplo.com/api/webhooks/whatsapp', ...extra,
+  };
+}
+
+/** Manda um webhook como o WA-AKG: corpo cru assinado com HMAC-SHA256. */
+export function enviarWebhookWa(env: Ambiente, evento: string, sessionId: string, data: unknown, opcoes: { segredo?: string } = {}) {
+  const corpo = JSON.stringify({ event: evento, sessionId, timestamp: new Date().toISOString(), data });
+  const assinatura = `sha256=${createHmac('sha256', opcoes.segredo ?? 'segredo-do-webhook-whatsapp').update(corpo).digest('hex')}`;
+  return env.http().post('/api/webhooks/whatsapp').set('content-type', 'application/json').set('x-webhook-signature', assinatura).send(corpo);
 }

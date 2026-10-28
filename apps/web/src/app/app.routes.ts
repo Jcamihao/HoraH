@@ -99,6 +99,18 @@ export const routes: Routes = [
         loadComponent: () => import('./features/assinatura/assinatura.page').then((m) => m.AssinaturaPage),
       },
       {
+        path: 'whatsapp',
+        canActivate: [soDono, cadastroConcluido],
+        title: 'WhatsApp | Hora H',
+        loadComponent: () => import('./features/whatsapp/whatsapp.page').then((m) => m.WhatsappPage),
+      },
+      {
+        path: 'notificacoes',
+        canActivate: [soDono, cadastroConcluido],
+        title: 'Notificações | Hora H',
+        loadComponent: () => import('./features/notificacoes/notificacoes.page').then((m) => m.NotificacoesPage),
+      },
+      {
         path: 'meu-perfil',
         title: 'Meu perfil | Hora H',
         loadComponent: () => import('./features/profissionais/meu-perfil.page').then((m) => m.MeuPerfilPage),

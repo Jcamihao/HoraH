@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { AgendaDto, ProfissionalDto, ServicoDto } from '@hora-h/shared';
+import type { AgendaDto, ConexaoWhatsappDto, NotificacoesDto, ProfissionalDto, ServicoDto } from '@hora-h/shared';
 import { Api } from '../../core/api';
 import { EstabelecimentoStore } from '../../core/estabelecimento.store';
 import { hojeNoFuso } from '../../core/datas';
@@ -48,6 +48,23 @@ import { NavbarComponent } from '../../shared/navbar.component';
         </a>
       </div>
 
+      @if (naoLidas() > 0 || whatsappDesligado()) {
+        <p class="group__header">Atenção</p>
+        <div class="group">
+          @if (naoLidas() > 0) {
+            <a class="row row--link" routerLink="/painel/notificacoes">
+              <span class="row__main"><span class="row__title">Notificações</span><span class="row__sub">{{ naoLidas() === 1 ? '1 aviso novo' : naoLidas() + ' avisos novos' }}</span></span>
+              <span class="badge badge--wait">{{ naoLidas() }}</span>
+            </a>
+          }
+          @if (whatsappDesligado()) {
+            <a class="row row--link" routerLink="/painel/whatsapp">
+              <span class="row__main"><span class="row__title">Conectar o WhatsApp</span><span class="row__sub">Seus clientes passam a receber confirmação e lembrete, e marcam horário pelo número do salão.</span></span>
+            </a>
+          }
+        </div>
+      }
+
       <p class="group__header">Link de agendamento</p>
       <div class="group">
         <div class="row">
@@ -74,6 +91,10 @@ export class InicioPage {
   protected readonly ativosProf = computed(() => this.profs().filter((p) => p.ativo).length);
   protected readonly ativosServ = computed(() => this.servs().filter((s) => s.ativo).length);
   protected readonly copiado = signal(false);
+  protected readonly naoLidas = signal(0);
+  private readonly whatsapp = signal<ConexaoWhatsappDto | null>(null);
+  /** Só sugere conectar se o WhatsApp existe neste ambiente e o salão ainda não conectou. */
+  protected readonly whatsappDesligado = computed(() => !!this.whatsapp()?.configurado && this.whatsapp()!.status !== 'CONECTADA');
   private readonly hoje = signal<AgendaDto | null>(null);
   protected readonly linkPublico = computed(() => `${location.origin}/${this.salao()?.slug ?? ''}`);
   protected readonly resumoHoje = computed(() => {
@@ -104,6 +125,9 @@ export class InicioPage {
       this.profs.set(p);
       this.servs.set(s);
       this.hoje.set(h);
+      // Avisos extras: se falharem, o início continua útil sem eles.
+      void this.api.get<NotificacoesDto>('/notificacoes').then((n) => this.naoLidas.set(n.naoLidas), () => undefined);
+      void this.api.get<ConexaoWhatsappDto>('/whatsapp').then((w) => this.whatsapp.set(w), () => undefined);
     } catch (e) {
       this.erro.set(mensagemDeErro(e));
     } finally {

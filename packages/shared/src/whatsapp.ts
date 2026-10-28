@@ -21,3 +21,15 @@ export function formatarWhatsapp(canonico: string): string {
   const nacional = canonico.slice(2);
   return `(${nacional.slice(0, 2)}) ${nacional.slice(2, 7)}-${nacional.slice(7)}`;
 }
+
+/**
+ * "5511999998888@s.whatsapp.net" -> "5511999998888". Só conversa individual (grupo e `@lid` ficam de fora).
+ * Alguns números antigos do Brasil vêm sem o 9 depois do DDD (12 dígitos): completamos para a forma canônica.
+ */
+export function telefoneDoJid(jid: string): string | null {
+  const m = /^(\d{10,15})(?::\d+)?@s\.whatsapp\.net$/.exec(jid);
+  if (!m) return null;
+  let digitos = m[1];
+  if (digitos.length === 12 && digitos.startsWith('55')) digitos = `${digitos.slice(0, 4)}9${digitos.slice(4)}`;
+  return WHATSAPP_CANONICO_REGEX.test(digitos) ? digitos : null;
+}

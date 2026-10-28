@@ -30,6 +30,7 @@ export class RotinasAgendador implements OnModuleInit, OnModuleDestroy {
   private fila?: Queue;
   private worker?: Worker;
   private timer?: NodeJS.Timeout;
+  private timerWhatsapp?: NodeJS.Timeout;
 
   constructor(
     private readonly config: ConfigService<Env, true>,
@@ -39,12 +40,16 @@ export class RotinasAgendador implements OnModuleInit, OnModuleDestroy {
   async onModuleInit(): Promise<void> {
     const url = this.config.get('REDIS_URL', { infer: true });
     const intervalo = this.config.get('ROTINAS_INTERVALO_MIN', { infer: true }) * 60_000;
+    const intervaloWhatsapp = this.config.get('WHATSAPP_JOB_INTERVALO_S', { infer: true }) * 1000;
     if (url) {
       const connection = opcoesRedis(url);
       this.fila = new Queue(FILA_ROTINAS, { connection });
-      await this.fila.upsertJobScheduler('assinaturas', { every: intervalo }, { name: 'assinaturas', opts: { removeOnComplete: 20, removeOnFail: 50 } });
+      const opts = { removeOnComplete: 20, removeOnFail: 50 };
+      await this.fila.upsertJobScheduler('assinaturas', { every: intervalo }, { name: 'assinaturas', opts });
+      await this.fila.upsertJobScheduler('whatsapp', { every: intervaloWhatsapp }, { name: 'whatsapp', opts });
       this.worker = new Worker(FILA_ROTINAS, async (job) => {
         if (job.name === 'assinaturas') return this.rotinas.processarAssinaturas();
+        if (job.name === 'whatsapp') return this.rotinas.processarWhatsapp();
       }, { connection, concurrency: 1 });
       this.worker.on('failed', (job, e) => this.logger.error(`Job ${job?.name} falhou: ${e.message}`));
       this.logger.log(`Jobs ligados no Redis (a cada ${intervalo / 60_000} min).`);
@@ -53,12 +58,15 @@ export class RotinasAgendador implements OnModuleInit, OnModuleDestroy {
       this.timer = setInterval(rodar, intervalo);
       this.timer.unref();
       setTimeout(rodar, 20_000).unref();
+      this.timerWhatsapp = setInterval(() => void this.rotinas.processarWhatsapp().catch((e) => this.logger.error(`Rotina do WhatsApp falhou: ${e.message}`)), intervaloWhatsapp);
+      this.timerWhatsapp.unref();
       this.logger.warn('Sem REDIS_URL: jobs rodando num temporizador do processo (só desenvolvimento).');
     }
   }
 
   async onModuleDestroy(): Promise<void> {
     if (this.timer) clearInterval(this.timer);
+    if (this.timerWhatsapp) clearInterval(this.timerWhatsapp);
     await this.worker?.close();
     await this.fila?.close();
   }

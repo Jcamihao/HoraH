@@ -17,13 +17,7 @@ export class PublicoService {
   /** Só aparece quem pode ser agendado: profissional ativo com pelo menos um serviço ativo (e o preço dele). */
   async salao(): Promise<SalaoPublicoDto> {
     const salao = await this.agenda.salao();
-    const profissionais = await this.prisma.db.profissional.findMany({
-      where: { ativo: true, servicos: { some: { servico: { ativo: true } } } },
-      include: {
-        servicos: { where: { servico: { ativo: true } }, include: { servico: { select: { nome: true, duracaoMin: true } } } },
-      },
-      orderBy: { nome: 'asc' },
-    });
+    const profissionais = await this.agenda.catalogo();
     return {
       nome: salao.nome,
       slug: salao.slug,
@@ -73,6 +67,11 @@ export class PublicoService {
 
   async cancelar(id: string): Promise<MeuAgendamentoDto> {
     const a = await this.agenda.cancelarPeloCliente(id);
+    return paraMeuAgendamentoDto(a, await this.agenda.salao(), new Date());
+  }
+
+  async confirmar(id: string): Promise<MeuAgendamentoDto> {
+    const a = await this.agenda.confirmarPresenca(id);
     return paraMeuAgendamentoDto(a, await this.agenda.salao(), new Date());
   }
 

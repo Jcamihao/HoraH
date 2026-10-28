@@ -164,7 +164,7 @@ type Rascunho = Record<string, Record<string, Item>>;
             }
             @case ('whatsapp') {
               <div class="stack">
-                <p class="banner">A conexão com o WhatsApp do salão chega na próxima etapa do Hora H. Você já pode concluir o cadastro e conectar depois, em Ajustes.</p>
+                <p class="banner">Conectar o WhatsApp do salão leva um minuto e pode ser feito depois, em Ajustes, lendo um QR code. Com ele conectado seus clientes recebem confirmação e lembrete, e marcam horário conversando com o número. Use um número só do negócio.</p>
                 @if (faltando().length) { <p class="banner banner--bad" role="alert">Ainda falta: {{ faltando().join(', ') }}.</p> }
               </div>
             }

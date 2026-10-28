@@ -22,6 +22,10 @@ const CAMPO_TENANT: Record<string, string> = {
   Bloqueio: 'estabelecimentoId',
   Cobranca: 'estabelecimentoId',
   AvisoEmail: 'estabelecimentoId',
+  ConexaoWhatsapp: 'estabelecimentoId',
+  MensagemLog: 'estabelecimentoId',
+  Notificacao: 'estabelecimentoId',
+  ConversaBot: 'estabelecimentoId',
 };
 
 const LEITURA_E_ALTERACAO_EM_MASSA = new Set([

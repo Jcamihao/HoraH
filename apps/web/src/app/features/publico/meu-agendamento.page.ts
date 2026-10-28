@@ -60,6 +60,13 @@ import { SeletorHorarioComponent } from './seletor-horario.component';
                 <span class="pub-quando__detalhe">{{ a.servico.nome }} com {{ a.profissional.nome }}<br />{{ duracao(a.duracaoMin) }} · {{ reais(a.precoCentavos) }}<br />Para {{ a.clienteNome }}</span>
               </div>
 
+              @if (a.podeConfirmar) {
+                <div class="pub-acoes" style="margin-top: 0; margin-bottom: 12px">
+                  <button type="button" class="pub-btn" [disabled]="trabalhando()" (click)="confirmar()"><hh-icon nome="check" /> Confirmo que vou</button>
+                </div>
+              } @else if (a.status === 'AGENDADO' && a.confirmacao === 'CONFIRMADO' && futuro()) {
+                <p class="pub-aviso" role="status">Presença confirmada. Esperamos você!</p>
+              }
               @if (a.podeAlterar) {
                 <p class="pub-sub">Você pode remarcar ou cancelar até {{ dia(a.limiteAlteracao) }} às {{ hora(a.limiteAlteracao) }}.</p>
                 <div class="pub-acoes">
@@ -137,6 +144,18 @@ export class MeuAgendamentoPage {
       else this.erro.set(mensagemDeErro(e));
     } finally {
       this.carregando.set(false);
+    }
+  }
+
+  protected async confirmar(): Promise<void> {
+    this.trabalhando.set(true);
+    this.erro.set('');
+    try {
+      this.ag.set(await this.api.post<MeuAgendamentoDto>(`/meu-agendamento/${this.token()}/confirmar`));
+    } catch (e) {
+      this.erro.set(mensagemDeErro(e));
+    } finally {
+      this.trabalhando.set(false);
     }
   }
 

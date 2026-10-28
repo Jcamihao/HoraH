@@ -2,11 +2,12 @@
 
 Agendamento online para salões, barbearias e estúdios de beleza. Especificação completa em [ESPECIFICACAO.md](ESPECIFICACAO.md).
 
-**Estado:** Fases 1, 2 e 3 prontas (a cobrança ainda não foi conferida contra o sandbox real do Asaas: ver "Assinatura" abaixo).
+**Estado:** Fases 1 a 4 prontas. O contrato com o Asaas (sandbox) e com o WA-AKG (sessão, QR, pareamento, webhook) foi conferido contra instâncias reais; **envio de mensagem e confirmação de entrega do WhatsApp só foram testados contra um WA-AKG de mentira** (falta um celular para ler o QR): ver "WhatsApp" abaixo.
 - Fase 1 (fundação): multi-tenant, login e papéis, cadastro do dono com passo a passo, profissionais, serviços, preços por profissional, convite por link.
 - Fase 2 (agenda e link público): disponibilidade com fuso horário, página pública `/{slug}`, marcação sem conflito (garantida no banco), agendamento manual, situação do atendimento, folgas e bloqueios, cancelar e remarcar pelo link único `/agendamento/{token}`, agenda do painel (dia e semana).
 - Fase 3 (assinatura): teste de 7 dias, faixas por número de profissionais, cobrança mensal pelo Asaas (Pix, cartão ou boleto), webhooks, tolerância de 5 dias, bloqueio e modo restrito, mudança de faixa com confirmação, e-mails (cobrança e avisos ao dono de novo agendamento e cancelamento).
-- Próxima: Fase 4 (WhatsApp: bot, confirmação, lembrete e cancelamento automático). Até lá o link do cliente aparece na tela de confirmação e o painel copia o link de cada agendamento.
+- Fase 4 (WhatsApp): conexão do número do salão por QR (ou código de pareamento), confirmação imediata, lembrete 24 h antes (8h às 20h), confirmação de presença, cancelamento automático por falta de resposta (só se o lembrete foi ENTREGUE, com pausa de 22h às 8h), bot de agendamento em menu guiado e notificações no painel.
+- Próxima: Fase 5 (financeiro) e Fase 6 (fechamento para lançamento: LGPD, backup, revisão de segurança).
 
 ## Estrutura
 
@@ -32,7 +33,7 @@ npm run dev:web     # terminal 3: app em http://localhost:4200 (proxy de /api pa
 ## Testes
 
 ```bash
-npm test                                   # API: unitários + e2e contra um PostgreSQL embutido (269 testes)
+npm test                                   # API: unitários + e2e contra um PostgreSQL embutido (374 testes)
 CHROME_BIN=/caminho/do/chrome npm run test:web   # Angular: 36 testes em Chrome headless
 npm run build                              # compila shared, api e web
 ASAAS_API_KEY='$aact_...' npm run asaas:sandbox   # confere o contrato com o Asaas de verdade (só sandbox)
@@ -68,3 +69,15 @@ Os testes da API aplicam as migrations reais e conferem: isolamento entre salõe
 - **E-mail (Resend):** `MAIL_PROVIDER=resend` + `RESEND_API_KEY` + `MAIL_FROM` (domínio verificado). Em desenvolvimento `MAIL_PROVIDER=log` escreve no log. O dono também recebe e-mail de novo agendamento e cancelamento feitos pelo cliente (liga/desliga em Ajustes); a lista de notificações dentro do painel fica para a Fase 4.
 - **Variáveis novas** (ver `apps/api/.env.example`): `ASAAS_API_KEY`, `ASAAS_BASE_URL` (sandbox por padrão), `ASAAS_WEBHOOK_TOKEN`, `MAIL_PROVIDER`, `RESEND_API_KEY`, `MAIL_FROM`, `REDIS_URL`, `ROTINAS_INTERVALO_MIN`. A chave do Asaas começa com `$`: entre aspas simples.
 - **Limites desta fase:** sem débito automático em cartão salvo (cada cobrança é paga na página do Asaas); estorno só registra; a regra de faixa olha o número de profissionais ativos no momento da mudança (não impede ativar e desativar perto da cobrança); os campos do Asaas foram conferidos contra um Asaas de mentira dos testes e contra a documentação, **não** contra o sandbox real.
+
+## WhatsApp (Fase 4)
+
+- **Gateway:** [WA-AKG](https://github.com/mrifqidaffaaditya/WA-AKG) (Baileys, não oficial), um serviço separado no mesmo servidor, **uma sessão por salão** (o nome da sessão é o id do estabelecimento). Tudo passa pela interface `WhatsAppProvider` (`apps/api/src/whatsapp/whatsapp.provider.ts`): trocar pela API oficial da Meta é escrever outra implementação. Decisões e achados em [docs/fase-4-whatsapp.md](docs/fase-4-whatsapp.md).
+- **Subir o WA-AKG com o mesmo PostgreSQL:** o repositório vem configurado para MySQL; troque `provider = "mysql"` por `"postgresql"` em `prisma/schema.prisma` (só usa `@db.Text`, que funciona nos dois), use `DATABASE_URL=...?schema=wa_akg` (tabelas separadas das do Hora H), `npx prisma db push`, crie um usuário **que não seja SUPERADMIN** (`node scripts/setup-admin.js` cria SUPERADMIN: rebaixe para USER, porque webhooks de SUPERADMIN recebem eventos de todas as sessões) e gere a API key dele. Variáveis do Hora H: `WAAKG_URL`, `WAAKG_API_KEY`, `WAAKG_WEBHOOK_SECRET`, `WAAKG_WEBHOOK_URL` (ver `apps/api/.env.example`).
+- **O WA-AKG só chama webhook HTTPS público** (recusa `http` e IP privado/localhost): `WAAKG_WEBHOOK_URL` é o endereço público da API + `/api/webhooks/whatsapp`. Cada webhook vem assinado (`X-Webhook-Signature: sha256=HMAC` do corpo cru); a API usa `rawBody` para conferir. **O WA-AKG não reenvia webhook que falhou**: o que se perder cai no caminho seguro (sem confirmação de entrega, nada é cancelado e o dono é avisado).
+- **Lembrete e cancelamento automático (spec 6):** o lembrete sai 24 h antes, só entre 8h e 20h do fuso do salão (antes das 8h sai às 8h; depois das 20h, às 20h). Agendamento com menos de 24 h, ou cujo horário de lembrete já passou, recebe só a confirmação imediata. O prazo de 2 h para o cliente responder **só começa quando o WhatsApp confirma a ENTREGA** e **não conta das 22h às 8h** (entregue às 21h vence às 9h). Sem resposta: cancela (ignorando o prazo de cancelamento do salão), avisa o cliente com link para remarcar e avisa o dono. Lembrete sem entrega depois de 2 h: o dono é avisado no painel e por e-mail e nada é cancelado.
+- **Confirmar:** o cliente responde `1` (confirmar) ou `2` (cancelar) ao lembrete, ou toca em "Confirmo que vou" no link.
+- **Bot (spec 7.2):** `1) Agendar`, `2) Meus agendamentos`; escolher profissional, serviço, dia, horário, nome (só se for cliente novo) e confirmar; ver, remarcar e cancelar. Usa a mesma agenda do link (disponibilidade, antecedência, prazo, teto de 3 horários por WhatsApp, assinatura bloqueada). Conversa expira em 30 min de silêncio. Só entende texto; ignora grupos.
+- **Anti-bloqueio:** envios do mesmo salão saem espaçados (`WHATSAPP_ESPACAMENTO_MS`, 6 s ± 40% por padrão), uma mensagem de cada vez; só falamos com quem já tem horário ou puxou conversa; o painel recomenda número exclusivo do negócio. Mensagem que não sai em 6 h expira.
+- **Fila e jobs:** a fila é a tabela `mensagens_log` (que também é o log da spec); um job a cada `WHATSAPP_JOB_INTERVALO_S` (15 s) manda o que está pronto, põe os lembretes devidos na fila e cancela quem não respondeu. Cada mensagem é "alugada" antes de enviar, então despachos simultâneos nunca duplicam.
+- **Limites:** o WA-AKG devolve 500 (não 503) ao enviar sem sessão conectada, tratado como falha repetível; o bot só atende números brasileiros de celular; números `@lid` (sem telefone) são ignorados.

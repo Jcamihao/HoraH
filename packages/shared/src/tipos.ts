@@ -91,6 +91,8 @@ export interface AgendamentoDto {
   profissional: { id: string; nome: string };
   servico: { id: string; nome: string };
   cliente: { id: string; nome: string; whatsapp: string };
+  /** O lembrete já foi entregue no WhatsApp do cliente. */
+  lembreteEntregue: boolean;
 }
 
 export interface BloqueioDto {
@@ -142,6 +144,9 @@ export interface MeuAgendamentoDto {
   limiteAlteracao: string;
   /** Agendado, no futuro e dentro do prazo: pode cancelar e remarcar. */
   podeAlterar: boolean;
+  confirmacao: ConfirmacaoAgendamento;
+  /** Agendado, no futuro e ainda sem confirmação: mostra o botão de confirmar presença. */
+  podeConfirmar: boolean;
 }
 
 export interface AgendamentoCriadoPublicoDto extends MeuAgendamentoDto {
@@ -189,4 +194,37 @@ export interface FaixaMudaDto {
   message: string;
   de: { faixa: number; valorCentavos: number };
   para: { faixa: number; valorCentavos: number };
+}
+
+export type TipoNotificacao = 'novo_agendamento' | 'cancelamento' | 'cancelamento_automatico' | 'lembrete_sem_entrega' | 'whatsapp_caiu';
+
+export interface NotificacaoDto {
+  id: string;
+  tipo: TipoNotificacao;
+  titulo: string;
+  corpo: string;
+  agendamentoId: string | null;
+  lida: boolean;
+  criadaEm: string;
+}
+
+export interface NotificacoesDto {
+  naoLidas: number;
+  itens: NotificacaoDto[];
+}
+
+export interface ConexaoWhatsappDto {
+  /** Falso quando o WhatsApp não está configurado neste ambiente. */
+  configurado: boolean;
+  status: 'DESCONECTADA' | 'AGUARDANDO_QR' | 'CONECTADA';
+  conectadoEm: string | null;
+  ultimaQuedaEm: string | null;
+  /** Mensagens esperando para sair (lembretes, confirmações). */
+  naFila: number;
+}
+
+export interface QrWhatsappDto {
+  status: ConexaoWhatsappDto['status'];
+  /** Imagem PNG (data URL) do QR code, só enquanto aguarda a leitura. */
+  qrImagem: string | null;
 }

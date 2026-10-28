@@ -51,6 +51,9 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </div>
           @if (a.status === 'AGENDADO') {
             <div class="row"><span class="row__main"><span class="row__title">Confirmação do cliente</span></span><span class="row__detail">{{ confirmacao(a) }}</span></div>
+            @if (a.lembreteEntregue) {
+              <div class="row"><span class="row__main"><span class="row__title">Lembrete no WhatsApp</span></span><span class="row__detail">Entregue</span></div>
+            }
           }
           <div class="row"><span class="row__main"><span class="row__title">Marcado por</span></span><span class="row__detail">{{ origem(a) }}</span></div>
         </div>

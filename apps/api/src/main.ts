@@ -7,7 +7,7 @@ import { configurarApp } from './app.setup';
 import type { Env } from './config/env';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { rawBody: true }); // o webhook do WhatsApp é assinado sobre o corpo cru
   configurarApp(app);
   const porta = app.get<ConfigService<Env, true>>(ConfigService).get('PORT', { infer: true });
   await app.listen(porta);

@@ -1,4 +1,4 @@
-import { faixaDe, formatarWhatsapp, planoDaFaixa, tipoCpfCnpj, hhmmParaMinutos, minutosParaHHmm, normalizarWhatsapp, slugificar, validarFaixas, validarSlug } from '@hora-h/shared';
+import { faixaDe, formatarWhatsapp, telefoneDoJid, planoDaFaixa, tipoCpfCnpj, hhmmParaMinutos, minutosParaHHmm, normalizarWhatsapp, slugificar, validarFaixas, validarSlug } from '@hora-h/shared';
 
 describe('slug', () => {
   it.each([
@@ -106,4 +106,16 @@ describe('CPF e CNPJ', () => {
   it.each(['', '123', '529.982.247-26', '111.111.111-11', '00000000000000', '11.222.333/0001-82', 'abc'])('recusa %s', (entrada) => {
     expect(tipoCpfCnpj(entrada)).toBeNull();
   });
+});
+
+describe('telefoneDoJid', () => {
+  it.each([
+    ['5511999998888@s.whatsapp.net', '5511999998888'],
+    ['5511999998888:12@s.whatsapp.net', '5511999998888'], // com o aparelho: ainda é o mesmo número
+    ['551199998888@s.whatsapp.net', '5511999998888'], // número antigo sem o 9
+  ])('%s -> %s', (jid, esperado) => expect(telefoneDoJid(jid)).toBe(esperado));
+
+  it.each(['1234567890-123456@g.us', '123456789012345@lid', '5511999998888', '14155552671@s.whatsapp.net', 'x@s.whatsapp.net', ''])('recusa %s', (jid) =>
+    expect(telefoneDoJid(jid)).toBeNull(),
+  );
 });

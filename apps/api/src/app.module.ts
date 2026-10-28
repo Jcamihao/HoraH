@@ -17,6 +17,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ProfissionaisModule } from './profissionais/profissionais.module';
 import { PublicoModule } from './publico/publico.module';
 import { RotinasModule } from './rotinas/rotinas.module';
+import { NotificacoesModule } from './notificacoes/notificacoes.module';
+import { WhatsappModule } from './whatsapp/whatsapp.module';
 import { ServicosModule } from './servicos/servicos.module';
 
 @Module({
@@ -50,6 +52,8 @@ import { ServicosModule } from './servicos/servicos.module';
     PublicoModule,
     MailModule,
     AssinaturaModule,
+    NotificacoesModule,
+    WhatsappModule,
     RotinasModule,
   ],
   controllers: [HealthController],

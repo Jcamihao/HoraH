@@ -65,6 +65,18 @@ export const emails = {
       `O novo valor (${reais(d.valorCentavos)}) vale a partir da próxima cobrança. A cobrança atual não muda.`,
     ], { rotulo: 'Ver minha assinatura', url: d.link }),
 
+  lembreteNaoEntregue: (d: Base & { cliente: string; quando: string }): Email =>
+    montar(d.para, `Lembrete não entregue: ${d.cliente}`, [
+      `O WhatsApp não confirmou a entrega do lembrete para ${d.cliente} (horário: ${d.quando}).`,
+      'O agendamento continua marcado e não será cancelado sozinho, porque não sabemos se a mensagem chegou. Vale falar com o cliente.',
+    ], { rotulo: 'Ver notificações', url: d.link }),
+
+  whatsappCaiu: (d: Base): Email =>
+    montar(d.para, 'O WhatsApp do seu salão desconectou', [
+      'Os lembretes e o bot de agendamento pararam de funcionar porque o número foi desconectado.',
+      'Reconecte lendo o QR code de novo. Os horários já marcados continuam guardados.',
+    ], { rotulo: 'Reconectar o WhatsApp', url: d.link }),
+
   novoAgendamento: (d: Base & { cliente: string; servico: string; profissional: string; quando: string }): Email =>
     montar(d.para, `Novo agendamento: ${d.cliente}, ${d.quando}`, [
       `${d.cliente} marcou ${d.servico} com ${d.profissional} para ${d.quando}.`,

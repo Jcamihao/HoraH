@@ -65,6 +65,13 @@ export class MeuAgendamentoController {
     return this.service.cancelar(id);
   }
 
+  /** "Confirmo que vou": para a contagem do cancelamento automático. */
+  @HttpCode(200)
+  @Post('confirmar')
+  confirmar(@AgendamentoDoToken() id: string): Promise<MeuAgendamentoDto> {
+    return this.service.confirmar(id);
+  }
+
   @Get('dias')
   dias(@AgendamentoDoToken() id: string): Promise<DiaDisponivelDto[]> {
     return this.service.diasParaRemarcar(id);

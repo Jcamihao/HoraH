@@ -1,4 +1,5 @@
-// Hora H — schema (Fase 1: fundação; Fase 2: clientes, agendamentos e bloqueios; Fase 3: assinatura e cobrança).
+// Hora H — schema (Fase 1: fundação; Fase 2: clientes, agendamentos e bloqueios; Fase 3: assinatura e cobrança;
+// Fase 4: WhatsApp, lembretes, bot e notificações).
 //
 // ISOLAMENTO MULTI-TENANT
 //  - Toda tabela de negócio carrega `estabelecimentoId`.
@@ -57,6 +58,33 @@ enum StatusCobranca {
   CANCELADA
 }
 
+enum StatusConexaoWhatsapp {
+  DESCONECTADA
+  AGUARDANDO_QR
+  CONECTADA
+}
+
+enum DirecaoMensagem {
+  ENVIADA
+  RECEBIDA
+}
+
+enum TipoMensagem {
+  CONFIRMACAO
+  LEMBRETE
+  CANCELAMENTO_AUTOMATICO
+  BOT
+}
+
+/// NA_FILA: ainda não saiu. ENVIADA/ENTREGUE/LIDA: o que o WhatsApp confirmou. FALHOU: desistimos depois das tentativas.
+enum StatusMensagem {
+  NA_FILA
+  ENVIADA
+  ENTREGUE
+  LIDA
+  FALHOU
+}
+
 enum StatusAssinatura {
   TESTE
   ATIVA
@@ -93,6 +121,10 @@ model Estabelecimento {
   bloqueios            Bloqueio[]
   cobrancas            Cobranca[]
   avisosEmail          AvisoEmail[]
+  conexaoWhatsapp      ConexaoWhatsapp?
+  mensagens            MensagemLog[]
+  notificacoes         Notificacao[]
+  conversasBot         ConversaBot[]
 
   @@map("estabelecimentos")
 }
@@ -317,6 +349,16 @@ model Agendamento {
   consentimentoEm   DateTime?              @db.Timestamptz(3)
   canceladoEm       DateTime?              @db.Timestamptz(3)
   canceladoPor      CanceladoPor?
+  /// Quando o lembrete deve sair (24 h antes, dentro de 8h às 20h). Nulo = este agendamento não recebe lembrete.
+  lembreteAgendadoPara DateTime?           @db.Timestamptz(3)
+  lembreteEnviadoEm    DateTime?           @db.Timestamptz(3)
+  /// O WhatsApp confirmou a ENTREGA do lembrete: só a partir daí a contagem de 2 h para cancelar começa.
+  lembreteEntregueEm   DateTime?           @db.Timestamptz(3)
+  /// Fim da contagem de 2 h (sem contar das 22h às 8h). Sem resposta até aqui = cancelamento automático.
+  confirmarAte         DateTime?           @db.Timestamptz(3)
+  /// Já avisamos o dono de que o lembrete não foi entregue (uma vez só).
+  semEntregaAvisadoEm  DateTime?           @db.Timestamptz(3)
+  confirmadoEm         DateTime?           @db.Timestamptz(3)
   createdAt         DateTime               @default(now()) @db.Timestamptz(3)
   updatedAt         DateTime               @updatedAt @db.Timestamptz(3)
 
@@ -328,6 +370,8 @@ model Agendamento {
   @@index([estabelecimentoId, inicio])
   @@index([profissionalId, inicio])
   @@index([clienteId])
+  @@index([lembreteAgendadoPara])
+  @@index([confirmarAte])
   @@map("agendamentos")
 }
 
@@ -396,4 +440,86 @@ model AvisoEmail {
 
   @@unique([estabelecimentoId, chave])
   @@map("avisos_email")
+}
+
+/// A conexão do WhatsApp do salão (uma sessão por salão no WA-AKG; o nome da sessão é o id do estabelecimento).
+model ConexaoWhatsapp {
+  id                String                @id @default(uuid()) @db.Uuid
+  estabelecimentoId String                @unique @db.Uuid
+  status            StatusConexaoWhatsapp @default(DESCONECTADA)
+  conectadoEm       DateTime?             @db.Timestamptz(3)
+  ultimaQuedaEm     DateTime?             @db.Timestamptz(3)
+  /// Não manda dois envios colados: o próximo só sai depois deste instante (espaçamento contra bloqueio).
+  proximoEnvioEm    DateTime              @default(now()) @db.Timestamptz(3)
+  createdAt         DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime              @updatedAt @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento       @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+
+  @@map("conexoes_whatsapp")
+}
+
+/// Log de mensagens (spec seção 3) e também a fila de envio: as `NA_FILA` saem quando o job as pega.
+model MensagemLog {
+  id                String          @id @default(uuid()) @db.Uuid
+  estabelecimentoId String          @db.Uuid
+  direcao           DirecaoMensagem
+  tipo              TipoMensagem
+  status            StatusMensagem
+  /// Forma canônica 55 + DDD + número.
+  telefone          String
+  texto             String
+  /// Impede enviar o mesmo aviso duas vezes (ex.: "lembrete:{agendamento}:{horário}").
+  chave             String?
+  /// Id da mensagem no WhatsApp: é por ele que a confirmação de entrega volta.
+  waMensagemId      String?
+  agendamentoId     String?         @db.Uuid
+  enviarApartirDe   DateTime        @default(now()) @db.Timestamptz(3)
+  tentativas        Int             @default(0)
+  erro              String?
+  enviadaEm         DateTime?       @db.Timestamptz(3)
+  entregueEm        DateTime?       @db.Timestamptz(3)
+  lidaEm            DateTime?       @db.Timestamptz(3)
+  createdAt         DateTime        @default(now()) @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+
+  @@unique([estabelecimentoId, chave])
+  @@index([status, enviarApartirDe])
+  @@index([estabelecimentoId, waMensagemId])
+  @@index([estabelecimentoId, telefone, createdAt])
+  @@map("mensagens_log")
+}
+
+/// Avisos para o dono dentro do painel (e por e-mail, quando couber).
+model Notificacao {
+  id                String    @id @default(uuid()) @db.Uuid
+  estabelecimentoId String    @db.Uuid
+  /// novo_agendamento, cancelamento, cancelamento_automatico, lembrete_sem_entrega, whatsapp_caiu
+  tipo              String
+  titulo            String
+  corpo             String
+  agendamentoId     String?   @db.Uuid
+  lidaEm            DateTime? @db.Timestamptz(3)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+
+  @@index([estabelecimentoId, createdAt])
+  @@map("notificacoes")
+}
+
+/// Onde cada cliente está no menu do bot (expira por inatividade).
+model ConversaBot {
+  id                String   @id @default(uuid()) @db.Uuid
+  estabelecimentoId String   @db.Uuid
+  telefone          String
+  estado            String
+  dados             Json     @default("{}")
+  atualizadaEm      DateTime @default(now()) @db.Timestamptz(3)
+
+  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+
+  @@unique([estabelecimentoId, telefone])
+  @@map("conversas_bot")
 }

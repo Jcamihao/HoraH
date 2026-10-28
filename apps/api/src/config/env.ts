@@ -26,6 +26,17 @@ export interface Env {
   REDIS_URL: string;
   /** De quanto em quanto tempo o job de assinaturas roda. */
   ROTINAS_INTERVALO_MIN: number;
+  /** WA-AKG (gateway de WhatsApp). Sem URL, o WhatsApp fica desligado e o painel avisa. */
+  WAAKG_URL: string;
+  WAAKG_API_KEY: string;
+  /** Segredo com que o WA-AKG assina (HMAC) cada webhook que manda para a API. */
+  WAAKG_WEBHOOK_SECRET: string;
+  /** Endereço PÚBLICO e HTTPS da rota de webhook da API (o WA-AKG recusa http e IP privado). */
+  WAAKG_WEBHOOK_URL: string;
+  /** Intervalo médio entre dois envios do mesmo salão (com variação de ±40%): mensagens coladas aumentam o risco de bloqueio. */
+  WHATSAPP_ESPACAMENTO_MS: number;
+  /** De quanto em quanto tempo o job do WhatsApp roda (fila de envio, lembretes, cancelamento automático). */
+  WHATSAPP_JOB_INTERVALO_S: number;
 }
 
 function inteiro(raw: Record<string, unknown>, chave: string, padrao: number, min: number, max: number): number {
@@ -73,6 +84,9 @@ export function validateEnv(raw: Record<string, unknown>): Env {
   if (texto('ASAAS_API_KEY') && !texto('ASAAS_WEBHOOK_TOKEN')) {
     throw new Error('ASAAS_API_KEY exige ASAAS_WEBHOOK_TOKEN: sem ele qualquer um poderia forjar um pagamento.');
   }
+  if (texto('WAAKG_URL') && !(texto('WAAKG_API_KEY') && texto('WAAKG_WEBHOOK_SECRET') && texto('WAAKG_WEBHOOK_URL'))) {
+    throw new Error('WAAKG_URL exige WAAKG_API_KEY, WAAKG_WEBHOOK_SECRET e WAAKG_WEBHOOK_URL.');
+  }
   return {
     NODE_ENV: nodeEnv as Env['NODE_ENV'],
     PORT: inteiro(raw, 'PORT', 3000, 1, 65535),
@@ -93,5 +107,11 @@ export function validateEnv(raw: Record<string, unknown>): Env {
     MAIL_FROM: texto('MAIL_FROM', 'Hora H <onboarding@resend.dev>'),
     REDIS_URL: texto('REDIS_URL'),
     ROTINAS_INTERVALO_MIN: inteiro(raw, 'ROTINAS_INTERVALO_MIN', 10, 1, 1440),
+    WAAKG_URL: texto('WAAKG_URL').replace(/\/+$/, ''),
+    WAAKG_API_KEY: texto('WAAKG_API_KEY'),
+    WAAKG_WEBHOOK_SECRET: texto('WAAKG_WEBHOOK_SECRET'),
+    WAAKG_WEBHOOK_URL: texto('WAAKG_WEBHOOK_URL'),
+    WHATSAPP_ESPACAMENTO_MS: inteiro(raw, 'WHATSAPP_ESPACAMENTO_MS', 6000, 0, 120_000),
+    WHATSAPP_JOB_INTERVALO_S: inteiro(raw, 'WHATSAPP_JOB_INTERVALO_S', 15, 1, 3600),
   };
 }

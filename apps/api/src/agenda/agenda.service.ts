@@ -1,5 +1,5 @@
 import {
-  BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException,
+  BadRequestException, ConflictException, ForbiddenException, Injectable, Logger, NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {
@@ -11,6 +11,8 @@ import { AssinaturaService } from '../assinatura/assinatura.service';
 import { novoTokenOpaco } from '../auth/sessao.service';
 import { TenantContext } from '../common/tenant-context';
 import { NotificacoesService } from '../notificacoes/notificacoes.service';
+import { momentoDoLembrete } from '../whatsapp/janelas';
+import { WhatsappService } from '../whatsapp/whatsapp.service';
 import { comTenant, PrismaService } from '../prisma/prisma.service';
 import { slotsDoDia, type Slot } from './disponibilidade';
 import { dataLocal, dataValida, diaDaSemana, diasEntre, hojeNoFuso, limitesDoDia, somarDias } from './tempo';
@@ -54,10 +56,14 @@ export interface ConsultaSlots {
   agora?: Date;
 }
 
-/** Violação da constraint de exclusão do Postgres (23P01): outro agendamento ocupou o horário. */
+/**
+ * Outro agendamento ocupou o horário: violação da constraint de exclusão do Postgres (23P01) ou, quando duas
+ * marcações do mesmo horário correm juntas, o deadlock (40P01) que o Postgres resolve derrubando UMA delas.
+ * Nos dois casos quem perdeu não conseguiu o horário; a outra segue e grava.
+ */
 export function ehConflitoDeHorario(e: unknown): boolean {
   const texto = e instanceof Error ? e.message : '';
-  return /agendamentos_sem_sobreposicao_excl|exclusion constraint|\b23P01\b/i.test(texto);
+  return /agendamentos_sem_sobreposicao_excl|exclusion constraint|\b23P01\b|\b40P01\b|deadlock detected/i.test(texto);
 }
 
 export function paraAgendamentoDto(a: AgendamentoCompleto): AgendamentoDto {
@@ -73,6 +79,7 @@ export function paraAgendamentoDto(a: AgendamentoCompleto): AgendamentoDto {
     profissional: a.profissional,
     servico: a.servico,
     cliente: a.cliente,
+    lembreteEntregue: a.lembreteEntregueEm !== null,
   };
 }
 
@@ -90,6 +97,8 @@ export function paraMeuAgendamentoDto(a: AgendamentoCompleto, salao: Salao, agor
     servico: a.servico,
     limiteAlteracao: limite.toISOString(),
     podeAlterar: a.status === StatusAgendamento.AGENDADO && agora <= limite && a.inicio > agora,
+    confirmacao: a.confirmacao,
+    podeConfirmar: a.status === StatusAgendamento.AGENDADO && a.inicio > agora && a.confirmacao === 'PENDENTE',
   };
 }
 
@@ -103,11 +112,14 @@ const TRANSICOES: Record<StatusAgendamento, StatusAgendamento[]> = {
 
 @Injectable()
 export class AgendaService {
+  private readonly logger = new Logger(AgendaService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly tenant: TenantContext,
     private readonly assinatura: AssinaturaService,
     private readonly notificacoes: NotificacoesService,
+    private readonly whatsapp: WhatsappService,
   ) {}
 
   /** Assinatura bloqueada: nenhum agendamento novo, venha de onde vier (link, bot ou painel). */
@@ -250,7 +262,7 @@ export class AgendaService {
     inicio: Date;
     nome: string;
     whatsapp: string;
-    origem: typeof OrigemAgendamento.LINK | typeof OrigemAgendamento.MANUAL;
+    origem: typeof OrigemAgendamento.LINK | typeof OrigemAgendamento.MANUAL | typeof OrigemAgendamento.BOT;
   }): Promise<AgendamentoCompleto> {
     const whatsapp = normalizarWhatsapp(p.whatsapp);
     if (!whatsapp) throw new BadRequestException('Informe o WhatsApp com DDD. Exemplo: (11) 99999-8888.');
@@ -258,7 +270,7 @@ export class AgendaService {
     await this.exigirAgendaAberta(p.origem);
     const salao = await this.salao();
     const { precoCentavos, duracaoMin } = await this.servicoDoProfissional(p.profissionalId, p.servicoId);
-    const regime: Regime = p.origem === OrigemAgendamento.LINK ? 'PUBLICO' : 'MANUAL';
+    const regime: Regime = p.origem === OrigemAgendamento.MANUAL ? 'MANUAL' : 'PUBLICO';
 
     // Uma única regra de "pode marcar aqui?": o horário tem que ser um dos que a própria lista oferece.
     const livres = await this.slotsDoDia(
@@ -270,7 +282,7 @@ export class AgendaService {
 
     const cliente = await this.obterCliente(p.nome, whatsapp);
     const agora = new Date();
-    if (p.origem === OrigemAgendamento.LINK) {
+    if (p.origem !== OrigemAgendamento.MANUAL) {
       // Limite brando contra spam (a página pública não verifica o WhatsApp). O dono, no painel, não tem teto.
       const futuros = await this.prisma.db.agendamento.count({
         where: { clienteId: cliente.id, status: StatusAgendamento.AGENDADO, inicio: { gt: agora } },
@@ -294,10 +306,12 @@ export class AgendaService {
           duracaoMin,
           origem: p.origem,
           token: novoTokenOpaco(),
-          consentimentoEm: p.origem === OrigemAgendamento.LINK ? agora : null,
+          consentimentoEm: p.origem !== OrigemAgendamento.MANUAL ? agora : null,
+          lembreteAgendadoPara: momentoDoLembrete(p.inicio, salao.fusoHorario, agora),
         }),
         include: INCLUIR,
       });
+      this.confirmarPorWhatsapp(criado, false);
       // Quem lançou no painel já sabe; o dono só é avisado do que veio de fora (link, bot).
       if (p.origem !== OrigemAgendamento.MANUAL) this.notificacoes.agendamentoCriado(criado);
       return criado;
@@ -362,7 +376,24 @@ export class AgendaService {
     if (atual.status === StatusAgendamento.CANCELADO && novo === StatusAgendamento.AGENDADO && atual.inicio <= agora) {
       throw new BadRequestException('O horário já passou. Faça um novo agendamento.');
     }
-    return this.gravarStatus(atual, novo, novo === StatusAgendamento.CANCELADO ? CanceladoPor.PAINEL : null, agora);
+    const salao = await this.salao();
+    const reabrindo = novo === StatusAgendamento.AGENDADO ? this.zerarLembrete(atual.inicio, salao.fusoHorario, agora) : {};
+    const gravado = await this.gravarStatus(atual, novo, novo === StatusAgendamento.CANCELADO ? CanceladoPor.PAINEL : null, agora, reabrindo);
+    if (novo === StatusAgendamento.CANCELADO) this.notificacoes.agendamentoCancelado(gravado, CanceladoPor.PAINEL);
+    return gravado;
+  }
+
+  /** Estado do lembrete de um agendamento "novo" (marcado ou remarcado): recalcula quando sai e apaga o que valia para o horário antigo. */
+  private zerarLembrete(inicio: Date, fuso: string, agora: Date) {
+    return {
+      lembreteAgendadoPara: momentoDoLembrete(inicio, fuso, agora),
+      lembreteEnviadoEm: null, lembreteEntregueEm: null, confirmarAte: null, semEntregaAvisadoEm: null, confirmadoEm: null,
+    };
+  }
+
+  /** Confirmação no WhatsApp do cliente. Nunca derruba a marcação: o erro vai para o log. */
+  private confirmarPorWhatsapp(a: AgendamentoCompleto, remarcado: boolean): void {
+    void this.whatsapp.enviarConfirmacao(a, remarcado).catch((e) => this.logger.error(`Confirmação por WhatsApp falhou: ${(e as Error).message}`));
   }
 
   private async gravarStatus(
@@ -377,7 +408,11 @@ export class AgendaService {
       // `status` no where: se alguém mudou o agendamento no meio do caminho, não sobrescrevemos às cegas.
       return await this.prisma.db.agendamento.update({
         where: { id: atual.id, status: atual.status },
-        data: { status: novo, canceladoEm: cancelando ? agora : null, canceladoPor: cancelando ? por : null, ...extra },
+        data: {
+          status: novo, canceladoEm: cancelando ? agora : null, canceladoPor: cancelando ? por : null,
+          ...(cancelando ? { lembreteAgendadoPara: null, confirmarAte: null } : {}),
+          ...extra,
+        },
         include: INCLUIR,
       });
     } catch (e) {
@@ -413,17 +448,70 @@ export class AgendaService {
     if (!livres.some((s) => s.inicio.getTime() === novoInicio.getTime())) throw new ConflictException(INDISPONIVEL);
 
     try {
-      return await this.prisma.db.agendamento.update({
+      const remarcado = await this.prisma.db.agendamento.update({
         where: { id: atual.id, status: StatusAgendamento.AGENDADO },
-        // Mudou o horário: a confirmação anterior não vale mais para o novo.
-        data: { inicio: novoInicio, fim: new Date(novoInicio.getTime() + atual.duracaoMin * MS_MIN), confirmacao: 'PENDENTE' },
+        // Mudou o horário: a confirmação, o lembrete e o prazo anteriores não valem mais para o novo.
+        data: {
+          inicio: novoInicio, fim: new Date(novoInicio.getTime() + atual.duracaoMin * MS_MIN), confirmacao: 'PENDENTE',
+          ...this.zerarLembrete(novoInicio, salao.fusoHorario, agora),
+        },
         include: INCLUIR,
       });
+      this.confirmarPorWhatsapp(remarcado, true);
+      return remarcado;
     } catch (e) {
       if (ehConflitoDeHorario(e)) throw new ConflictException(INDISPONIVEL);
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') throw new ConflictException(MUDOU);
       throw e;
     }
+  }
+
+  /** O cliente confirmou presença (botão do link ou resposta no WhatsApp). Para a contagem do cancelamento automático. */
+  async confirmarPresenca(id: string): Promise<AgendamentoCompleto> {
+    const atual = await this.obterAgendamento(id);
+    const agora = new Date();
+    if (atual.status !== StatusAgendamento.AGENDADO || atual.inicio <= agora) {
+      throw new ConflictException('Este agendamento não pode mais ser confirmado.');
+    }
+    if (atual.confirmacao === 'CONFIRMADO') return atual;
+    await this.prisma.db.agendamento.updateMany({
+      where: { id, status: StatusAgendamento.AGENDADO, confirmacao: { not: 'CONFIRMADO' } },
+      data: { confirmacao: 'CONFIRMADO', confirmadoEm: agora, confirmarAte: null },
+    });
+    return this.obterAgendamento(id);
+  }
+
+  /**
+   * Sem resposta dentro do prazo, depois de o lembrete ser ENTREGUE: libera o horário. Ignora o prazo de
+   * cancelamento do salão (ele só vale para o cliente). A checagem e a gravação são uma só instrução, então
+   * se o cliente confirmar no mesmo instante nada é cancelado. Devolve nulo se não cancelou.
+   */
+  async cancelarPorFaltaDeResposta(id: string, agora: Date): Promise<AgendamentoCompleto | null> {
+    const r = await this.prisma.db.agendamento.updateMany({
+      where: {
+        id, status: StatusAgendamento.AGENDADO, confirmacao: 'PENDENTE', lembreteEntregueEm: { not: null },
+        confirmarAte: { lte: agora }, inicio: { gt: agora },
+      },
+      data: {
+        status: StatusAgendamento.CANCELADO, confirmacao: 'SEM_RESPOSTA', canceladoEm: agora, canceladoPor: CanceladoPor.AUTOMATICO,
+        lembreteAgendadoPara: null, confirmarAte: null,
+      },
+    });
+    if (r.count === 0) return null;
+    const a = await this.obterAgendamento(id);
+    this.notificacoes.agendamentoCancelado(a, CanceladoPor.AUTOMATICO);
+    return a;
+  }
+
+  /** Quem pode ser agendado agora: profissional ativo com pelo menos um serviço ativo, com o preço dele. */
+  async catalogo() {
+    return this.prisma.db.profissional.findMany({
+      where: { ativo: true, servicos: { some: { servico: { ativo: true } } } },
+      include: {
+        servicos: { where: { servico: { ativo: true } }, include: { servico: { select: { nome: true, duracaoMin: true } } } },
+      },
+      orderBy: { nome: 'asc' },
+    });
   }
 
   exigirPodeAlterar(a: AgendamentoCompleto, salao: Salao, agora: Date): void {

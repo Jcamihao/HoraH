@@ -29,7 +29,7 @@ describe('link único do cliente: ver, cancelar e remarcar', () => {
     const r = (await env.http().get(`/api/meu-agendamento/${token}`).expect(200)).body;
     expect(r).toMatchObject({ status: 'AGENDADO', podeAlterar: true, clienteNome: 'Cliente Link', servico: { nome: 'Corte' } });
     expect(Object.keys(r).sort()).toEqual([
-      'clienteNome', 'duracaoMin', 'fim', 'inicio', 'limiteAlteracao', 'podeAlterar', 'precoCentavos', 'profissional', 'salao', 'servico', 'status',
+      'clienteNome', 'confirmacao', 'duracaoMin', 'fim', 'inicio', 'limiteAlteracao', 'podeAlterar', 'podeConfirmar', 'precoCentavos', 'profissional', 'salao', 'servico', 'status',
     ]);
     // limite = início - prazo de cancelamento do salão (padrão 2 h)
     expect(new Date(r.inicio).getTime() - new Date(r.limiteAlteracao).getTime()).toBe(2 * 3_600_000);
