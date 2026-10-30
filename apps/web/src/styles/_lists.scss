@@ -100,24 +100,56 @@
   font-weight: 700;
 }
 
-// Linha com campo: rótulo à esquerda, valor à direita, como nos Ajustes do aparelho
+// Linha com campo: rótulo pequeno em cima, valor embaixo, na largura toda da linha.
+// Assim o texto digitado e as mensagens longas têm espaço e o rótulo nunca disputa lugar com o valor.
 .row--field {
-  min-height: 52px;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 0;
+  min-height: 68px;
+  padding-block: 10px 8px;
   cursor: text;
 
   label,
   .row__label {
-    flex: 0 0 8.5rem;
+    flex: 0 0 100%;
+    font-family: var(--font-num);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .input {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 36px;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .input--time {
+    flex: 0 0 auto;
   }
 
   &:focus-within {
     outline: 3px solid var(--tint);
     outline-offset: -3px;
   }
+
+  &:focus-within label {
+    color: var(--ink);
+  }
 }
 
 .row--field.is-invalid {
   background: var(--bad-bg);
+}
+
+.row--field.is-invalid label {
+  color: var(--bad);
 }
 
 // Controle segmentado: pílulas com contorno de tinta; a escolhida é preenchida
