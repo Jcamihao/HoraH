@@ -22,9 +22,14 @@ Agendamento online para salões, barbearias e estúdios de beleza. Especificaç�
 Precisa de Node 20.19+ e npm. Sem Docker: o banco roda embutido.
 
 ```bash
-npm install
-cp apps/api/.env.example apps/api/.env      # ajuste JWT_SECRET (32+ caracteres)
-npm run build -w @hora-h/shared             # a api e o web importam este pacote
+npm run dev:all     # tudo de uma vez: banco, API e site; Ctrl+C para parar
+```
+
+Na primeira vez o `dev:all` também faz o que falta: `npm install`, cria `apps/api/.env` com um `JWT_SECRET` aleatório e compila o pacote `shared`. Depois abra http://localhost:4200. Se uma das portas (5440, 3000, 4200) já estiver em uso, ele avisa e não sobe nada.
+
+Para subir cada parte em seu terminal (útil para ver o log separado):
+
+```bash
 npm run dev:db      # terminal 1: PostgreSQL de desenvolvimento (porta 5440) + migrations
 npm run dev:api     # terminal 2: API em http://localhost:3000/api
 npm run dev:web     # terminal 3: app em http://localhost:4200 (proxy de /api para a API)
