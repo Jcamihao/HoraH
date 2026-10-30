@@ -1,22 +1,23 @@
-// Página pública do salão (cliente final, celular primeiro). Identidade própria, separada do painel:
-// o salão é o personagem, então o nome dele é o maior elemento da tela e a cor vem em campos inteiros.
-// Sem filetes, sem sombras em repouso, sem degradês: a separação é degrau de tom e espaço.
+// Página pública do salão (cliente final, celular primeiro). Mesma identidade "Rolo de Senhas" do painel,
+// com o nome do salão como maior elemento da tela, impresso na faixa amarela.
+// Sem sombras em repouso e sem degradês: a separação é degrau de tom e espaço.
 body:has(.pub) {
-  background: #f1f3f0;
+  background: #f7f7f4;
 }
 
 .pub {
-  --p-bg: #f1f3f0;
+  --p-bg: #f7f7f4;
   --p-surface: #ffffff;
-  --p-soft: #e1e8e4;
-  --p-soft-press: #d2dcd7;
-  --p-ink: #15181a;
-  --p-ink-2: #48514f;
-  --p-accent: #0e5c57;
-  --p-accent-press: #0a4743;
+  --p-soft: #ecece5;
+  --p-soft-press: #deded4;
+  --p-ink: #17171a;
+  --p-ink-2: #55555a;
+  --p-roll: #ffd84d;
+  --p-accent: #1f3fd6;
+  --p-accent-press: #1832ae;
   --p-on-accent: #ffffff;
-  --p-bad: #a8231b;
-  --p-bad-bg: #f7dedb;
+  --p-bad: #c42a1a;
+  --p-bad-bg: #fde5e1;
 
   min-height: 100dvh;
   background: var(--p-bg);
@@ -32,8 +33,8 @@ body:has(.pub) {
 
 // Campo de cor com o nome do salão
 .pub-hero {
-  background: var(--p-accent);
-  color: var(--p-on-accent);
+  background: var(--p-roll);
+  color: var(--p-ink);
   padding: calc(env(safe-area-inset-top) + 20px) 0 28px;
 }
 
@@ -48,35 +49,36 @@ body:has(.pub) {
   min-height: var(--tap);
   margin-left: -8px;
   padding-right: 12px;
-  color: var(--p-on-accent);
+  color: var(--p-ink);
   font-size: var(--fs-body);
   font-weight: 600;
 }
 
 .pub-nome {
   margin-top: 28px;
-  font-size: clamp(2.5rem, 12vw, 4.25rem);
-  font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.035em;
+  font-family: var(--font-num);
+  font-size: clamp(3rem, 15vw, 5.25rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: 0;
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
 
 .pub-nome--medio {
-  font-size: clamp(2rem, 9.5vw, 3.25rem);
+  font-size: clamp(2.5rem, 12vw, 4rem);
 }
 
 .pub-nome--longo {
-  font-size: clamp(1.625rem, 7vw, 2.5rem);
+  font-size: clamp(2rem, 9vw, 3rem);
   line-height: 1.02;
 }
 
 .pub-hero--compacto .pub-nome {
   margin-top: 4px;
-  font-size: 1.375rem;
-  letter-spacing: -0.015em;
-  line-height: 1.15;
+  font-size: 1.75rem;
+  letter-spacing: 0.005em;
+  line-height: 1.05;
 }
 
 .pub-lead {
@@ -104,10 +106,11 @@ body:has(.pub) {
 
 .pub-q {
   margin-bottom: 20px;
-  font-size: clamp(1.75rem, 7.5vw, 2.25rem);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.025em;
+  font-family: var(--font-num);
+  font-size: clamp(2.25rem, 10vw, 2.875rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
   text-wrap: balance;
 }
 
@@ -145,8 +148,8 @@ body:has(.pub) {
 
 .pub-choice__title {
   display: block;
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.3125rem;
+  font-weight: 600;
   line-height: 1.2;
   overflow-wrap: anywhere;
 }
@@ -160,7 +163,8 @@ body:has(.pub) {
 
 .pub-choice__detail {
   flex: none;
-  font-size: 1.25rem;
+  font-family: var(--font-num);
+  font-size: 1.625rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -251,8 +255,9 @@ body:has(.pub) {
   width: 100%;
   max-width: var(--tap);
   justify-self: center;
-  border-radius: 50%;
-  font-size: 1.0625rem;
+  border-radius: var(--r-ctl);
+  font-family: var(--font-num);
+  font-size: 1.25rem;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   transition: background-color 0.15s var(--ease-out);
@@ -298,9 +303,10 @@ body:has(.pub) {
 
 .pub-horario {
   min-height: 52px;
-  border-radius: 26px;
+  border-radius: var(--r-ctl);
   background: var(--p-surface);
-  font-size: 1.125rem;
+  font-family: var(--font-num);
+  font-size: 1.375rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   transition: background-color 0.15s var(--ease-out);
@@ -349,7 +355,7 @@ body:has(.pub) {
   outline: none;
 
   &::placeholder {
-    color: #8b9693;
+    color: #77776f;
     font-weight: 400;
   }
 }
@@ -381,7 +387,7 @@ body:has(.pub) {
   width: 100%;
   min-height: 56px;
   padding: 0 28px;
-  border-radius: 28px;
+  border-radius: var(--r-ctl);
   background: var(--p-accent);
   color: var(--p-on-accent);
   font-size: 1.0625rem;
@@ -415,7 +421,7 @@ body:has(.pub) {
   color: var(--p-bad);
 
   &:active:not(:disabled) {
-    background: #f0c9c5;
+    background: #f6c8c1;
   }
 }
 
@@ -486,10 +492,11 @@ body:has(.pub) {
 .pub-quando__hora {
   display: block;
   margin-block: 4px 12px;
-  font-size: clamp(3.5rem, 20vw, 5.5rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font-family: var(--font-num);
+  font-size: clamp(4.5rem, 26vw, 7rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
 }
 
@@ -514,13 +521,13 @@ body:has(.pub) {
 .pub-skeleton {
   height: 76px;
   margin-bottom: 8px;
-  background: #e4e9e6;
+  background: #ecece5;
   animation: pub-pulso 0.9s ease-in-out infinite alternate;
 }
 
 @keyframes pub-pulso {
   to {
-    background: #eef1ef;
+    background: #f7f7f4;
   }
 }
 

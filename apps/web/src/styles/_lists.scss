@@ -2,21 +2,24 @@
 .group {
   background: var(--surface);
   border-radius: var(--r-group);
+  box-shadow: 0 1px 0 var(--sep);
   overflow: hidden;
 }
 
 .group__header {
-  margin: 24px 0 6px;
-  padding-inline: var(--gutter);
-  font-size: var(--fs-caption);
+  margin: 28px 0 8px;
+  padding-inline: 2px;
+  font-family: var(--font-num);
+  font-size: 1.0625rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--ink-2);
+  letter-spacing: 0.06em;
+  color: var(--ink);
 }
 
 .group__footer {
   margin-top: 6px;
-  padding-inline: var(--gutter);
+  padding-inline: 2px;
   font-size: var(--fs-caption);
   color: var(--ink-2);
 }
@@ -53,11 +56,11 @@
     position: absolute;
     right: var(--gutter);
     top: 50%;
-    width: 8px;
-    height: 8px;
-    border-top: 2px solid var(--sep-strong);
-    border-right: 2px solid var(--sep-strong);
-    transform: translateY(-50%) rotate(45deg);
+    width: 10px;
+    height: 16px;
+    margin-top: -8px;
+    background: var(--ink);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M2 2l6 6-6 6' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
   }
 
   &:active {
@@ -85,13 +88,16 @@
 .row__detail {
   margin-left: auto;
   color: var(--ink-2);
+  font-family: var(--font-num);
+  font-size: 1.125rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
 .row__detail--bad {
   color: var(--bad);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 // Linha com campo: rótulo à esquerda, valor à direita, como nos Ajustes do aparelho
@@ -105,8 +111,8 @@
   }
 
   &:focus-within {
-    outline: 2px solid var(--tint);
-    outline-offset: -2px;
+    outline: 3px solid var(--tint);
+    outline-offset: -3px;
   }
 }
 
@@ -114,20 +120,21 @@
   background: var(--bad-bg);
 }
 
-// Controle segmentado
+// Controle segmentado: pílulas com contorno de tinta; a escolhida é preenchida
 .seg {
   display: flex;
-  gap: 2px;
-  padding: 2px;
-  border-radius: 9px;
-  background: #e3e3e8;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .seg [role='tab'] {
   flex: 1 1 0;
-  min-height: 40px;
-  padding: 0 8px;
-  border-radius: 7px;
+  min-width: max-content;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--surface);
   font-size: var(--fs-small);
   font-weight: 600;
   overflow: hidden;
@@ -135,14 +142,12 @@
   white-space: nowrap;
   transition:
     background-color 0.2s var(--ease-out),
-    box-shadow 0.2s var(--ease-out);
+    color 0.2s var(--ease-out);
 }
 
 .seg [role='tab'][aria-selected='true'] {
-  background: var(--surface);
-  box-shadow:
-    0 3px 8px rgba(0, 0, 0, 0.12),
-    0 3px 1px rgba(0, 0, 0, 0.04);
+  background: var(--ink);
+  color: var(--roll);
 }
 
 // Interruptor
@@ -152,7 +157,7 @@
   width: 51px;
   height: 31px;
   border-radius: 16px;
-  background: var(--sep-strong);
+  background: #8c8c83;
   transition: background-color 0.25s var(--ease-out);
 }
 
@@ -171,38 +176,40 @@
   height: 27px;
   border-radius: 50%;
   background: #fff;
-  box-shadow:
-    0 3px 8px rgba(0, 0, 0, 0.15),
-    0 1px 1px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
   transition: transform 0.25s var(--ease-out);
 }
 
 .switch[aria-checked='true'] {
-  background: #2e9e52;
+  background: var(--ok);
 }
 
 .switch[aria-checked='true']::after {
   transform: translateX(20px);
 }
 
-// Etiquetas de estado
+// Etiquetas de estado: carimbo com contorno de tinta (o estado vai no texto, nunca só na cor)
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  min-height: 24px;
-  padding: 0 10px;
-  border-radius: 12px;
-  background: var(--off-bg);
+  min-height: 26px;
+  padding: 0 8px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
   color: var(--ink-2);
   font-size: var(--fs-caption);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
 .badge--ok {
-  background: var(--ok-bg);
-  color: var(--ok);
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--roll);
 }
 
 .badge--wait {
@@ -227,12 +234,13 @@
 
 .empty h2 {
   color: var(--ink);
+  font-size: 2rem;
 }
 
 .skeleton {
   height: 56px;
   border-radius: var(--r-group);
-  background: linear-gradient(90deg, #e6e6eb 25%, #efeff4 50%, #e6e6eb 75%);
+  background: linear-gradient(90deg, #ecece5 25%, #f7f7f4 50%, #ecece5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.2s linear infinite;
 }

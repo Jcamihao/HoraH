@@ -1,43 +1,58 @@
-// Identidade "Lista Nativa". Cores, fonte, raios e movimento moram aqui:
+// Identidade "Rolo de Senhas". Cores, fontes, raios e movimento moram aqui:
 // trocar a marca do Hora H é editar este arquivo.
 :root {
   color-scheme: light;
 
   // Superfícies e tinta
-  --bg: #f2f2f7;
+  --bg: #f7f7f4;
   --surface: #ffffff;
-  --ink: #111113;
-  --ink-2: #6c6c70; // texto secundário (5:1 sobre branco)
-  --sep: #d8d8dd;
-  --sep-strong: #c6c6cb;
-  --press: #e5e5ea;
+  --ink: #17171a;
+  --ink-2: #55555a; // texto secundário (7:1 sobre branco)
+  --sep: #d6d6cd;
+  --sep-strong: #b9b9ae;
+  --press: #efefe8;
+
+  // Papel de senha: a faixa de topo e o que é "marcado"
+  --roll: #ffd84d;
+  --roll-deep: #f2c200;
+  --on-roll: #17171a;
 
   // Cor de ação: só em quem se toca
-  --tint: #0a72e8;
-  --tint-press: #0860c4;
-  --tint-bg: #e4f0fd;
+  --tint: #1f3fd6;
+  --tint-press: #1832ae;
+  --tint-bg: #fff1b8; // aviso informativo: papel de senha clareado
 
   // Estado: só quando há estado
-  --ok: #16693a;
-  --ok-bg: #e1f2e6;
-  --wait: #8a5200;
-  --wait-bg: #fff0d1;
-  --bad: #c7271f;
-  --bad-bg: #fde7e5;
-  --off-bg: #e9e9ee;
+  --ok: #17693a;
+  --ok-bg: #dff1e4;
+  --wait: #7a4b00;
+  --wait-bg: #ffecb0;
+  --bad: #c42a1a;
+  --bad-bg: #fde5e1;
+  --off-bg: #ecece5;
+
+  // Fita de cor de cada profissional (fixa em todas as telas)
+  --fita-0: #1f3fd6;
+  --fita-1: #e0301e;
+  --fita-2: #17693a;
+  --fita-3: #8a2be2;
+  --fita-4: #e07b00;
+  --fita-5: #0a8aa8;
 
   // Forma
-  --r-group: 12px;
-  --r-ctl: 12px;
+  --r-group: 8px;
+  --r-ctl: 8px;
+  --r-ficha: 6px;
   --tap: 44px;
   --gutter: 16px;
 
-  // Tipo: fonte do sistema, como no resto do aparelho
-  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  // Tipo: Barlow para texto, Barlow Condensed para números e títulos (arquivos locais)
+  --font: 'Barlow', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-num: 'Barlow Condensed', 'Arial Narrow', 'Barlow', sans-serif;
   --fs-body: 1.0625rem;
   --fs-small: 0.9375rem;
   --fs-caption: 0.8125rem;
-  --fs-title: 2.125rem;
+  --fs-title: 2.5rem;
 
   // Movimento
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

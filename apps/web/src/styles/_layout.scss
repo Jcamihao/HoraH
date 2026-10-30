@@ -13,6 +13,36 @@
   --s-dock: 96px;
 }
 
+.page--fab {
+  --s-dock: 168px;
+}
+
+// Ação principal da agenda: botão cobalto flutuante acima da barra de abas
+.fab {
+  position: fixed;
+  z-index: 28;
+  right: var(--gutter);
+  bottom: calc(84px + env(safe-area-inset-bottom));
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--tint);
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(31, 63, 214, 0.35);
+  transition: transform 0.15s var(--ease-out);
+
+  &:active {
+    transform: scale(0.97);
+    background: var(--tint-press);
+  }
+}
+
 .page--dock {
   --s-dock: 144px;
 }
@@ -51,8 +81,9 @@
   align-items: center;
   min-height: calc(52px + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) var(--gutter) 0;
-  background: var(--bg);
-  box-shadow: 0 1px 0 transparent;
+  background: var(--roll);
+  color: var(--on-roll);
+  box-shadow: 0 2px 0 transparent;
 }
 
 .navbar__back {
@@ -63,9 +94,10 @@
   min-height: var(--tap);
   margin-left: -8px;
   padding-right: 8px;
-  color: var(--tint);
+  color: var(--on-roll);
   text-decoration: none;
   font-size: var(--fs-body);
+  font-weight: 600;
 }
 
 .navbar__title {
@@ -73,7 +105,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 600;
+  font-family: var(--font-num);
+  font-size: 1.25rem;
+  font-weight: 700;
   opacity: 0;
 }
 
@@ -86,7 +120,7 @@
   display: inline-flex;
   align-items: center;
   min-height: var(--tap);
-  color: var(--ink-2);
+  color: var(--on-roll);
   font-size: var(--fs-small);
 }
 
@@ -106,7 +140,7 @@
 
   @keyframes navbar-line {
     to {
-      box-shadow: 0 1px 0 var(--sep);
+      box-shadow: 0 2px 0 var(--ink);
     }
   }
 
@@ -117,28 +151,45 @@
   }
 }
 
+// Faixa de papel de senha: título e subtítulo sangram até a borda da tela
+.large-title,
+.large-sub {
+  background: var(--roll);
+  color: var(--on-roll);
+  box-shadow: 0 0 0 100vmax var(--roll);
+  clip-path: inset(0 -100vmax);
+}
+
 .large-title {
   padding-top: 4px;
 }
 
 .large-sub {
-  margin-top: 6px;
-  color: var(--ink-2);
-  font-size: var(--fs-small);
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding: 6px 0 18px;
+  font-size: var(--fs-body);
+  font-weight: 600;
 }
 
 .progress {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--sep);
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(23, 23, 26, 0.12);
   overflow: hidden;
+  box-shadow: 0 0 0 100vmax var(--roll);
+  clip-path: inset(-12px -100vmax);
+}
+
+.progress + .large-title {
+  margin-top: 12px !important;
 }
 
 .progress > i {
   display: block;
   height: 100%;
-  border-radius: 2px;
-  background: var(--tint);
+  border-radius: 4px;
+  background: var(--ink);
   transition: width 0.4s var(--ease-out);
 }
 
@@ -151,7 +202,7 @@
   bottom: 0;
   display: flex;
   background: var(--surface);
-  border-top: 1px solid var(--sep);
+  border-top: 2px solid var(--ink);
   padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
 }
 
@@ -164,15 +215,16 @@
   justify-content: center;
   gap: 2px;
   min-height: 52px;
-  border-radius: 10px;
+  border-radius: var(--r-ctl);
   color: var(--ink-2);
-  font-size: 0.6875rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
   text-decoration: none;
 }
 
 .tabbar a.active {
-  color: var(--tint);
+  background: var(--roll);
+  color: var(--on-roll);
 }
 
 // Ação principal do passo a passo, fixa na base
@@ -183,8 +235,8 @@
   right: 0;
   bottom: 0;
   padding: 12px var(--gutter) calc(12px + env(safe-area-inset-bottom));
-  background: var(--bg);
-  border-top: 1px solid var(--sep);
+  background: var(--surface);
+  border-top: 2px solid var(--ink);
 }
 
 .dock__inner {
@@ -209,7 +261,7 @@
     gap: 2px;
     padding: 28px 12px;
     border-top: 0;
-    border-right: 1px solid var(--sep);
+    border-right: 2px solid var(--ink);
   }
 
   .tabbar a,
@@ -223,12 +275,17 @@
     font-size: var(--fs-body);
   }
 
-  .tabbar a.active {
-    background: var(--tint-bg);
-  }
-
   .page--tabbed {
     --s-dock: 48px;
+  }
+
+  .page--fab {
+    --s-dock: 120px;
+  }
+
+  .fab {
+    right: 32px;
+    bottom: 32px;
   }
 }
 
@@ -265,7 +322,8 @@
   gap: 12px;
   flex-wrap: wrap;
   padding: 10px var(--gutter);
-  background: var(--tint-bg);
+  background: var(--ink);
+  color: #fff;
   font-size: var(--fs-small);
   text-align: center;
 }
@@ -275,6 +333,7 @@
 }
 
 .avisobar a {
+  color: var(--roll);
   font-weight: 700;
   white-space: nowrap;
 }

@@ -14,19 +14,19 @@ Operate. Painel Angular mobile-first (dono e profissional) e telas de entrada: l
 Dono de salão pequeno, não técnico, no celular entre atendimentos. Tarefa: terminar o cadastro sozinho e depois ajustar profissionais, serviços, preços e regras. Estados: passo atual/concluído, preço faltando, convite enviado, profissional inativo, erro de rede, vazio. Idioma pt-BR. Marca do Hora H ainda não existe (nome provisório): a identidade é neutra e trocável por tokens.
 
 ## Chosen direction
-Lista Nativa, escolhida pelo usuário na rodada "mais segura" (dez rodadas de sorteio antes). Memorable moment: o título grande que encolhe para a barra superior ao rolar e a pilha de telas que entra pelo lado a cada passo.
+Rolo de Senhas, sorteado e confirmado pelo usuario em 2026-10-30 (substitui a Lista Nativa; o usuario achou o visual generico, sem marca e parecido com iPhone). Cada horario marcado e uma ficha de senha. Memorable moment: a ficha com picote e a hora em numero grande condensado, e a fita de cor fixa de cada profissional.
 
 ## Direction contract
 
-THESIS: O painel é a lista do próprio celular: título grande, grupos de linhas separadas por filete e uma única cor de ação; recusa personalidade de marca em troca de clareza e familiaridade até a marca do Hora H existir.
+THESIS: O painel e um rolo de senhas de atendimento: cada horario marcado e uma ficha numerada com picote; recusa o cinza-e-azul de aparelho e a lista de linhas iguais.
 
-OWN-WORLD: Fundo #F2F2F7, grupos brancos de canto 12px, filete de 1px #D8D8DD, tinta #111, texto secundário #6C6C70, ação azul #0A72E8 só no que se toca; verde, âmbar e vermelho só em estado. Fonte do sistema, título 34px/700, corpo 17px. Reconhecível sem texto: grupos arredondados brancos sobre cinza-claro, controle segmentado, barra de abas.
+OWN-WORLD: Faixa de topo amarelo senha #FFD84D, fundo branco-frio #F7F7F4, fichas brancas com picote tracejado e dois recortes redondos, tinta quase preta #17171A, acao cobalto #1F3FD6, vermelho de falta #E0301E. Numeros em Barlow Condensed 700 tabular, texto em Barlow. Reconhecivel sem texto: faixa amarela, fichas com stub de hora e picote.
 
-STORY: O dono sabe onde está pelo título grande e pela barra de progresso fina; toca numa linha para editar, termina cada passo com um botão azul de largura total e nunca perde o caminho de volta.
+STORY: O dono bate o olho na faixa amarela com o dia, le as fichas de cima para baixo pela hora grande, ve o estado em etiqueta carimbada e toca no botao cobalto para marcar.
 
-FIRST VIEWPORT: Celular 390x844. Barra superior com "Voltar" em azul e o nome do salão à direita; abaixo, fio de progresso 5/6; título "Preços" 34px e subtítulo; controle segmentado com as profissionais; grupo branco com as linhas serviço, tempo e preço à direita com seta; a linha sem preço mostra "Definir" em vermelho; botão azul de largura total fixo na base.
+FIRST VIEWPORT: Celular 390x844. Faixa amarela no topo com data e titulo condensado 40px, filtros em pilulas de contorno preto; fichas brancas com stub de 84px (hora e duracao) e fita de cor do profissional; botao cobalto flutuante Marcar horario; abas brancas na base.
 
-FORM: Lista Nativa, direção autoral do mundo convencional (mão "mais segura"), cedendo tipo, paleta, densidade e o título grande que colapsa ao rolar como movimento de assinatura; navegação e controles são os padrão da plataforma. seed: none (unavailable)
+FORM: Rolo de Senhas, assigned (indice 4 da lista propria), seed: none (unavailable). Cede tipo, paleta, densidade e a ficha com picote como movimento; navegacao, abas, campos e controles seguem padrao web. Raises: fita de cor por profissional (mascotes), grade de 30 min visivel (Crouwel).
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 

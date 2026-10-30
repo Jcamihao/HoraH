@@ -23,10 +23,8 @@ const A_CADA_MINUTO = 60_000;
   imports: [RouterLink, IconComponent, NavbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <hh-navbar titulo="Agenda">
-      @if (!restrito()) { <a routerLink="/painel/agenda/novo"><hh-icon nome="plus" /> Novo</a> }
-    </hh-navbar>
-    <main class="page page--tabbed">
+    <hh-navbar titulo="Agenda" />
+    <main class="page page--tabbed page--fab">
       <h1 class="large-title">Agenda</h1>
       <p class="large-sub">{{ subtitulo() }}</p>
 
@@ -74,11 +72,12 @@ const A_CADA_MINUTO = 60_000;
             <div style="margin-top: 16px"></div>
           }
           @if (itens.length) {
-            <div class="group">
+            <div class="fichas">
               @for (item of itens; track item.chave) {
                 @if (item.tipo === 'agendamento') {
                   @let a = item.ag;
-                  <a class="row row--link" [class.row--muted]="a.status === 'CANCELADO'" [routerLink]="['/painel/agenda', a.id]">
+                  <a class="ficha ficha--link" [class.ficha--muted]="a.status === 'CANCELADO'" [style.--fita]="fita(a.profissional.id)" [routerLink]="['/painel/agenda', a.id]">
+                    <i class="ficha__fita" aria-hidden="true"></i>
                     <span class="agenda-hora">{{ item.hora }}<small>{{ hora(a.fim) }}</small></span>
                     <span class="row__main">
                       <span class="row__title">{{ a.cliente.nome }}</span>
@@ -88,7 +87,8 @@ const A_CADA_MINUTO = 60_000;
                     @else if (a.confirmacao === 'CONFIRMADO') { <span class="badge badge--ok">Confirmado</span> }
                   </a>
                 } @else {
-                  <div class="row row--block">
+                  <div class="ficha ficha--block" [style.--fita]="fita(item.bl.profissionalId)">
+                    <i class="ficha__fita" aria-hidden="true"></i>
                     <span class="agenda-hora">@if (item.inteiro) { Dia<small>todo</small> } @else { {{ item.hora }}<small>{{ item.ate }}</small> }</span>
                     <span class="row__main">
                       <span class="row__title">Bloqueado</span>
@@ -121,6 +121,9 @@ const A_CADA_MINUTO = 60_000;
         </div>
       }
     </main>
+    @if (!restrito()) {
+      <a class="fab" routerLink="/painel/agenda/novo"><hh-icon nome="plus" /> Marcar horário</a>
+    }
   `,
 })
 export class AgendaPage {
@@ -136,6 +139,12 @@ export class AgendaPage {
   protected readonly removendoId = signal('');
 
   protected readonly restrito = this.salaoStore.restrito;
+
+  /** Cor de fita fixa do profissional: posição na equipe, a mesma em todas as telas. */
+  protected fita(profissionalId: string | null | undefined): string {
+    const i = Math.max(0, this.equipe().findIndex((p) => p.id === profissionalId));
+    return `var(--fita-${i % 6})`;
+  }
   protected readonly fuso = computed(() => this.salaoStore.dados()?.fusoHorario ?? 'America/Sao_Paulo');
   private readonly agora = signal(new Date());
   protected readonly hoje = computed(() => hojeNoFuso(this.fuso(), this.agora()));

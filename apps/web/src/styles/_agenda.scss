@@ -1,31 +1,120 @@
-// Agenda: hora à esquerda, atendimento à direita, como a lista de eventos do calendário do aparelho
+// Agenda: cada horário é uma ficha de senha. A hora grande fica no talão, separada por um picote;
+// a fita de cor da borda é a cor fixa do profissional.
+.fichas {
+  display: grid;
+  gap: 10px;
+}
+
+.ficha {
+  --fita: var(--fita-0);
+  --talao: 6rem;
+
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: 72px;
+  border-radius: var(--r-ficha);
+  background: var(--surface);
+  box-shadow: 0 1px 0 var(--sep);
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 0.15s var(--ease-out);
+
+  // Recortes redondos do picote
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: var(--talao);
+    width: 14px;
+    height: 14px;
+    margin-left: -7px;
+    border-radius: 50%;
+    background: var(--bg);
+  }
+
+  &::before {
+    top: -7px;
+  }
+
+  &::after {
+    bottom: -7px;
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.ficha__fita {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: var(--fita);
+}
+
 .agenda-hora {
   flex: none;
-  width: 3.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: var(--talao);
+  padding: 8px 4px 8px 14px;
+  border-right: 2px dashed var(--sep-strong);
+  font-family: var(--font-num);
+  font-size: 1.875rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  font-weight: 600;
-  line-height: 1.15;
+  line-height: 1;
 }
 
 .agenda-hora small {
   display: block;
-  font-weight: 400;
+  margin-top: 4px;
+  font-family: var(--font);
+  font-weight: 600;
   font-size: var(--fs-caption);
+  letter-spacing: 0.04em;
   color: var(--ink-2);
 }
 
+.ficha .row__main {
+  align-self: center;
+  padding: 10px 12px;
+}
+
+.ficha .badge {
+  align-self: center;
+  margin-right: 12px;
+}
+
+.ficha--link {
+  padding-right: 0;
+}
+
 // Cancelado continua visível (o dono vê o que aconteceu), mas recua
-.row--muted {
+.ficha--muted {
   opacity: 0.6;
 }
 
-.row--muted .row__title {
+.ficha--muted .row__title {
   text-decoration: line-through;
 }
 
 // Bloqueio: neutro, sem cor de estado (não é bom nem ruim, só indisponível)
-.row--block {
+.ficha--block {
   background: var(--off-bg);
+  box-shadow: none;
+}
+
+.ficha--block .agenda-hora {
+  color: var(--ink-2);
+}
+
+.ficha--block .btn {
+  align-self: center;
+  margin-right: 12px;
 }
 
 .date-nav {
@@ -36,15 +125,18 @@
 .date-nav__label {
   flex: 1;
   text-align: center;
-  font-weight: 600;
+  font-family: var(--font-num);
+  font-size: 1.375rem;
+  font-weight: 700;
 }
 
 .date-nav .btn--plain {
   width: var(--tap);
   padding: 0;
+  color: var(--ink);
 }
 
-// Horários livres para escolher
+// Horários livres para escolher: pequenas fichas
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -56,17 +148,22 @@
   min-width: 4.75rem;
   min-height: var(--tap);
   padding: 0 12px;
+  border: 2px solid var(--ink);
   border-radius: var(--r-ctl);
-  background: var(--tint-bg);
-  color: var(--tint);
-  font-weight: 600;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-num);
+  font-size: 1.25rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  transition: background-color 0.15s var(--ease-out);
+  transition:
+    background-color 0.15s var(--ease-out),
+    color 0.15s var(--ease-out);
 }
 
 .chip[aria-pressed='true'] {
-  background: var(--tint);
-  color: #fff;
+  background: var(--ink);
+  color: var(--roll);
 }
 
 .navbar__action a,
@@ -77,7 +174,8 @@
   min-height: var(--tap);
   padding-inline: 8px;
   margin-right: -8px;
-  color: var(--tint);
+  color: var(--on-roll);
   font-size: var(--fs-body);
+  font-weight: 700;
   text-decoration: none;
 }
