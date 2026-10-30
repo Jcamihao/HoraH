@@ -1,111 +1,122 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-22T10:14:28.935108+00:00",
+  "generatedAt": "2026-10-30T11:05:16.643Z",
   "title": "Design System: Hora H, painel",
   "extensions": {
     "colorMeta": {
+      "roll": {
+        "role": "primary",
+        "displayName": "Amarelo de Senha",
+        "canonical": "#ffd84d",
+        "tonalRamp": [
+          "#3d3000",
+          "#665000",
+          "#997a00",
+          "#cc9f00",
+          "#f2c200",
+          "#ffd84d",
+          "#ffe88f",
+          "#fff6cc"
+        ]
+      },
       "tint": {
         "role": "primary",
-        "displayName": "Azul de Ação",
-        "canonical": "#0a72e8",
+        "displayName": "Cobalto de Ação",
+        "canonical": "#1f3fd6",
         "tonalRamp": [
-          "#052f5e",
-          "#0848a0",
-          "#0a60c8",
-          "#0a72e8",
-          "#4a97ee",
-          "#8ebef4",
-          "#c4defa",
-          "#e4f0fd"
+          "#0a1650",
+          "#122494",
+          "#1832ae",
+          "#1f3fd6",
+          "#5f78e8",
+          "#9aabf0",
+          "#c9d2f7",
+          "#e8ecfc"
         ]
       },
       "surface-bg": {
         "role": "neutral",
-        "displayName": "Cinza de Fundo",
-        "canonical": "#f2f2f7",
+        "displayName": "Branco Frio",
+        "canonical": "#f7f7f4",
         "tonalRamp": [
-          "#1c1c1e",
-          "#3a3a3c",
-          "#6c6c70",
-          "#8e8e93",
-          "#c6c6cb",
-          "#d8d8dd",
-          "#e5e5ea",
-          "#f2f2f7"
+          "#17171a",
+          "#3a3a3d",
+          "#55555a",
+          "#77776f",
+          "#b9b9ae",
+          "#d6d6cd",
+          "#ecece5",
+          "#f7f7f4"
         ]
       },
       "state-ok": {
         "role": "secondary",
         "displayName": "Verde de Pronto",
-        "canonical": "#16693a",
+        "canonical": "#17693a",
         "tonalRamp": [
           "#0a2e19",
           "#0f4a28",
-          "#16693a",
+          "#17693a",
           "#2e9e52",
           "#6cc788",
           "#a6dcb7",
           "#cdeed7",
-          "#e1f2e6"
+          "#dff1e4"
         ]
       },
       "state-wait": {
         "role": "secondary",
         "displayName": "Âmbar de Espera",
-        "canonical": "#8a5200",
+        "canonical": "#7a4b00",
         "tonalRamp": [
           "#3d2400",
           "#5f3800",
-          "#8a5200",
+          "#7a4b00",
           "#c07a10",
           "#e0a448",
           "#f0c98a",
           "#f8e2b8",
-          "#fff0d1"
+          "#ffecb0"
         ]
       },
       "state-bad": {
         "role": "secondary",
         "displayName": "Vermelho de Falta",
-        "canonical": "#c7271f",
+        "canonical": "#c42a1a",
         "tonalRamp": [
           "#52100d",
           "#85191a",
-          "#c7271f",
+          "#c42a1a",
           "#e2574d",
           "#ec8a82",
           "#f4b4ae",
           "#f9d3d0",
-          "#fde7e5"
+          "#fde5e1"
         ]
       }
     },
     "typographyMeta": {
       "title": {
         "displayName": "Título",
-        "purpose": "Título grande de cada tela; encolhe para a barra ao rolar."
+        "role": "display"
+      },
+      "ticket-time": {
+        "displayName": "Hora da ficha",
+        "role": "display"
       },
       "body": {
         "displayName": "Corpo",
-        "purpose": "Linhas e campos, mínimo de 16px."
+        "role": "body"
       },
       "caption": {
-        "displayName": "Legenda",
-        "purpose": "Cabeçalho e rodapé de grupo."
+        "displayName": "Carimbo",
+        "role": "label"
       }
     },
-    "shadows": [
-      {
-        "name": "controle-selecionado",
-        "value": "0 3px 8px rgba(0,0,0,.12), 0 3px 1px rgba(0,0,0,.04)",
-        "purpose": "Aba ativa do controle segmentado."
-      },
-      {
-        "name": "botao-interruptor",
-        "value": "0 3px 8px rgba(0,0,0,.15), 0 1px 1px rgba(0,0,0,.16)",
-        "purpose": "Bolinha do interruptor."
-      }
-    ],
+    "shadows": {
+      "fab": "0 6px 16px rgba(31,63,214,.35)",
+      "knob": "0 2px 4px rgba(0,0,0,.25)"
+    },
     "motion": [
       {
         "name": "ease-out",
@@ -132,101 +143,74 @@
       "refersTo": "button-filled",
       "description": "Ação principal da tela; uma por tela.",
       "html": "<button class=\"ds-btn-filled\">Salvar e continuar</button>",
-      "css": ".ds-btn-filled{background:#0a72e8;color:#fff;min-height:50px;padding:0 20px;border-radius:12px;border:0;font:600 17px -apple-system,'Segoe UI',Roboto,sans-serif;cursor:pointer;transition:background-color .15s,transform .15s}.ds-btn-filled:active{background:#0860c4;transform:scale(.98)}.ds-btn-filled:focus-visible{outline:3px solid #0a72e8;outline-offset:2px}"
+      "css": ".ds-btn-filled{background:#1f3fd6;color:#fff;min-height:50px;padding:0 20px;border-radius:8px;border:2px solid #1f3fd6;font:600 17px 'Barlow',sans-serif;cursor:pointer}.ds-btn-filled:active{background:#1832ae}"
     },
     {
-      "name": "Botão tonal",
+      "name": "Botão de contorno",
       "kind": "button",
-      "refersTo": "button-tinted",
-      "description": "Ação secundária, como adicionar.",
-      "html": "<button class=\"ds-btn-tinted\">Adicionar</button>",
-      "css": ".ds-btn-tinted{background:#e4f0fd;color:#0a72e8;min-height:50px;padding:0 20px;border-radius:12px;border:0;font:600 17px -apple-system,'Segoe UI',Roboto,sans-serif;cursor:pointer}.ds-btn-tinted:active{transform:scale(.98)}"
+      "refersTo": "button-outline",
+      "description": "Ação secundária.",
+      "html": "<button class=\"ds-btn-out\">Copiar link</button>",
+      "css": ".ds-btn-out{background:#fff;color:#17171a;min-height:50px;padding:0 20px;border-radius:8px;border:2px solid #17171a;font:600 17px 'Barlow',sans-serif;cursor:pointer}"
     },
     {
-      "name": "Linha de grupo",
+      "name": "Ficha",
       "kind": "card",
-      "refersTo": "group",
-      "description": "Linhas brancas separadas por filete recuado.",
-      "html": "<div class=\"ds-group\"><div class=\"ds-row\"><span>Corte feminino<small>45 min</small></span><b>R$ 80</b></div><div class=\"ds-row\"><span>Escova<small>40 min</small></span><b>R$ 50</b></div></div>",
-      "css": ".ds-group{background:#fff;border-radius:12px;overflow:hidden;font:17px -apple-system,'Segoe UI',Roboto,sans-serif;color:#111113}.ds-row{position:relative;display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:10px 16px}.ds-row+.ds-row::before{content:'';position:absolute;top:0;left:16px;right:0;height:1px;background:#d8d8dd}.ds-row small{display:block;margin-top:2px;font-size:15px;color:#6c6c70}.ds-row b{font-weight:400;color:#6c6c70;font-variant-numeric:tabular-nums}"
-    },
-    {
-      "name": "Campo em linha",
-      "kind": "input",
-      "refersTo": "row",
-      "description": "Rótulo à esquerda, valor ao lado, dentro de um grupo.",
-      "html": "<div class=\"ds-field\"><label for=\"ds-n\">Nome</label><input id=\"ds-n\" value=\"Studio Marina\"></div>",
-      "css": ".ds-field{display:flex;align-items:center;gap:12px;min-height:52px;padding:10px 16px;background:#fff;border-radius:12px;font:17px -apple-system,'Segoe UI',Roboto,sans-serif}.ds-field label{flex:0 0 8.5rem}.ds-field input{flex:1;border:0;background:transparent;font:inherit;outline:none;min-height:44px}.ds-field:focus-within{outline:2px solid #0a72e8;outline-offset:-2px}"
-    },
-    {
-      "name": "Etiqueta de estado",
-      "kind": "chip",
-      "refersTo": "badge-wait",
-      "description": "Estado curto: pronto, pendente ou falta.",
-      "html": "<span class=\"ds-badge ds-badge-wait\">Sem acesso</span> <span class=\"ds-badge ds-badge-bad\">Sem serviços</span>",
-      "css": ".ds-badge{display:inline-flex;align-items:center;min-height:24px;padding:0 10px;border-radius:12px;font:600 13px -apple-system,'Segoe UI',Roboto,sans-serif}.ds-badge-wait{background:#fff0d1;color:#8a5200}.ds-badge-bad{background:#fde7e5;color:#c7271f}"
-    },
-    {
-      "name": "Controle segmentado",
-      "kind": "nav",
-      "refersTo": "group",
-      "description": "Troca de profissional no passo de preços.",
-      "html": "<div class=\"ds-seg\"><button class=\"on\">Marina</button><button>Rafa</button></div>",
-      "css": ".ds-seg{display:flex;gap:2px;padding:2px;border-radius:9px;background:#e3e3e8;font:600 15px -apple-system,'Segoe UI',Roboto,sans-serif}.ds-seg button{flex:1;min-height:40px;border:0;border-radius:7px;background:transparent;cursor:pointer}.ds-seg button.on{background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04)}"
-    },
-    {
-      "name": "Interruptor",
-      "kind": "custom",
-      "refersTo": "row",
-      "description": "Liga e desliga; verde quando ligado.",
-      "html": "<button class=\"ds-switch\" role=\"switch\" aria-checked=\"true\" aria-label=\"Faz este serviço\"></button>",
-      "css": ".ds-switch{position:relative;width:51px;height:31px;border:0;border-radius:16px;background:#2e9e52;cursor:pointer}.ds-switch::after{content:'';position:absolute;top:2px;left:22px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16)}"
+      "refersTo": "ticket",
+      "description": "Um horário marcado: hora no talão, picote, nome e carimbo.",
+      "html": "<div class=\"ds-ficha\"><span class=\"t\">12:00<small>13:00</small></span><span class=\"n\">Camila Rocha<small>Corte e escova · Marina</small></span><span class=\"b\">Confirmado</span></div>",
+      "css": ".ds-ficha{display:flex;align-items:center;background:#fff;border-radius:6px;box-shadow:0 1px 0 #d6d6cd;border-left:0;font:500 17px 'Barlow',sans-serif;min-height:72px;width:320px;overflow:hidden}.ds-ficha .t{width:96px;padding:0 4px 0 14px;border-right:2px dashed #b9b9ae;font:700 30px/1 'Barlow Condensed',sans-serif;display:flex;flex-direction:column;align-self:stretch;justify-content:center}.ds-ficha small{display:block;font:700 13px 'Barlow',sans-serif;color:#55555a}.ds-ficha .n{flex:1;padding:0 12px}.ds-ficha .b{margin-right:12px;background:#17171a;color:#ffd84d;border:2px solid #17171a;border-radius:4px;padding:3px 8px;font:700 13px 'Barlow',sans-serif;text-transform:uppercase;letter-spacing:.04em}"
     }
   ],
   "narrative": {
-    "northStar": "A Lista do Aparelho",
-    "overview": "O painel parece a lista de ajustes do próprio celular: título grande, grupos de linhas brancas separadas por um filete e uma cor só para o que se toca. A marca do Hora H ainda não existe, então a identidade é neutra de propósito e trocável por tokens.",
+    "northStar": "O Rolo de Senhas",
+    "overview": "Cada horário marcado é uma ficha de senha: hora grande num talão, picote tracejado, nome ao lado e fita de cor do profissional. O topo é uma faixa de papel amarelo. Identidade escolhida em 2026-10-30 no lugar da Lista Nativa.",
     "keyCharacteristics": [
-      "Título grande que encolhe para a barra ao rolar",
-      "Grupos brancos de canto 12px sobre cinza-claro",
-      "Uma cor de ação; verde, âmbar e vermelho só para estado",
-      "Fonte do sistema",
-      "Telas entram pelo lado"
+      "Faixa amarela no topo de toda tela",
+      "Ficha com talão de hora e picote",
+      "Barlow Condensed nos números",
+      "Contornos de tinta de 2px",
+      "Uma cor de ação: cobalto"
     ],
     "rules": [
       {
         "name": "The Only-Touch Rule",
-        "body": "O azul de ação aparece só em quem responde ao toque.",
+        "body": "O cobalto aparece só em quem responde ao toque.",
         "section": "colors"
       },
       {
         "name": "The State-Not-Style Rule",
-        "body": "Verde, âmbar e vermelho existem só para estado.",
+        "body": "Verde, âmbar e vermelho existem só para estado, sempre com texto.",
         "section": "colors"
       },
       {
-        "name": "The Tabular-Money Rule",
-        "body": "Preço, horário e duração usam algarismos tabulares.",
+        "name": "The Roll-Is-The-Frame Rule",
+        "body": "O amarelo é faixa de topo e aba ativa, nunca fundo de conteúdo.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular-Time Rule",
+        "body": "Hora, preço e duração usam Barlow Condensed com algarismos tabulares.",
         "section": "typography"
       },
       {
         "name": "The Flat-By-Default Rule",
-        "body": "Grupos e botões não têm sombra; ela só marca o que o dedo move.",
+        "body": "Fichas, grupos e botões não têm sombra de repouso além do filete.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do usar azul de ação só em quem responde ao toque.",
-      "Do agrupar linhas em um grupo branco de canto 12px com filete recuado de 16px.",
-      "Do mostrar o estado com etiqueta e texto, nunca só com cor.",
-      "Do manter o campo de formulário em 16px ou mais e a área de toque em 44px ou mais.",
+      "Do usar cobalto só em quem responde ao toque.",
+      "Do mostrar a hora grande no talão e o estado em carimbo com texto.",
+      "Do manter a mesma fita de cor para o mesmo profissional.",
+      "Do manter campos em 16px ou mais e alvos de 44px ou mais.",
       "Do trocar a marca editando só src/styles/_tokens.scss."
     ],
     "donts": [
-      "Don't pôr cartão dentro de cartão.",
+      "Don't pôr ficha dentro de ficha.",
       "Don't usar verde, âmbar ou vermelho como enfeite.",
-      "Don't usar sombra pesada, desfoque decorativo ou gradiente em texto.",
-      "Don't pôr um rótulo pequeno em caixa-alta acima de um título.",
+      "Don't usar o amarelo como fundo de conteúdo.",
+      "Don't usar sombra pesada, degradê ou desfoque decorativo.",
       "Don't inventar números, clientes ou provas."
     ]
   }
