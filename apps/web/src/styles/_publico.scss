@@ -1,23 +1,26 @@
-// Página pública do salão (cliente final, celular primeiro). Mesma identidade "Rolo de Senhas" do painel,
-// com o nome do salão como maior elemento da tela, impresso na faixa amarela.
-// Sem sombras em repouso e sem degradês: a separação é degrau de tom e espaço.
+// Página pública do salão (cliente final, celular primeiro). Mesma identidade do painel (Meetgen Design System):
+// topo escuro com o nome do salão como maior elemento da tela, folha sálvia com canto grande por baixo.
+// Sem sombras: a separação é degrau de tom e espaço.
 body:has(.pub) {
-  background: #f7f7f4;
+  background: #dadbbb;
 }
 
 .pub {
-  --p-bg: #f7f7f4;
-  --p-surface: #ffffff;
-  --p-soft: #ecece5;
-  --p-soft-press: #deded4;
-  --p-ink: #17171a;
-  --p-ink-2: #55555a;
-  --p-roll: #ffd84d;
-  --p-accent: #1f3fd6;
-  --p-accent-press: #1832ae;
-  --p-on-accent: #ffffff;
-  --p-bad: #c42a1a;
-  --p-bad-bg: #fde5e1;
+  --p-bg: #dadbbb;
+  --p-surface: #fbfbea;
+  --p-soft: #cfd0b4;
+  --p-soft-press: #c3c4a9;
+  --p-ink: #262721;
+  --p-ink-2: #4a4b41;
+  --p-hero: #262721;
+  --p-on-hero: #fbfbea;
+  --p-on-hero-muted: #c9caba;
+  --p-accent: #e86a30;
+  --p-accent-press: #d45a22;
+  --p-on-accent: #262721;
+  --p-accent-text: #9a3b0c;
+  --p-bad: #a8281c;
+  --p-bad-bg: #f4d3cc;
 
   min-height: 100dvh;
   background: var(--p-bg);
@@ -33,13 +36,26 @@ body:has(.pub) {
 
 // Campo de cor com o nome do salão
 .pub-hero {
-  background: var(--p-roll);
-  color: var(--p-ink);
-  padding: calc(env(safe-area-inset-top) + 20px) 0 28px;
+  position: relative;
+  background: var(--p-hero);
+  color: var(--p-on-hero);
+  padding: calc(env(safe-area-inset-top) + 20px) 0 60px;
+}
+
+// Folha sálvia que sobe sobre o topo escuro
+.pub-hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 32px;
+  background: var(--p-bg);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
 }
 
 .pub-hero--grande {
-  padding-bottom: 40px;
+  padding-bottom: 72px;
 }
 
 .pub-back {
@@ -49,18 +65,17 @@ body:has(.pub) {
   min-height: var(--tap);
   margin-left: -8px;
   padding-right: 12px;
-  color: var(--p-ink);
+  color: var(--p-on-hero);
   font-size: var(--fs-body);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .pub-nome {
   margin-top: 28px;
-  font-family: var(--font-num);
   font-size: clamp(3rem, 15vw, 5.25rem);
   font-weight: 700;
-  line-height: 0.95;
-  letter-spacing: 0;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
@@ -76,9 +91,9 @@ body:has(.pub) {
 
 .pub-hero--compacto .pub-nome {
   margin-top: 4px;
-  font-size: 1.75rem;
-  letter-spacing: 0.005em;
-  line-height: 1.05;
+  font-size: 1.375rem;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
 }
 
 .pub-lead {
@@ -106,8 +121,7 @@ body:has(.pub) {
 
 .pub-q {
   margin-bottom: 20px;
-  font-family: var(--font-num);
-  font-size: clamp(2.25rem, 10vw, 2.875rem);
+  font-size: clamp(1.75rem, 8vw, 2.125rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0;
@@ -163,9 +177,8 @@ body:has(.pub) {
 
 .pub-choice__detail {
   flex: none;
-  font-family: var(--font-num);
-  font-size: 1.625rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
@@ -189,7 +202,7 @@ body:has(.pub) {
   flex: none;
   min-height: var(--tap);
   padding-inline: 4px;
-  color: var(--p-accent);
+  color: var(--p-accent-text);
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 0.2em;
@@ -256,10 +269,9 @@ body:has(.pub) {
   max-width: var(--tap);
   justify-self: center;
   border-radius: var(--r-ctl);
-  font-family: var(--font-num);
-  font-size: 1.25rem;
+  font-size: 1.0625rem;
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
+  font-weight: 600;
   transition: background-color 0.15s var(--ease-out);
 }
 
@@ -305,9 +317,8 @@ body:has(.pub) {
   min-height: 52px;
   border-radius: var(--r-ctl);
   background: var(--p-surface);
-  font-family: var(--font-num);
-  font-size: 1.375rem;
-  font-weight: 700;
+  font-size: 1.125rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   transition: background-color 0.15s var(--ease-out);
 
@@ -492,11 +503,10 @@ body:has(.pub) {
 .pub-quando__hora {
   display: block;
   margin-block: 4px 12px;
-  font-family: var(--font-num);
-  font-size: clamp(4.5rem, 26vw, 7rem);
+  font-size: clamp(3.5rem, 20vw, 5rem);
   font-weight: 700;
-  line-height: 0.95;
-  letter-spacing: 0;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
   font-variant-numeric: tabular-nums;
 }
 

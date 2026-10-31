@@ -1,25 +1,22 @@
-// Grupos de linhas: a divisão é um filete recuado, não um cartão dentro de cartão
+// Grupos: folhas creme de canto 18, sem sombra; a divisão é um filete recuado
 .group {
   background: var(--surface);
   border-radius: var(--r-group);
-  box-shadow: 0 1px 0 var(--sep);
   overflow: hidden;
 }
 
 .group__header {
   margin: 28px 0 8px;
-  padding-inline: 2px;
-  font-family: var(--font-num);
-  font-size: 1.0625rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  padding-inline: 4px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.25;
   color: var(--ink);
 }
 
 .group__footer {
-  margin-top: 6px;
-  padding-inline: 2px;
+  margin-top: 8px;
+  padding-inline: 4px;
   font-size: var(--fs-caption);
   color: var(--ink-2);
 }
@@ -29,7 +26,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 52px;
+  min-height: 56px;
   padding: 10px var(--gutter);
   color: inherit;
   text-decoration: none;
@@ -44,12 +41,12 @@
   left: var(--gutter);
   right: 0;
   height: 1px;
-  background: var(--sep);
+  background: var(--divider-light);
 }
 
 .row--link {
   cursor: pointer;
-  padding-right: 36px;
+  padding-right: 40px;
 
   &::after {
     content: '';
@@ -59,12 +56,12 @@
     width: 10px;
     height: 16px;
     margin-top: -8px;
-    background: var(--ink);
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M2 2l6 6-6 6' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    background: var(--ink-900);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 16'%3E%3Cpath d='M2 2l6 6-6 6' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
   }
 
   &:active {
-    background: var(--press);
+    background: var(--sage-50);
   }
 }
 
@@ -75,6 +72,7 @@
 
 .row__title {
   display: block;
+  font-weight: 500;
   overflow-wrap: anywhere;
 }
 
@@ -88,20 +86,17 @@
 .row__detail {
   margin-left: auto;
   color: var(--ink-2);
-  font-family: var(--font-num);
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
 .row__detail--bad {
-  color: var(--bad);
-  font-weight: 700;
+  color: var(--danger);
+  font-weight: 600;
 }
 
-// Linha com campo: rótulo pequeno em cima, valor embaixo, na largura toda da linha.
-// Assim o texto digitado e as mensagens longas têm espaço e o rótulo nunca disputa lugar com o valor.
+// Linha com campo: rótulo pequeno em cima, valor embaixo, na largura toda da linha
 .row--field {
   flex-wrap: wrap;
   align-items: center;
@@ -114,10 +109,9 @@
   label,
   .row__label {
     flex: 0 0 100%;
-    font-family: var(--font-num);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
+    font-size: var(--fs-caption);
+    font-weight: 500;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--ink-2);
   }
@@ -127,7 +121,7 @@
     min-width: 0;
     min-height: 36px;
     font-size: 1.125rem;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .input--time {
@@ -135,8 +129,8 @@
   }
 
   &:focus-within {
-    outline: 3px solid var(--tint);
-    outline-offset: -3px;
+    outline: 2px solid var(--orange-500);
+    outline-offset: -2px;
   }
 
   &:focus-within label {
@@ -145,52 +139,53 @@
 }
 
 .row--field.is-invalid {
-  background: var(--bad-bg);
+  background: var(--danger-wash);
 }
 
 .row--field.is-invalid label {
-  color: var(--bad);
+  color: var(--danger);
 }
 
-// Controle segmentado: pílulas com contorno de tinta; a escolhida é preenchida
+// Controle segmentado (abas Dia / Semana / Mês): sobre fundo escuro, ativo em laranja
 .seg {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
 }
 
 .seg [role='tab'] {
-  flex: 1 1 0;
-  min-width: max-content;
-  min-height: 42px;
-  padding: 0 16px;
-  border: 2px solid var(--ink);
-  border-radius: 999px;
-  background: var(--surface);
-  font-size: var(--fs-small);
-  font-weight: 600;
+  min-height: 36px;
+  padding: 0 11px;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-900);
+  font-size: 0.875rem;
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition:
-    background-color 0.2s var(--ease-out),
-    color 0.2s var(--ease-out);
+  transition: background-color var(--t-base) var(--ease-out);
 }
 
 .seg [role='tab'][aria-selected='true'] {
-  background: var(--ink);
-  color: var(--roll);
+  background: var(--orange-500);
+  color: var(--ink-900);
+  font-weight: 600;
 }
 
-// Interruptor
+.seg--dark [role='tab'] {
+  color: var(--cream-50);
+}
+
+// Interruptor: laranja quando ligado
 .switch {
   position: relative;
   flex: none;
   width: 51px;
   height: 31px;
   border-radius: 16px;
-  background: #8c8c83;
-  transition: background-color 0.25s var(--ease-out);
+  background: var(--sage-300);
+  transition: background-color var(--t-base) var(--ease-out);
 }
 
 .switch::before {
@@ -207,51 +202,48 @@
   width: 27px;
   height: 27px;
   border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-  transition: transform 0.25s var(--ease-out);
+  background: var(--cream-50);
+  transition: transform var(--t-base) var(--ease-out);
 }
 
 .switch[aria-checked='true'] {
-  background: var(--ok);
+  background: var(--orange-500);
 }
 
 .switch[aria-checked='true']::after {
   transform: translateX(20px);
 }
 
-// Etiquetas de estado: carimbo com contorno de tinta (o estado vai no texto, nunca só na cor)
+// Pílula de estado: 24px, maiúsculas pequenas. Padrão = PENDING, ok = GOING.
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  min-height: 26px;
-  padding: 0 8px;
-  border: 2px solid currentColor;
-  border-radius: 4px;
-  background: transparent;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--sage-200);
   color: var(--ink-2);
-  font-size: var(--fs-caption);
-  font-weight: 700;
+  font-size: 0.65625rem;
+  font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 .badge--ok {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--roll);
+  background: var(--ink-900);
+  color: var(--cream-50);
 }
 
 .badge--wait {
-  background: var(--wait-bg);
-  color: var(--wait);
+  background: var(--orange-100);
+  color: var(--orange-ink);
 }
 
 .badge--bad {
-  background: var(--bad-bg);
-  color: var(--bad);
+  background: var(--danger-wash);
+  color: var(--danger);
 }
 
 .empty {
@@ -266,19 +258,11 @@
 
 .empty h2 {
   color: var(--ink);
-  font-size: 2rem;
+  font-size: 1.375rem;
 }
 
 .skeleton {
   height: 56px;
   border-radius: var(--r-group);
-  background: linear-gradient(90deg, #ecece5 25%, #f7f7f4 50%, #ecece5 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.2s linear infinite;
-}
-
-@keyframes shimmer {
-  to {
-    background-position: -200% 0;
-  }
+  background: var(--pattern-slot);
 }

@@ -2,49 +2,29 @@
   min-height: 100dvh;
 }
 
+// A folha: moldura sálvia-400 nas laterais, folha interna sálvia-200 com cantos grandes em cima.
+// O topo escuro (barra, título, subtítulo) sangra até a borda da tela.
 .page {
-  width: min(100%, 640px);
+  width: min(100%, 660px);
+  min-height: calc(100dvh - 56px);
   margin-inline: auto;
   padding-inline: var(--gutter);
   padding-bottom: calc(var(--s-dock, 32px) + env(safe-area-inset-bottom));
+  border-inline: var(--sheet-edge) solid var(--sage-400);
+  background: var(--sage-200);
+  isolation: isolate;
 }
 
 .page--tabbed {
-  --s-dock: 96px;
-}
-
-.page--fab {
-  --s-dock: 168px;
-}
-
-// Ação principal da agenda: botão cobalto flutuante acima da barra de abas
-.fab {
-  position: fixed;
-  z-index: 28;
-  right: var(--gutter);
-  bottom: calc(84px + env(safe-area-inset-bottom));
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 52px;
-  padding: 0 22px;
-  border-radius: 999px;
-  background: var(--tint);
-  color: #fff;
-  font-size: 1.125rem;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 6px 16px rgba(31, 63, 214, 0.35);
-  transition: transform 0.15s var(--ease-out);
-
-  &:active {
-    transform: scale(0.97);
-    background: var(--tint-press);
-  }
+  --s-dock: 112px;
 }
 
 .page--dock {
   --s-dock: 144px;
+}
+
+.page--fab {
+  --s-dock: 176px;
 }
 
 .stack {
@@ -71,7 +51,7 @@
   margin-top: 24px;
 }
 
-// Barra superior: voltar à esquerda, título pequeno que aparece ao rolar, ação à direita
+// Barra superior escura: voltar (ou o nome Hora H) à esquerda, título pequeno ao rolar, ação à direita
 .navbar {
   position: sticky;
   top: 0;
@@ -79,11 +59,19 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  min-height: calc(52px + env(safe-area-inset-top));
-  padding: env(safe-area-inset-top) var(--gutter) 0;
-  background: var(--roll);
-  color: var(--on-roll);
-  box-shadow: 0 2px 0 transparent;
+  min-height: calc(56px + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) calc(var(--gutter) + var(--sheet-edge)) 0;
+  background: var(--ink-900);
+  color: var(--cream-50);
+  box-shadow: 0 1px 0 transparent;
+}
+
+// Sem botão de voltar, a esquerda leva o nome do produto
+.navbar > span:first-child:empty::before {
+  content: 'Hora H';
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .navbar__back {
@@ -94,10 +82,10 @@
   min-height: var(--tap);
   margin-left: -8px;
   padding-right: 8px;
-  color: var(--on-roll);
+  color: var(--cream-50);
   text-decoration: none;
   font-size: var(--fs-body);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .navbar__title {
@@ -105,9 +93,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: var(--font-num);
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 600;
   opacity: 0;
 }
 
@@ -120,11 +106,10 @@
   display: inline-flex;
   align-items: center;
   min-height: var(--tap);
-  color: var(--on-roll);
+  color: var(--on-dark-muted);
   font-size: var(--fs-small);
 }
 
-// Título grande que encolhe para a barra ao rolar (movimento de assinatura)
 @supports (animation-timeline: scroll()) {
   .navbar {
     animation: navbar-line linear both;
@@ -140,7 +125,7 @@
 
   @keyframes navbar-line {
     to {
-      box-shadow: 0 2px 0 var(--ink);
+      box-shadow: 0 1px 0 var(--ink-700);
     }
   }
 
@@ -151,33 +136,64 @@
   }
 }
 
-// Faixa de papel de senha: título e subtítulo sangram até a borda da tela
+// Título e subtítulo na faixa escura. O subtítulo fecha a faixa e desenha as duas camadas da folha.
 .large-title,
 .large-sub {
-  background: var(--roll);
-  color: var(--on-roll);
-  box-shadow: 0 0 0 100vmax var(--roll);
+  background: var(--ink-900);
+  color: var(--cream-50);
+  box-shadow: 0 0 0 100vmax var(--ink-900);
   clip-path: inset(0 -100vmax);
 }
 
 .large-title {
+  position: relative;
+  z-index: 1;
+  margin-bottom: -1px;
   padding-top: 4px;
+  font-weight: 600;
+  line-height: 38px; // altura inteira: evita um fio de antialiasing na emenda com o subtítulo
 }
 
 .large-sub {
+  position: relative;
+  clip-path: inset(0 -100vmax -2px);
+  max-width: none;
   margin-top: 0;
-  margin-bottom: 20px;
-  padding: 6px 0 18px;
-  font-size: var(--fs-body);
-  font-weight: 600;
+  margin-bottom: 0;
+  padding: 15px 0 56px;
+  color: var(--on-dark-muted);
+  font-size: var(--fs-small);
+  line-height: 20px;
+  font-weight: 400;
+}
+
+// Folha externa (sálvia-400) e folha interna (sálvia-200), ambas com o canto de cima arredondado
+.large-sub::before,
+.large-sub::after {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--gutter) - var(--sheet-edge));
+  right: calc(-1 * var(--gutter) - var(--sheet-edge));
+  bottom: -2px;
+  height: 46px;
+  background: var(--sage-400);
+  border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+}
+
+.large-sub::after {
+  left: calc(-1 * var(--gutter));
+  right: calc(-1 * var(--gutter));
+  height: 34px;
+  background: var(--sage-200);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
 }
 
 .progress {
-  height: 8px;
-  border-radius: 4px;
-  background: rgba(23, 23, 26, 0.12);
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ink-700);
   overflow: hidden;
-  box-shadow: 0 0 0 100vmax var(--roll);
+  box-shadow: 0 0 0 100vmax var(--ink-900);
   clip-path: inset(-12px -100vmax);
 }
 
@@ -188,12 +204,12 @@
 .progress > i {
   display: block;
   height: 100%;
-  border-radius: 4px;
-  background: var(--ink);
+  border-radius: 3px;
+  background: var(--orange-500);
   transition: width 0.4s var(--ease-out);
 }
 
-// Barra de abas (celular) e barra lateral (desktop)
+// Barra de abas (celular) e barra lateral (desktop): escura, com a aba ativa em laranja
 .tabbar {
   position: fixed;
   z-index: 30;
@@ -201,9 +217,9 @@
   right: 0;
   bottom: 0;
   display: flex;
-  background: var(--surface);
-  border-top: 2px solid var(--ink);
-  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  gap: 4px;
+  background: var(--ink-900);
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
 }
 
 .tabbar a,
@@ -215,16 +231,18 @@
   justify-content: center;
   gap: 2px;
   min-height: 52px;
-  border-radius: var(--r-ctl);
-  color: var(--ink-2);
+  border-radius: var(--r-sm);
+  color: var(--on-dark-muted);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
+  transition: background-color var(--t-base) var(--ease-out);
 }
 
 .tabbar a.active {
-  background: var(--roll);
-  color: var(--on-roll);
+  background: var(--orange-500);
+  color: var(--cream-50);
+  font-weight: 600;
 }
 
 // Ação principal do passo a passo, fixa na base
@@ -235,8 +253,8 @@
   right: 0;
   bottom: 0;
   padding: 12px var(--gutter) calc(12px + env(safe-area-inset-bottom));
-  background: var(--surface);
-  border-top: 2px solid var(--ink);
+  background: var(--sage-200);
+  border-top: 1px solid var(--divider-light);
 }
 
 .dock__inner {
@@ -245,6 +263,30 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+// Ação principal flutuante (agenda)
+.fab {
+  position: fixed;
+  z-index: 28;
+  right: var(--gutter);
+  bottom: calc(84px + env(safe-area-inset-bottom));
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--orange-500);
+  color: var(--ink-900);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform var(--t-fast) var(--ease-out);
+
+  &:active {
+    transform: scale(0.97);
+  }
 }
 
 @media (min-width: 960px) {
@@ -260,8 +302,7 @@
     justify-content: flex-start;
     gap: 2px;
     padding: 28px 12px;
-    border-top: 0;
-    border-right: 2px solid var(--ink);
+    border-right: 1px solid var(--ink-700);
   }
 
   .tabbar a,
@@ -322,9 +363,10 @@
   gap: 12px;
   flex-wrap: wrap;
   padding: 10px var(--gutter);
-  background: var(--ink);
-  color: #fff;
+  background: var(--orange-500);
+  color: var(--ink-900);
   font-size: var(--fs-small);
+  font-weight: 500;
   text-align: center;
 }
 
@@ -333,25 +375,20 @@
 }
 
 .avisobar a {
-  color: var(--roll);
+  color: var(--ink-900);
   font-weight: 700;
   white-space: nowrap;
 }
 
 .avisobar--espera {
-  background: var(--wait-bg);
-  color: var(--wait);
-}
-
-.avisobar--espera a {
-  color: var(--wait);
+  background: var(--orange-100);
 }
 
 .avisobar--ruim {
-  background: var(--bad-bg);
-  color: var(--bad);
+  background: var(--danger-wash);
+  color: var(--danger);
 }
 
 .avisobar--ruim a {
-  color: var(--bad);
+  color: var(--danger);
 }

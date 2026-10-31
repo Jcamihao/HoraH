@@ -1,60 +1,90 @@
-// Identidade "Rolo de Senhas". Cores, fontes, raios e movimento moram aqui:
-// trocar a marca do Hora H é editar este arquivo.
+// Identidade "Meetgen Design System" aplicada ao Hora H (pacote de design recebido em 2026-10-31).
+// Três famílias de cor: laranja (o que se toca, está selecionado ou ocupado), tinta e sálvia/creme.
+// Sem sombras: a profundidade vem de camadas tonais com cantos grandes.
+// Cores, fonte, raios e movimento moram aqui: trocar a marca do Hora H é editar este arquivo.
 :root {
   color-scheme: light;
 
-  // Superfícies e tinta
-  --bg: #f7f7f4;
-  --surface: #ffffff;
-  --ink: #17171a;
-  --ink-2: #55555a; // texto secundário (7:1 sobre branco)
-  --sep: #d6d6cd;
-  --sep-strong: #b9b9ae;
-  --press: #efefe8;
+  // Laranja de marca
+  --orange-500: #e86a30;
+  --orange-400: #ee7f4c; // ocupado
+  --orange-200: #f3b693;
+  --orange-100: #efcbb2;
+  --orange-ink: #9a3b0c; // laranja legível como texto sobre sálvia (4,9:1)
 
-  // Papel de senha: a faixa de topo e o que é "marcado"
-  --roll: #ffd84d;
-  --roll-deep: #f2c200;
-  --on-roll: #17171a;
+  // Tinta
+  --ink-900: #262721;
+  --ink-700: #3a3b34;
+  --text-secondary: #4a4b41;
+  --on-dark-muted: #c9caba;
+  --on-dark-subtle: #a9aa98;
 
-  // Cor de ação: só em quem se toca
-  --tint: #1f3fd6;
-  --tint-press: #1832ae;
-  --tint-bg: #fff1b8; // aviso informativo: papel de senha clareado
+  // Sálvia e creme
+  --olive-400: #9fa08a; // meta e inativo (só decorativo: 1,9:1 sobre sálvia-200, não serve para texto)
+  --sage-400: #b2b49e;
+  --sage-300: #c3c4a9;
+  --sage-250: #cfd0b4;
+  --sage-200: #dadbbb;
+  --sage-100: #e6e7cc;
+  --sage-50: #eef0d4;
+  --cream-50: #fbfbea;
+  --cream-0: #fffff3;
+  --divider-light: #e2e2cf;
 
-  // Estado: só quando há estado
-  --ok: #17693a;
-  --ok-bg: #dff1e4;
-  --wait: #7a4b00;
-  --wait-bg: #ffecb0;
-  --bad: #c42a1a;
-  --bad-bg: #fde5e1;
-  --off-bg: #ecece5;
+  // Só avatares
+  --blue-200: #a5b9de;
+  --green-200: #a7d9a4;
 
-  // Fita de cor de cada profissional (fixa em todas as telas)
-  --fita-0: #1f3fd6;
-  --fita-1: #e0301e;
-  --fita-2: #17693a;
-  --fita-3: #8a2be2;
-  --fita-4: #e07b00;
-  --fita-5: #0a8aa8;
+  // Erro: o pacote não define cor de erro; esta é a única exceção às três famílias
+  --danger: #a8281c;
+  --danger-wash: #f4d3cc;
+
+  // Papéis semânticos (as telas usam estes nomes)
+  --bg: var(--sage-200);
+  --surface: var(--cream-50);
+  --ink: var(--ink-900);
+  --ink-2: var(--text-secondary);
+  --sep: var(--divider-light);
+  --sep-strong: var(--sage-300);
+  --press: var(--sage-100);
+  --tint: var(--orange-500);
+  --tint-press: #d45a22;
+  --tint-bg: var(--orange-100);
+  --ok: var(--cream-50);
+  --ok-bg: var(--ink-900);
+  --wait: var(--orange-ink);
+  --wait-bg: var(--orange-100);
+  --bad: var(--danger);
+  --bad-bg: var(--danger-wash);
+  --off-bg: var(--sage-250);
+
+  // Padrão listrado: horário vazio ou indisponível (135°)
+  --pattern-slot: repeating-linear-gradient(135deg, #e6e7cc 0 5px, #eef0d4 5px 10px);
+  --pattern-tile: repeating-linear-gradient(135deg, #c3c4a9 0 4px, #ccccb2 4px 8px);
 
   // Forma
-  --r-group: 8px;
-  --r-ctl: 8px;
-  --r-ficha: 6px;
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 14px;
+  --r-lg: 18px;
+  --r-xl: 28px;
+  --r-2xl: 34px;
+  --r-group: var(--r-lg);
+  --r-ctl: var(--r-md);
   --tap: 44px;
   --gutter: 16px;
+  --sheet-edge: 10px;
 
-  // Tipo: Barlow para texto, Barlow Condensed para números e títulos (arquivos locais)
-  --font: 'Barlow', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-num: 'Barlow Condensed', 'Arial Narrow', 'Barlow', sans-serif;
+  // Tipo: Figtree (arquivos locais)
+  --font: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --fs-body: 1.0625rem;
   --fs-small: 0.9375rem;
-  --fs-caption: 0.8125rem;
-  --fs-title: 2.5rem;
+  --fs-caption: 0.78125rem;
+  --fs-title: 2.125rem;
 
   // Movimento
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --t-fast: 120ms;
+  --t-base: 200ms;
   --t-push: 0.32s;
 }
