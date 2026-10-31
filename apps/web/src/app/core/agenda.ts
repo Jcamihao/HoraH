@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { ConfirmacaoAgendamento, OrigemAgendamento, StatusAgendamento } from '@hora-h/shared';
 
-export type ModoAgenda = 'dia' | 'semana';
+export type ModoAgenda = 'dia' | 'semana' | 'mes';
 
 /**
  * O que o usuário estava olhando na agenda (dia, visão, profissional). Fica na memória do app para

@@ -1,142 +1,501 @@
-// Agenda: cada horário é uma ficha de senha. A hora grande fica no talão, separada por um picote;
-// a fita de cor da borda é a cor fixa do profissional.
-.fichas {
-  display: grid;
-  gap: 10px;
+// Agenda no Meetgen Design System: três visões (dia, semana, mês) sobre a folha sálvia.
+// Texto sobre laranja é tinta (o creme dá 3,5:1); neutros esmaecidos usam #66675a (4,1:1 sobre sálvia-200).
+
+// Abas Dia / Semana / Mês dentro da faixa escura. A faixa escura continua no subtítulo aberto (sem as
+// camadas da folha) e fecha aqui, onde a folha nasce. Mesmos truques do .large-sub: box-shadow com spread
+// para sangrar até a borda, clip-path para a emenda e alturas inteiras em px (sem fio de antialiasing).
+.large-sub--aberto {
+  padding: 15px 0 10px;
+
+  &::before,
+  &::after {
+    display: none;
+  }
 }
 
-.ficha {
-  --fita: var(--fita-0);
-  --talao: 6rem;
-
+.large-tabs {
   position: relative;
-  display: flex;
-  align-items: stretch;
-  min-height: 72px;
-  border-radius: var(--r-ficha);
-  background: var(--surface);
-  box-shadow: 0 1px 0 var(--sep);
-  color: inherit;
-  text-decoration: none;
-  overflow: hidden;
-  transition: transform 0.15s var(--ease-out);
+  margin: 0;
+  padding: 0 0 62px;
+  background: var(--ink-900);
+  box-shadow: 0 0 0 100vmax var(--ink-900);
+  clip-path: inset(0 -100vmax -2px);
 
-  // Recortes redondos do picote
+  // Alvo de toque de 44px; o bloco laranja visível segue com os 36px do desenho
+  .seg {
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+
+  .seg [role='tab'] {
+    position: relative;
+    isolation: isolate;
+    min-height: var(--tap);
+    padding: 0 15px;
+    background: transparent;
+    color: var(--cream-50);
+    overflow: visible;
+
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset: 4px 4px;
+      border-radius: var(--r-sm);
+      background: transparent;
+      transition: background-color var(--t-base) var(--ease-out);
+    }
+
+    &[aria-selected='true']::before {
+      background: var(--orange-500);
+    }
+  }
+
+  .seg [role='tab'][aria-selected='true'] {
+    background: transparent;
+    color: var(--ink-900);
+  }
+
+  .seg [role='tab'][aria-selected='false'] {
+    color: var(--cream-50);
+  }
+
   &::before,
   &::after {
     content: '';
     position: absolute;
-    left: var(--talao);
-    width: 14px;
-    height: 14px;
-    margin-left: -7px;
-    border-radius: 50%;
-    background: var(--bg);
-  }
-
-  &::before {
-    top: -7px;
+    left: calc(-1 * var(--gutter) - var(--sheet-edge));
+    right: calc(-1 * var(--gutter) - var(--sheet-edge));
+    bottom: -2px;
+    height: 46px;
+    background: var(--sage-400);
+    border-radius: var(--r-2xl) var(--r-2xl) 0 0;
   }
 
   &::after {
-    bottom: -7px;
+    left: calc(-1 * var(--gutter));
+    right: calc(-1 * var(--gutter));
+    height: 34px;
+    background: var(--sage-200);
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
   }
+}
+
+.agenda-aviso {
+  margin-top: 12px;
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+}
+
+// Seletor de data: anterior esmaecido, seta, atual em destaque, seta, próximo esmaecido
+.stepper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--tap) auto var(--tap) minmax(0, 1fr);
+  align-items: center;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.stepper__lado,
+.stepper__atual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  line-height: 1;
+}
+
+.stepper__lado {
+  color: #66675a;
+
+  .stepper__txt {
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  &--ant {
+    align-items: flex-start;
+  }
+
+  &--prox {
+    align-items: flex-end;
+  }
+}
+
+.stepper__atual {
+  padding-inline: 4px;
+  color: var(--ink-900);
+
+  .stepper__txt {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.stepper--dia .stepper__atual .stepper__txt {
+  font-size: 1.375rem;
+}
+
+.stepper small {
+  margin-top: 4px;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.stepper__seta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap);
+  height: var(--tap);
+  color: var(--ink-900);
+}
+
+// ---- Dia: hora vazia listrada ou atendimento
+.horas {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slot__hora {
+  flex: none;
+  width: 34px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.slot__barra {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  border-radius: var(--r-sm);
+  background: var(--pattern-slot);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+// Bloqueio: mesma linha listrada, com o motivo e o botão de remover
+.slot--bloqueio .slot__barra {
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  padding: 4px 4px 4px 14px;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.slot__texto {
+  min-width: 0;
+}
+
+.slot__titulo {
+  display: block;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--ink-900);
+}
+
+.slot__sub {
+  display: block;
+  font-size: var(--fs-caption);
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+
+.slot--bloqueio .btn {
+  flex: none;
+  min-height: var(--tap);
+}
+
+// Atendimento: cartão creme com o bloco laranja da hora à esquerda (início grande, fim no rodapé mais escuro)
+.reuniao {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  margin-inline: -8px;
+  padding: 5px;
+  border-radius: var(--r-lg);
+  background: var(--cream-50);
+  color: inherit;
+  text-decoration: none;
+  transition: transform var(--t-fast) var(--ease-out);
 
   &:active {
     transform: scale(0.99);
   }
 }
 
-.ficha__fita {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 6px;
-  background: var(--fita);
-}
-
-.agenda-hora {
+.reuniao__hora {
   flex: none;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  width: var(--talao);
-  padding: 8px 4px 8px 14px;
-  border-right: 2px dashed var(--sep-strong);
-  font-family: var(--font-num);
-  font-size: 1.875rem;
+  width: 62px;
+  min-height: 68px;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--orange-500);
+  color: var(--ink-900);
+  font-size: 1rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
-.agenda-hora small {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--font);
+.reuniao__hora small {
+  align-self: stretch;
+  margin-top: auto;
+  padding: 7px 0;
+  background: var(--orange-400);
+  text-align: center;
+  font-size: 0.6875rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.reuniao__hora {
+  // o início ocupa o miolo e o fim fica colado no rodapé
+  padding-top: 14px;
+}
+
+.reuniao__corpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.reuniao__topo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 0;
+}
+
+.reuniao__topo .row__title {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.reuniao__topo .row__sub {
   font-size: var(--fs-caption);
-  letter-spacing: 0.04em;
-  color: var(--ink-2);
 }
 
-.ficha .row__main {
-  align-self: center;
-  padding: 10px 12px;
+.reuniao__rodape {
+  margin-top: 4px;
+  padding: 8px 0 6px;
+  border-top: 1px solid var(--divider-light);
 }
 
-.ficha .badge {
-  align-self: center;
-  margin-right: 12px;
+.reuniao--cancelada {
+  opacity: 0.7;
 }
 
-.ficha--link {
-  padding-right: 0;
-}
-
-// Cancelado continua visível (o dono vê o que aconteceu), mas recua
-.ficha--muted {
-  opacity: 0.6;
-}
-
-.ficha--muted .row__title {
+.reuniao--cancelada .row__title {
   text-decoration: line-through;
 }
 
-// Bloqueio: neutro, sem cor de estado (não é bom nem ruim, só indisponível)
-.ficha--block {
-  background: var(--off-bg);
-  box-shadow: none;
+// ---- Semana: sete colunas (segunda a domingo); a do dia selecionado ganha fundo
+.semana {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  margin-top: 12px;
 }
 
-.ficha--block .agenda-hora {
+.semana__col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  border-radius: 16px;
+}
+
+.semana__col--sel {
+  background: var(--sage-50);
+}
+
+.semana__dia {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--ink-2);
 }
 
-.ficha--block .btn {
-  align-self: center;
-  margin-right: 12px;
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 56px;
+  height: 52px;
+  border-radius: var(--r-sm);
+  background: var(--pattern-tile);
+  color: var(--ink-2);
+  line-height: 1;
 }
 
-.date-nav {
-  justify-content: space-between;
-  padding-block: 4px;
+.tile__num {
+  font-size: var(--fs-body);
+  font-weight: 600;
 }
 
-.date-nav__label {
-  flex: 1;
+.tile small {
+  margin-top: 3px;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tile--ocupado {
+  background: var(--orange-400);
+  color: var(--ink-900);
+}
+
+.tile--sel {
+  background: var(--orange-500);
+  color: var(--ink-900);
+}
+
+// Hoje, quando não é o selecionado: aro de tinta
+.tile--hoje:not(.tile--sel) {
+  box-shadow: inset 0 0 0 2px var(--ink-900);
+}
+
+.chip-hora {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1px;
+  width: 100%;
+  max-width: 56px;
+  height: 44px;
+  padding-top: 12px;
+  border-radius: var(--r-sm);
+  background: var(--orange-400);
+  color: var(--ink-900);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.chip-hora small {
+  font-size: 0.5rem;
+  font-weight: 600;
+}
+
+.chip-hora--vazio {
+  background: var(--pattern-tile);
+}
+
+.semana__col--sel .chip-hora--vazio {
+  background: repeating-linear-gradient(135deg, #e6e7cc 0 4px, #eef0d4 4px 8px);
+}
+
+// ---- Mês: grade de 7 colunas, semana começa na segunda
+.mes {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  row-gap: 6px;
+  margin-top: 12px;
+}
+
+.mes__cab {
+  padding-bottom: 6px;
   text-align: center;
-  font-family: var(--font-num);
-  font-size: 1.375rem;
-  font-weight: 700;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
 }
 
-.date-nav .btn--plain {
-  width: var(--tap);
-  padding: 0;
-  color: var(--ink);
+.mes__dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  max-width: 56px;
+  height: 62px;
+  margin-inline: auto;
+  border-radius: var(--r-sm);
+  color: var(--ink-900);
 }
 
-// Horários livres para escolher: pequenas fichas
+.mes__num {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.mes__dia--hoje {
+  background: var(--cream-0);
+}
+
+.mes__dia--fora .mes__num {
+  color: #66675a;
+  font-weight: 500;
+}
+
+// Contagem de atendimentos: laranja com número; fora do mês pálida; zero só com contorno
+.contagem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 7px;
+  background: var(--orange-500);
+  color: var(--ink-900);
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.mes__dia--fora .contagem {
+  background: var(--orange-100);
+  color: var(--orange-ink);
+}
+
+.contagem--zero,
+.mes__dia--fora .contagem--zero {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--sage-300);
+  color: var(--sage-300);
+}
+
+// Horários livres para escolher
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -148,22 +507,17 @@
   min-width: 4.75rem;
   min-height: var(--tap);
   padding: 0 12px;
-  border: 2px solid var(--ink);
-  border-radius: var(--r-ctl);
-  background: var(--surface);
-  color: var(--ink);
-  font-family: var(--font-num);
-  font-size: 1.25rem;
-  font-weight: 700;
+  border-radius: var(--r-sm);
+  background: var(--sage-100);
+  color: var(--ink-900);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  transition:
-    background-color 0.15s var(--ease-out),
-    color 0.15s var(--ease-out);
+  transition: background-color var(--t-fast) var(--ease-out);
 }
 
 .chip[aria-pressed='true'] {
-  background: var(--ink);
-  color: var(--roll);
+  background: var(--orange-500);
+  color: var(--ink-900);
 }
 
 .navbar__action a,
@@ -174,8 +528,8 @@
   min-height: var(--tap);
   padding-inline: 8px;
   margin-right: -8px;
-  color: var(--on-roll);
+  color: var(--cream-50);
   font-size: var(--fs-body);
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: none;
 }

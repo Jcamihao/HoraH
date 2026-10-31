@@ -66,6 +66,27 @@ export function inicioDaSemana(data: string): string {
   return somarDias(data, -((diaDaSemana(data) + 6) % 7));
 }
 
+/** Dia do mês (1 a 31). */
+export function diaDoMes(data: string): number {
+  return partes(data).dia;
+}
+
+/** "out". */
+export function mesCurto(data: string): string {
+  return MESES_CURTOS[partes(data).mes - 1];
+}
+
+/** "2026". */
+export function anoDaData(data: string): number {
+  return partes(data).ano;
+}
+
+/** "outubro de 2026". */
+export function mesEAno(data: string): string {
+  const { ano, mes } = partes(data);
+  return `${MESES_LONGOS[mes - 1]} de ${ano}`;
+}
+
 /** "qua, 22 out". */
 export function diaCurto(data: string): string {
   const { mes, dia } = partes(data);
