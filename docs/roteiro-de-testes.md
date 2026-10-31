@@ -6,7 +6,7 @@ Legenda: **Esperado** é o que deve acontecer. Se algo diferente acontecer, anot
 
 ## Parte A. Subir o app
 
-1. Na pasta do projeto: `npm run dev:all`. Espere a linha "Tudo no ar".
+1. Na pasta do projeto: `npm run dev`. Espere a linha "Tudo no ar".
 2. Abra http://localhost:4200.
 3. Para parar, Ctrl+C no terminal.
 
@@ -48,7 +48,7 @@ A porta é 3100 porque a API do Hora H usa a 3000. O `?schema=wa_akg` põe as ta
 
 **B3. Criar as tabelas e o usuário dele**
 
-O banco precisa estar no ar, então o `npm run dev:all` do Hora H tem de estar rodando.
+O banco precisa estar no ar, então o `npm run dev` do Hora H tem de estar rodando.
 
 ```bash
 cd ~/wa-akg
@@ -88,7 +88,7 @@ WAAKG_WEBHOOK_SECRET=o-segredo-do-B5
 WAAKG_WEBHOOK_URL=https://algo.trycloudflare.com/api/webhooks/whatsapp
 ```
 
-As quatro são obrigatórias juntas. Reinicie o `npm run dev:all`. Se o túnel mudar de endereço, atualize `WAAKG_WEBHOOK_URL` e reinicie de novo.
+As quatro são obrigatórias juntas. Reinicie o `npm run dev`. Se o túnel mudar de endereço, atualize `WAAKG_WEBHOOK_URL` e reinicie de novo.
 
 **B8. Conferir antes de abrir o app**
 

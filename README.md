@@ -22,10 +22,10 @@ Agendamento online para salões, barbearias e estúdios de beleza. Especificaç�
 Precisa de Node 20.19+ e npm. Sem Docker: o banco roda embutido.
 
 ```bash
-npm run dev:all     # tudo de uma vez: banco, API e site; Ctrl+C para parar
+npm run dev     # tudo de uma vez: banco, API e site; Ctrl+C para parar
 ```
 
-Na primeira vez o `dev:all` também faz o que falta: `npm install`, cria `apps/api/.env` com um `JWT_SECRET` aleatório e compila o pacote `shared`. Depois abra http://localhost:4200. Se uma das portas (5440, 3000, 4200) já estiver em uso, ele avisa e não sobe nada.
+Na primeira vez o `dev` também faz o que falta: `npm install`, cria `apps/api/.env` com um `JWT_SECRET` aleatório e compila o pacote `shared`. Depois abra http://localhost:4200. Se uma das portas (5440, 3000, 4200) já estiver em uso, ele avisa e não sobe nada.
 
 Para subir cada parte em seu terminal (útil para ver o log separado):
 

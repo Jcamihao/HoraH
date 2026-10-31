@@ -1,5 +1,5 @@
 // Sobe tudo para desenvolver: banco, API e site, na ordem certa, num terminal só.
-// Uso: npm run dev:all   (Ctrl+C para tudo)
+// Uso: npm run dev   (Ctrl+C para tudo)
 // Na primeira vez também instala dependências, cria apps/api/.env e compila o pacote shared.
 import { spawn, spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';

@@ -1,6 +1,6 @@
 {
   "name": "hora-h",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "private": true,
   "description": "Hora H — agendamento online para negócios de beleza",
   "workspaces": [
@@ -11,7 +11,7 @@
     "build": "npm run build -w @hora-h/shared && npm run build -w @hora-h/api && npm run build -w @hora-h/web",
     "test": "npm run test -w @hora-h/api",
     "test:web": "npm run test -w @hora-h/web",
-    "dev:all": "node scripts/dev-all.mjs",
+    "dev": "node scripts/dev.mjs",
     "dev:db": "npm run db:dev -w @hora-h/api",
     "dev:api": "npm run start:dev -w @hora-h/api",
     "dev:web": "npm run start -w @hora-h/web",
