@@ -1,6 +1,6 @@
 {
   "name": "hora-h",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "private": true,
   "description": "Hora H — agendamento online para negócios de beleza",
   "workspaces": [

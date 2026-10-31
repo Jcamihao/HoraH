@@ -35,6 +35,10 @@ npm run dev:api     # terminal 2: API em http://localhost:3000/api
 npm run dev:web     # terminal 3: app em http://localhost:4200 (proxy de /api para a API)
 ```
 
+## Roteiro de testes
+
+[docs/roteiro-de-testes.md](docs/roteiro-de-testes.md): passo a passo para testar o app inteiro, incluindo como instalar e configurar o WA-AKG e testar o WhatsApp no app.
+
 ## Testes
 
 ```bash
