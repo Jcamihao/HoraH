@@ -30,11 +30,10 @@
               }
             ],
             "styles": [
-              "@fontsource/barlow/latin-400.css",
-              "@fontsource/barlow/latin-500.css",
-              "@fontsource/barlow/latin-600.css",
-              "@fontsource/barlow-condensed/latin-600.css",
-              "@fontsource/barlow-condensed/latin-700.css",
+              "@fontsource/figtree/latin-400.css",
+              "@fontsource/figtree/latin-500.css",
+              "@fontsource/figtree/latin-600.css",
+              "@fontsource/figtree/latin-700.css",
               "src/styles.scss"
             ]
           },
@@ -92,11 +91,10 @@
               }
             ],
             "styles": [
-              "@fontsource/barlow/latin-400.css",
-              "@fontsource/barlow/latin-500.css",
-              "@fontsource/barlow/latin-600.css",
-              "@fontsource/barlow-condensed/latin-600.css",
-              "@fontsource/barlow-condensed/latin-700.css",
+              "@fontsource/figtree/latin-400.css",
+              "@fontsource/figtree/latin-500.css",
+              "@fontsource/figtree/latin-600.css",
+              "@fontsource/figtree/latin-700.css",
               "src/styles.scss"
             ],
             "karmaConfig": "karma.conf.js"
