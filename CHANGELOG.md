@@ -2,6 +2,12 @@
 
 Formato livre, mais novo primeiro. As versões seguem o `package.json` da raiz e de `apps/web`.
 
+## 0.8.4 (2026-11-04)
+
+Só o site (`apps/web`).
+
+- **Favicon e ícones do app** a partir do logo: `favicon.svg` (símbolo redondo), `favicon.ico` (16, 32 e 48 px), `favicon-32.png`, `apple-touch-icon.png` (180 px, para "Adicionar à tela de início" no iPhone), `icon-192.png`, `icon-512.png` e `icon-maskable-512.png` (para o Android recortar o ícone). Novo `manifest.webmanifest` (nome, cor do tema, ícones e `start_url` em `/painel`) e os links no `index.html`.
+
 ## 0.8.3 (2026-11-04)
 
 Só o site (`apps/web`).
