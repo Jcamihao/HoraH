@@ -1,6 +1,6 @@
 # Roteiro de testes do Hora H
 
-Para testar o app inteiro, do zero, no celular ou numa janela de navegador estreita (390px). A parte B liga o WhatsApp de verdade pelo WA-AKG.
+Para testar o app inteiro, do zero, no celular ou numa janela de navegador estreita (390px). A parte B liga o WhatsApp de verdade pelo WA-AKG. O passo a passo de instalação e configuração, incluindo produção, está no [README](../README.md#guia-completo-do-zero-até-o-app-rodando-com-whatsapp); este roteiro é para **conferir** que tudo funciona.
 
 Legenda: **Esperado** é o que deve acontecer. Se algo diferente acontecer, anote o passo e o texto da tela ou do terminal.
 
@@ -190,8 +190,23 @@ As respostas "1" e "2" só chegam ao app se o túnel do B6 estiver ativo.
 
 ## Parte E. Visual e uso geral
 1. Todas as telas em 390px: sem rolagem horizontal, botões fáceis de tocar, texto legível.
-2. Desktop em 1440px: barra lateral e coluna centrada.
+2. Desktop em 1440px: barra lateral escura à esquerda e conteúdo alinhado à esquerda.
 3. Sair da conta e entrar de novo. Esperado: volta ao painel.
+4. Modo escuro: toque no botão sol/lua no canto superior direito. Esperado: o app inteiro muda de tema, o botão troca de ícone e a escolha continua depois de recarregar a página.
+5. Títulos de página em maiúsculas nos dois temas.
+6. Bloquear horário (desligue "Dia inteiro"): os campos mostram "Qua, 4 nov" e "14:00" na fonte do app; tocar abre o seletor do aparelho. Coloque o fim antes do início. Esperado: mensagem "O fim precisa ser depois do início." e botão desabilitado.
+7. Página pública com dois aparelhos no mesmo horário: quem confirma por último vê "Esse horário não está mais disponível. Escolha outro." e volta à escolha de dia e horário.
+
+## Parte F. PWA e app no celular
+
+Depois do site em HTTPS (README, passo 8) ou, só para o PWA, em `localhost` com o build de produção.
+
+1. **Instalar como PWA.** Android (Chrome): menu ⋮ → Instalar app. iPhone (Safari): Compartilhar → Adicionar à Tela de Início. Esperado: o ícone do Hora H (símbolo redondo) na tela inicial e o app abre sem a barra do navegador.
+2. **Sem internet.** Com o app instalado e já usado uma vez, ligue o modo avião e abra. Esperado: a tela do app aparece (de entrada, se não houver sessão em memória) em vez do erro do navegador, sem quebrar.
+3. **Sessão e internet de volta.** Entre no painel, ligue o modo avião, abra o app e depois desligue o modo avião e abra de novo. Esperado: volta ao painel **sem pedir a senha**.
+4. **App nativo** (README, passo 10): rode `npm run mobile:sync` e abra no Android Studio ou no Xcode. Esperado: splash do Hora H, depois o site; a barra de status acompanha o tema (letras claras no escuro); no Android o botão voltar volta uma tela e, na primeira tela, sai do app.
+5. **Tema no app.** Alterne o botão sol/lua. Esperado: a barra de status do aparelho muda junto.
+6. **Links externos** (página de pagamento do Asaas, WhatsApp): abrem fora do app, no navegador do aparelho.
 
 ## O que este roteiro não garante
 - O texto exato do menu do bot não foi conferido na tela; os passos da D4 seguem o que o bot mostrar.
@@ -199,3 +214,4 @@ As respostas "1" e "2" só chegam ao app se o túnel do B6 estiver ativo.
 - O túnel (`cloudflared` ou `ngrok`) não foi testado neste projeto.
 - Conferido: a tela do WA-AKG abre em `http://localhost:3100` a partir do Windows e **não** abre em `http://127.0.0.1:3100`.
 - Esperados das partes C2, C3 (itens 3 a 5), C5 e C6 vêm dos testes automáticos, não de ter olhado a tela.
+- A Parte F nunca foi rodada num aparelho de verdade: o PWA foi testado só no Chromium e o app nativo só teve a camada nativa simulada no navegador. Trate falhas ali como achados.

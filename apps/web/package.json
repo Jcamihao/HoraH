@@ -1,12 +1,17 @@
 {
   "name": "@hora-h/web",
-  "version": "0.8.0",
+  "version": "0.10.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --watch=false --browsers=ChromeHeadlessCI"
+    "test": "ng test --watch=false --browsers=ChromeHeadlessCI",
+    "cap": "cap",
+    "mobile:sync": "ng build && cap sync",
+    "mobile:android": "cap open android",
+    "mobile:ios": "cap open ios",
+    "mobile:assets": "capacitor-assets generate --android --ios --iconBackgroundColor '#111111' --iconBackgroundColorDark '#111111' --splashBackgroundColor '#fafafa' --splashBackgroundColorDark '#0a0908'"
   },
   "prettier": {
     "printWidth": 100,
@@ -28,7 +33,14 @@
     "@angular/forms": "^20.3.0",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
-    "@fontsource/figtree": "^5.3.0",
+    "@angular/service-worker": "20.3.34",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/keyboard": "^8.0.6",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4",
+    "@fontsource/caveat": "^5.3.0",
+    "@fontsource/poppins": "^5.3.0",
     "@hora-h/shared": "*",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
@@ -37,6 +49,10 @@
     "@angular/build": "^20.3.40",
     "@angular/cli": "^20.3.40",
     "@angular/compiler-cli": "^20.3.0",
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/ios": "^8.6.0",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",

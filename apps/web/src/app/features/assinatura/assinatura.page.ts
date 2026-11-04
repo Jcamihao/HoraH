@@ -44,11 +44,17 @@ const COBRANCA: Record<string, { rotulo: string; classe: string }> = {
           <p class="banner" style="margin-top: 16px">A cobrança ainda não está configurada neste ambiente. Seu teste e a agenda funcionam normalmente.</p>
         }
 
+        <div class="cols cols--2"><div class="col">
         <p class="group__header">Seu plano</p>
         <div class="group">
           <div class="row"><span class="row__main"><span class="row__title">Plano</span></span><span class="row__detail">{{ plano().rotulo }}</span></div>
           <div class="row"><span class="row__main"><span class="row__title">Valor</span></span><span class="row__detail">{{ reais(a.valorCentavos) }} por mês</span></div>
           <div class="row"><span class="row__main"><span class="row__title">Profissionais ativos</span></span><span class="row__detail">{{ a.profissionaisAtivos }}</span></div>
+        </div>
+        <div class="planos" aria-label="Faixas de preço">
+          <div class="plano" [class.plano--on]="a.faixa === 1"><small>1 profissional</small><strong>R$ 29,90</strong></div>
+          <div class="plano" [class.plano--on]="a.faixa === 2"><small>2 a 5 profissionais</small><strong>R$ 59,90</strong></div>
+          <div class="plano" [class.plano--on]="a.faixa === 3"><small>6 ou mais</small><strong>R$ 99,90</strong></div>
         </div>
         <p class="group__footer">O valor acompanha o número de profissionais ativos: 1 por R$ 29,90, de 2 a 5 por R$ 59,90, 6 ou mais por R$ 99,90. Mudanças valem a partir da próxima cobrança.</p>
 
@@ -99,6 +105,7 @@ const COBRANCA: Record<string, { rotulo: string; classe: string }> = {
           <button type="button" class="btn btn--block" style="margin-top: 12px" [disabled]="trabalhando()" (click)="atualizar()"><hh-icon nome="clock" /> Já paguei: atualizar situação</button>
         }
 
+        </div><div class="col">
         @if (a.cobrancas.length) {
           <p class="group__header">Cobranças</p>
           <div class="group">
@@ -117,6 +124,7 @@ const COBRANCA: Record<string, { rotulo: string; classe: string }> = {
             <p class="hint" style="margin-top: 8px">Não haverá nova cobrança. O que você já pagou vale até o fim do período e seus dados continuam guardados.</p>
           </div>
         }
+        </div></div>
       }
     </main>
   `,

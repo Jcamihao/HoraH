@@ -1,59 +1,39 @@
-# Web
+# Hora H, site (Angular)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.40.
+Painel do salão, página pública de agendamento e telas de entrada. Angular 20 com Signals, componentes standalone e sem Zone.js. Faz parte do monorepo; o passo a passo completo de instalação está no [README da raiz](../../README.md#guia-completo-do-zero-até-o-app-rodando-com-whatsapp).
 
-## Development server
+## Comandos
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Na raiz do repositório:
 
 ```bash
-ng generate component component-name
+npm run dev:web      # http://localhost:4200 (proxy de /api para http://localhost:3000)
+npm run build -w @hora-h/web
+CHROME_BIN=/caminho/do/chrome npm run test:web   # 54 testes unitários, Chrome headless
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Ou, dentro de `apps/web`: `npx ng serve`, `npx ng build`, `npx ng test --watch=false --browsers=ChromeHeadlessCI`.
 
-```bash
-ng generate --help
+App para celular (PWA e Capacitor): `npm run mobile:sync`, `mobile:android` e `mobile:ios` na raiz, com `HORAH_URL` definido. Detalhes no [Passo 10 do README](../../README.md#passo-10-app-no-celular-pwa-e-capacitor).
+
+O pacote `@hora-h/shared` precisa estar compilado antes (`npm run build -w @hora-h/shared`); o `npm run dev` da raiz já faz isso.
+
+## Estrutura
+
+```
+src/
+  styles/            tokens (claro e escuro) e estilos globais: _tokens, _base, _layout, _controls, _lists, _agenda, _publico
+  app/
+    core/            API, sessão, tema, guards, datas, regras da agenda
+    shared/          componentes usados em várias telas (navbar, ícones, horário, campos de dia e hora, botão de tema)
+    features/        uma pasta por área: auth, onboarding, inicio, agenda, profissionais, servicos,
+                     configuracoes, assinatura, whatsapp, notificacoes, publico, shell
 ```
 
-## Building
+- **Rotas** em `src/app/app.routes.ts`: `/entrar`, `/cadastrar`, `/convite/:token`, `/painel/...` (dono e profissional), `/agendamento/:token` e `/:slug` (página pública).
+- **Sessão:** o access token fica só na memória; o refresh token é um cookie `httpOnly`. O interceptor renova sozinho.
+- **Tema:** `TemaStore` grava `data-tema="claro|escuro"` no `<html>` e a escolha em `localStorage` (`hh_tema`). Um script no `index.html` aplica o tema antes do Angular subir.
 
-To build the project run:
+## Design
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Regras e valores em [DESIGN.md](DESIGN.md); contexto de produto em [PRODUCT.md](PRODUCT.md). Para mudar cores, fontes ou raios, edite `src/styles/_tokens.scss`.

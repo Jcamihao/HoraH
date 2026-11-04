@@ -1,13 +1,14 @@
-// Botão: 56 de altura, canto 14, sem borda. Um laranja principal por tela.
+// Botão: pílula de 48px, contorno preto. O principal da tela é laranja e, em largura total, leva a seta redonda.
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 56px;
-  padding: 0 20px;
-  border-radius: var(--r-ctl);
-  background: var(--sage-250);
+  min-height: 48px;
+  padding: 0 22px;
+  border: 1.5px solid var(--ink-900);
+  border-radius: 999px;
+  background: transparent;
   color: var(--ink-900);
   font-size: var(--fs-body);
   font-weight: 600;
@@ -15,7 +16,13 @@
   text-align: center;
   transition:
     background-color var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out),
     transform var(--t-fast) var(--ease-out);
+
+  &:hover:not(:disabled) {
+    background: var(--panel);
+    color: #fff;
+  }
 
   &:active:not(:disabled) {
     transform: scale(0.98);
@@ -28,79 +35,138 @@
   }
 }
 
-// Laranja de marca com texto de tinta e 18px em negrito: 4,1:1, o texto creme do pacote dá só 3,5:1
 .btn--filled {
+  border-color: var(--orange-500);
   background: var(--orange-500);
-  color: var(--ink-900);
-  font-size: 1.125rem;
-  font-weight: 700;
+  color: #fff;
 
-  &:active:not(:disabled) {
+  &:hover:not(:disabled) {
+    border-color: var(--tint-press);
     background: var(--tint-press);
   }
 }
 
 .btn--dark {
-  background: var(--ink-900);
-  color: var(--cream-50);
+  border-color: var(--panel);
+  background: var(--panel);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: var(--panel-hover);
+    border-color: var(--panel-hover);
+    color: #fff;
+  }
 }
 
 .btn--plain {
   min-height: var(--tap);
   padding: 0 8px;
+  border-color: transparent;
   background: transparent;
   color: var(--orange-ink);
   text-decoration: underline;
   text-underline-offset: 0.2em;
+
+  &:hover:not(:disabled) {
+    background: transparent;
+    color: var(--ink-900);
+  }
 }
 
 .btn--bad {
-  background: var(--danger-wash);
-  color: var(--danger);
+  border-color: var(--orange-500);
+  color: var(--orange-ink);
+
+  &:hover:not(:disabled) {
+    border-color: var(--orange-500);
+    background: var(--orange-500);
+    color: #fff;
+  }
 }
 
 .btn--block {
   width: 100%;
 }
 
+// Botão principal de largura total: texto à esquerda, seta em círculo à direita
+.btn--filled.btn--block,
+.btn--dark.btn--block {
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 0 8px 0 24px;
+  font-size: 1rem;
+  text-align: left;
+
+  &::after {
+    content: '→';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 22%);
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+}
+
 .btn--small {
   min-height: 36px;
-  padding: 0 14px;
-  border-radius: var(--r-sm);
+  padding: 0 16px;
   font-size: var(--fs-small);
 }
 
+// Campo: caixa branca de cantos grandes, com borda fina
 .input {
   width: 100%;
-  min-height: var(--tap);
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 1px solid var(--sage-250);
+  border-radius: var(--r-md);
+  background: var(--surface);
   appearance: none;
   outline: none;
+  transition: border-color var(--t-fast) var(--ease-out);
 
   &::placeholder {
-    color: #77786a;
+    color: #a8a29e;
     opacity: 1;
+  }
+
+  &:focus {
+    border-color: var(--orange-500);
   }
 }
 
 select.input {
-  padding-right: 24px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.5l4.5 4.5 4.5-4.5' fill='none' stroke='%23262721' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.5l4.5 4.5 4.5-4.5' fill='none' stroke='%23111111' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 2px center;
+  background-position: right 18px center;
 }
 
 .input--right {
   text-align: right;
 }
 
+// Hora: pastilha cinza clara, número em negrito
+.input--time::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
 .input--time {
   width: auto;
-  min-width: 6.5rem;
+  min-width: 5rem;
+  min-height: 44px;
+  padding: 0 14px;
+  border-color: transparent;
+  border-radius: var(--r-sm);
+  background: var(--sage-50);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 
 .input-money {
@@ -112,8 +178,10 @@ select.input {
 }
 
 .input-money .input {
-  width: 7rem;
+  width: 7.5rem;
+  min-height: 44px;
   text-align: right;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
@@ -136,28 +204,112 @@ select.input {
 
 .banner {
   max-width: none;
-  padding: 12px var(--gutter);
-  border-radius: var(--r-group);
-  background: var(--cream-50);
+  padding: 14px var(--gutter);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
   font-size: var(--fs-small);
 }
 
-.banner--bad {
-  background: var(--danger-wash);
-  color: var(--danger);
-}
-
+.banner--bad,
 .banner--wait {
   background: var(--orange-100);
+  box-shadow: none;
   color: var(--orange-ink);
 }
 
 .banner--ok {
-  background: var(--ink-900);
-  color: var(--cream-50);
+  background: var(--panel);
+  box-shadow: none;
+  color: #fff;
 }
 
 // Ação sem volta: afastada das outras
 .danger-zone {
   margin-top: 40px;
+}
+
+// Campos de dia e hora: o texto é nosso (Poppins, 24h, em português) e o seletor nativo fica transparente por cima
+.campo-nativo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 1px solid var(--sage-250);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  font-family: var(--font);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  transition: border-color var(--t-fast) var(--ease-out);
+
+  &:focus-within {
+    border-color: var(--orange-500);
+  }
+}
+
+.campo-nativo__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.campo-nativo__input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.campo-nativo--hora {
+  flex: none;
+  width: auto;
+  min-width: 6rem;
+  justify-content: center;
+}
+
+.campo-nativo--chip {
+  min-width: 5rem;
+  min-height: 44px;
+  padding: 0 14px;
+  border-color: transparent;
+  border-radius: var(--r-sm);
+  background: var(--sage-50);
+  font-weight: 600;
+}
+
+.campo-par {
+  display: flex;
+  gap: 10px;
+}
+
+hh-campo-data,
+hh-campo-hora {
+  display: block;
+}
+
+.campo-par hh-campo-data {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.campo-par hh-campo-hora {
+  flex: none;
+}
+
+.row--field.is-invalid .campo-nativo {
+  border-color: var(--danger);
+  background: var(--danger-wash);
 }

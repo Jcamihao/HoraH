@@ -1,31 +1,55 @@
-// Página pública do salão (cliente final, celular primeiro). Mesma identidade do painel (Meetgen Design System):
-// topo escuro com o nome do salão como maior elemento da tela, folha sálvia com canto grande por baixo.
-// Sem sombras: a separação é degrau de tom e espaço.
+// Página pública do salão (cliente final, celular primeiro). Mesma identidade do painel: faixa preta com o nome do salão,
+// formas redondas laranja e verde, cartões brancos. No desktop a faixa vira um painel lateral.
 body:has(.pub) {
-  background: #dadbbb;
+  background: var(--bg);
 }
 
 .pub {
-  --p-bg: #dadbbb;
-  --p-surface: #fbfbea;
-  --p-soft: #cfd0b4;
-  --p-soft-press: #c3c4a9;
-  --p-ink: #262721;
-  --p-ink-2: #4a4b41;
-  --p-hero: #262721;
-  --p-on-hero: #fbfbea;
-  --p-on-hero-muted: #c9caba;
-  --p-accent: #e86a30;
-  --p-accent-press: #d45a22;
-  --p-on-accent: #262721;
-  --p-accent-text: #9a3b0c;
-  --p-bad: #a8281c;
-  --p-bad-bg: #f4d3cc;
+  --p-bg: #fafafa;
+  --p-surface: #ffffff;
+  --p-soft: #f5f4f1;
+  --p-soft-press: #ece9e4;
+  --p-ink: #111111;
+  --p-ink-2: #57534e;
+  --p-hero: #111111;
+  --p-on-hero: #ffffff;
+  --p-on-hero-muted: #d6d3cd;
+  --p-accent: #e84a27;
+  --p-accent-press: #cf3f1e;
+  --p-on-accent: #ffffff;
+  --p-accent-text: #c53a1a;
+  --p-bad: #c53a1a;
+  --p-bad-bg: #fdeee6;
 
   min-height: 100dvh;
   background: var(--p-bg);
   color: var(--p-ink);
   font-family: var(--font);
+}
+
+@mixin pub-escuro {
+  .pub {
+    --p-bg: #0a0908;
+    --p-surface: #181614;
+    --p-soft: #24201d;
+    --p-soft-press: #2a2725;
+    --p-ink: #ffffff;
+    --p-ink-2: #a8a29e;
+    --p-hero: #24201d;
+    --p-accent-text: #ff6b47;
+    --p-bad: #ff8a6b;
+    --p-bad-bg: #3a1a12;
+  }
+}
+
+:root[data-tema='escuro'] {
+  @include pub-escuro;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema]) {
+    @include pub-escuro;
+  }
 }
 
 .pub-wrap {
@@ -34,28 +58,51 @@ body:has(.pub) {
   padding-inline: 20px;
 }
 
-// Campo de cor com o nome do salão
+// Faixa preta com o nome do salão; no celular é um cartão de cantos grandes, no desktop um painel lateral
 .pub-hero {
   position: relative;
+  overflow: hidden;
+  margin: calc(env(safe-area-inset-top) + 12px) 12px 0;
+  padding: 28px 0 32px;
+  border-radius: 32px;
   background: var(--p-hero);
   color: var(--p-on-hero);
-  padding: calc(env(safe-area-inset-top) + 20px) 0 60px;
 }
 
-// Folha sálvia que sobe sobre o topo escuro
+// Formas redondas da identidade: uma laranja grande e uma verde menor
+.pub-hero::before,
 .pub-hero::after {
   content: '';
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 32px;
-  background: var(--p-bg);
-  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  border-radius: 50%;
+  pointer-events: none;
 }
 
-.pub-hero--grande {
-  padding-bottom: 72px;
+.pub-hero::before {
+  top: -56px;
+  right: -48px;
+  width: 190px;
+  height: 190px;
+  background: var(--orange-500);
+}
+
+.pub-hero::after {
+  top: 36px;
+  right: 36px;
+  width: 52px;
+  height: 52px;
+  background: var(--green-500);
+}
+
+.pub-hero .pub-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.pub-tag {
+  display: block;
+  font: 700 1.5rem / 1 var(--font-hand);
+  color: var(--orange-bright);
 }
 
 .pub-back {
@@ -66,41 +113,39 @@ body:has(.pub) {
   margin-left: -8px;
   padding-right: 12px;
   color: var(--p-on-hero);
-  font-size: var(--fs-body);
-  font-weight: 500;
+  font-size: var(--fs-small);
+  font-weight: 600;
 }
 
 .pub-nome {
-  margin-top: 28px;
-  font-size: clamp(3rem, 15vw, 5.25rem);
-  font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.015em;
+  margin-top: 8px;
+  font-size: clamp(2.25rem, 11vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
 
 .pub-nome--medio {
-  font-size: clamp(2.5rem, 12vw, 4rem);
+  font-size: clamp(2rem, 9vw, 3rem);
 }
 
 .pub-nome--longo {
-  font-size: clamp(2rem, 9vw, 3rem);
-  line-height: 1.02;
+  font-size: clamp(1.625rem, 7vw, 2.25rem);
 }
 
 .pub-hero--compacto .pub-nome {
-  margin-top: 4px;
   font-size: 1.375rem;
-  letter-spacing: -0.01em;
-  line-height: 1.15;
 }
 
 .pub-lead {
-  margin-top: 16px;
-  max-width: 28ch;
-  font-size: 1.1875rem;
-  line-height: 1.35;
+  margin-top: 12px;
+  max-width: 32ch;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--p-on-hero-muted);
 }
 
 .pub-main {
@@ -121,10 +166,10 @@ body:has(.pub) {
 
 .pub-q {
   margin-bottom: 20px;
-  font-size: clamp(1.75rem, 8vw, 2.125rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0;
+  font-size: clamp(1.5rem, 6vw, 1.875rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
@@ -140,19 +185,58 @@ body:has(.pub) {
   align-items: center;
   gap: 16px;
   width: 100%;
-  min-height: 76px;
-  margin-bottom: 8px;
-  padding: 14px 20px;
+  min-height: 72px;
+  margin-bottom: 10px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
   background: var(--p-surface);
+  box-shadow: var(--shadow-card);
   color: inherit;
   text-align: left;
   text-decoration: none;
   transition: background-color 0.15s var(--ease-out), transform 0.15s var(--ease-out);
 
   &:active {
-    background: var(--p-soft);
     transform: scale(0.99);
   }
+}
+
+// Seta preta em círculo, no fim da escolha
+.pub-choice > hh-icon {
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--p-ink);
+  color: var(--p-bg);
+}
+
+.pub-choice > hh-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pub-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--orange-500);
+  color: #fff;
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+
+.pub-avatar--1 {
+  background: var(--green-500);
+}
+
+.pub-avatar--2 {
+  background: #78716c;
 }
 
 .pub-choice__main {
@@ -162,8 +246,8 @@ body:has(.pub) {
 
 .pub-choice__title {
   display: block;
-  font-size: 1.3125rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   line-height: 1.2;
   overflow-wrap: anywhere;
 }
@@ -177,8 +261,8 @@ body:has(.pub) {
 
 .pub-choice__detail {
   flex: none;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
@@ -190,8 +274,9 @@ body:has(.pub) {
   gap: 16px;
   margin-bottom: 24px;
   padding: 14px 20px;
-  background: var(--p-soft);
-  font-size: var(--fs-body);
+  border-radius: var(--r-md);
+  background: var(--p-soft-press);
+  font-size: var(--fs-small);
 }
 
 .pub-recap strong {
@@ -212,7 +297,9 @@ body:has(.pub) {
 .pub-cal {
   margin-bottom: 24px;
   padding: 20px 8px 12px;
+  border-radius: var(--r-lg);
   background: var(--p-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .pub-cal__topo {
@@ -268,15 +355,16 @@ body:has(.pub) {
   width: 100%;
   max-width: var(--tap);
   justify-self: center;
-  border-radius: var(--r-ctl);
-  font-size: 1.0625rem;
+  border-radius: 50%;
+  font-size: var(--fs-body);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   transition: background-color 0.15s var(--ease-out);
 }
 
 .pub-dia.is-livre {
-  background: var(--p-soft);
+  background: var(--orange-100);
+  color: var(--orange-ink);
 
   &:active {
     background: var(--p-soft-press);
@@ -314,10 +402,11 @@ body:has(.pub) {
 }
 
 .pub-horario {
-  min-height: 52px;
-  border-radius: var(--r-ctl);
+  min-height: 48px;
+  border: 1px solid var(--sage-250);
+  border-radius: 999px;
   background: var(--p-surface);
-  font-size: 1.125rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   transition: background-color 0.15s var(--ease-out);
@@ -335,39 +424,38 @@ body:has(.pub) {
 // Campos
 .pub-campo {
   display: block;
-  margin-bottom: 8px;
-  padding: 12px 20px 10px;
-  background: var(--p-surface);
+  margin-bottom: 14px;
   cursor: text;
-
-  &:focus-within {
-    outline: 3px solid var(--p-accent);
-    outline-offset: -3px;
-  }
 }
 
-.pub-campo.is-invalido {
+.pub-campo.is-invalido input {
+  border-color: var(--p-bad);
   background: var(--p-bad-bg);
 }
 
 .pub-campo__rotulo {
   display: block;
+  margin-bottom: 6px;
   font-size: var(--fs-small);
-  color: var(--p-ink-2);
+  font-weight: 600;
 }
 
 .pub-campo input {
   width: 100%;
-  min-height: 36px;
-  border: 0;
-  background: transparent;
-  font-size: 1.375rem;
-  font-weight: 600;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 1px solid var(--sage-250);
+  border-radius: var(--r-md);
+  background: var(--p-surface);
+  font-size: var(--fs-body);
   outline: none;
 
   &::placeholder {
-    color: #77776f;
-    font-weight: 400;
+    color: #a8a29e;
+  }
+
+  &:focus {
+    border-color: var(--p-accent);
   }
 }
 
@@ -398,11 +486,11 @@ body:has(.pub) {
   width: 100%;
   min-height: 56px;
   padding: 0 28px;
-  border-radius: var(--r-ctl);
+  border-radius: 999px;
   background: var(--p-accent);
   color: var(--p-on-accent);
-  font-size: 1.0625rem;
-  font-weight: 700;
+  font-size: var(--fs-body);
+  font-weight: 600;
   text-align: center;
   text-decoration: none;
   transition: background-color 0.15s var(--ease-out), transform 0.15s var(--ease-out);
@@ -419,7 +507,8 @@ body:has(.pub) {
 }
 
 .pub-btn--suave {
-  background: var(--p-soft);
+  border: 1.5px solid var(--p-ink);
+  background: transparent;
   color: var(--p-ink);
 
   &:active:not(:disabled) {
@@ -428,11 +517,12 @@ body:has(.pub) {
 }
 
 .pub-btn--perigo {
-  background: var(--p-bad-bg);
+  border: 1.5px solid var(--p-accent);
+  background: transparent;
   color: var(--p-bad);
 
   &:active:not(:disabled) {
-    background: #f6c8c1;
+    background: var(--p-bad-bg);
   }
 }
 
@@ -451,16 +541,17 @@ body:has(.pub) {
   right: 0;
   bottom: 0;
   padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
-  background: var(--p-bg);
+  background: linear-gradient(to bottom, transparent, var(--p-bg) 30%);
 }
 
 // Avisos
 .pub-aviso {
   margin-bottom: 16px;
   padding: 14px 20px;
-  background: var(--p-soft);
-  font-size: var(--fs-body);
-  line-height: 1.35;
+  border-radius: var(--r-md);
+  background: var(--p-soft-press);
+  font-size: var(--fs-small);
+  line-height: 1.45;
 }
 
 .pub-aviso--erro {
@@ -484,9 +575,11 @@ body:has(.pub) {
 
 // Confirmação: o dia e a hora são a imagem da tela
 .pub-quando {
-  margin-bottom: 24px;
-  padding: 24px 20px;
-  background: var(--p-surface);
+  margin-bottom: 20px;
+  padding: 22px 20px;
+  border-radius: var(--r-lg);
+  background: var(--p-hero);
+  color: var(--p-on-hero);
 }
 
 .pub-quando__dia {
@@ -503,10 +596,10 @@ body:has(.pub) {
 .pub-quando__hora {
   display: block;
   margin-block: 4px 12px;
-  font-size: clamp(3.5rem, 20vw, 5rem);
-  font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.015em;
+  font-size: clamp(2rem, 9vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 
@@ -531,6 +624,7 @@ body:has(.pub) {
 .pub-skeleton {
   height: 76px;
   margin-bottom: 8px;
+  border-radius: var(--r-lg);
   background: #ecece5;
   animation: pub-pulso 0.9s ease-in-out infinite alternate;
 }
@@ -548,5 +642,76 @@ body:has(.pub) {
 
   .pub-skeleton {
     animation: none;
+  }
+}
+
+@media (min-width: 960px) {
+  .pub {
+    display: grid;
+    grid-template-columns: 46% minmax(0, 1fr);
+  }
+
+  .pub-hero {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100dvh;
+    margin: 0;
+    padding: 56px;
+    border-radius: 0 48px 48px 0;
+  }
+
+  .pub-hero::before {
+    top: -80px;
+    right: -60px;
+    width: 300px;
+    height: 300px;
+  }
+
+  .pub-hero::after {
+    top: 120px;
+    right: 150px;
+    width: 76px;
+    height: 76px;
+  }
+
+  .pub-hero .pub-wrap {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pub-hero--grande,
+  .pub-hero--compacto {
+    padding-bottom: 56px;
+  }
+
+  .pub-hero--compacto .pub-nome {
+    font-size: clamp(2.75rem, 5vw, 4.5rem);
+  }
+
+  .pub-nome {
+    font-size: clamp(2.75rem, 5vw, 4.5rem);
+  }
+
+  .pub-tag {
+    font-size: 2rem;
+  }
+
+  .pub-lead {
+    font-size: var(--fs-body);
+  }
+
+  .pub-wrap {
+    margin-inline: 0;
+    padding-inline: 56px;
+  }
+
+  .pub-back {
+    position: absolute;
+    top: 40px;
+    left: 48px;
   }
 }

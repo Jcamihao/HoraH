@@ -1,3 +1,5 @@
+import { AuthLadoComponent } from '../../shared/auth-lado.component';
+import { LogoComponent } from '../../shared/logo.component';
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -8,15 +10,19 @@ import { mensagemDeErro } from '../../core/errors';
 
 @Component({
   selector: 'app-convite',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AuthLadoComponent, LogoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <main class="page" style="padding-top: 72px">
+    <main class="auth">
+      <hh-auth-lado class="auth__lado" />
+      <div class="auth__form">
+        <span class="brand auth__marca"><hh-logo [altura]="25" /></span>
       @if (previa(); as p) {
-        <h1 class="large-title">Oi, {{ primeiroNome(p.profissional) }}</h1>
-        <p class="large-sub">{{ p.estabelecimento }} convidou você para a agenda. Crie sua senha para entrar.</p>
+        <h1 class="large-title auth__oi">Oi, {{ primeiroNome(p.profissional) }}</h1>
+        <p class="auth__convida">{{ p.estabelecimento }} convidou você para a agenda.</p>
+        <p class="large-sub">Crie sua senha para entrar.</p>
 
-        <form class="stack" style="margin-top: 24px" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+        <form class="stack" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
           <div class="group">
             <div class="row row--field" [class.is-invalid]="invalidoCampo('email')">
               <label for="email">E-mail</label>
@@ -43,6 +49,7 @@ import { mensagemDeErro } from '../../core/errors';
         <h1 class="large-title">Convite</h1>
         <div class="skeleton" style="margin-top: 24px" aria-busy="true"></div>
       }
+      </div>
     </main>
   `,
 })

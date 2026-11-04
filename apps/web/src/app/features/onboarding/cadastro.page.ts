@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import type { EstabelecimentoDto, FaixaHorario, ProfissionalDto, ServicoDto } from '@hora-h/shared';
 import { Api } from '../../core/api';
 import { AuthStore } from '../../core/auth.store';
@@ -10,6 +10,7 @@ import { EstabelecimentoStore } from '../../core/estabelecimento.store';
 import { DURACOES, SemanaCampos, faixasParaSemana, formatarDuracao, semanaPadrao, semanaParaFaixas } from '../../core/horarios';
 import { HorarioEditorComponent } from '../../shared/horario-editor.component';
 import { IconComponent } from '../../shared/icon.component';
+import { LogoComponent } from '../../shared/logo.component';
 import { NavbarComponent } from '../../shared/navbar.component';
 import { PrecoCampoComponent } from '../../shared/preco-campo.component';
 
@@ -44,18 +45,35 @@ type Rascunho = Record<string, Record<string, Item>>;
 
 @Component({
   selector: 'app-cadastro',
-  imports: [ReactiveFormsModule, HorarioEditorComponent, IconComponent, NavbarComponent, PrecoCampoComponent],
+  imports: [ReactiveFormsModule, RouterLink, HorarioEditorComponent, IconComponent, LogoComponent, NavbarComponent, PrecoCampoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <hh-navbar [voltar]="indice() > 0 ? ['/painel/cadastro', etapas[indice() - 1].id] : null" [rotulo]="indice() > 0 ? etapas[indice() - 1].nome : ''" [titulo]="etapa().titulo">
-      Passo {{ indice() + 1 }} de {{ etapas.length }}
-    </hh-navbar>
 
-    <main class="page page--dock">
+    <div class="onb">
+    <aside class="onb-lado" aria-label="Passos do cadastro">
+      <span class="brand"><hh-logo [altura]="28" /></span>
+      <p class="kicker">Cadastro do salão</p>
+      <ol>
+        @for (e of etapas; track e.id; let i = $index) {
+          <li [class.onb-lado__atual]="i === indice()" [class.onb-lado__feito]="i < indice()">
+            @if (i < indice()) {
+              <a [routerLink]="['/painel/cadastro', e.id]"><span class="onb-lado__n">{{ i + 1 }}</span>{{ e.nome }}</a>
+            } @else {
+              <span class="onb-lado__item" [attr.aria-current]="i === indice() ? 'step' : null"><span class="onb-lado__n">{{ i + 1 }}</span>{{ e.nome }}</span>
+            }
+          </li>
+        }
+      </ol>
+    </aside>
+    <div class="onb__corpo">
+    <hh-navbar [voltar]="indice() > 0 ? ['/painel/cadastro', etapas[indice() - 1].id] : null" [rotulo]="indice() > 0 ? etapas[indice() - 1].nome : ''" [titulo]="etapa().titulo" />
+
+    <main class="page page--dock page--narrow">
+      <p class="progress-label">Etapa {{ indice() + 1 }} de {{ etapas.length }}</p>
       <div class="progress" role="progressbar" [attr.aria-valuenow]="indice() + 1" aria-valuemin="1" [attr.aria-valuemax]="etapas.length" [attr.aria-label]="'Passo ' + (indice() + 1) + ' de ' + etapas.length + ': ' + etapa().nome">
-        <i [style.width.%]="((indice() + 1) / etapas.length) * 100"></i>
+        @for (e of etapas; track e.id; let i = $index) { <i [class.on]="i <= indice()"></i> }
       </div>
-      <h1 class="large-title" style="margin-top: 16px">{{ etapa().titulo }}</h1>
+      <h1 class="large-title">{{ etapa().titulo }}</h1>
       <p class="large-sub">{{ etapa().sub }}</p>
 
       @if (carregando()) {
@@ -180,6 +198,8 @@ type Rascunho = Record<string, Record<string, Item>>;
           {{ salvando() ? 'Salvando…' : indice() === etapas.length - 1 ? 'Concluir cadastro' : 'Salvar e continuar' }}
         </button>
       </div>
+    </div>
+    </div>
     </div>
   `,
 })

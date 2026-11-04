@@ -7,12 +7,13 @@ import { AuthStore } from '../../core/auth.store';
 import { hojeNoFuso, somarDias } from '../../core/datas';
 import { mensagemDeErro } from '../../core/errors';
 import { EstabelecimentoStore } from '../../core/estabelecimento.store';
+import { CampoDataComponent, CampoHoraComponent } from '../../shared/campo-nativo.component';
 import { IconComponent } from '../../shared/icon.component';
 import { NavbarComponent } from '../../shared/navbar.component';
 
 @Component({
   selector: 'app-bloqueio',
-  imports: [IconComponent, NavbarComponent],
+  imports: [IconComponent, NavbarComponent, CampoDataComponent, CampoHoraComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <hh-navbar voltar="/painel/agenda" rotulo="Agenda" titulo="Bloquear horário" />
@@ -24,6 +25,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
       @if (carregando()) {
         <div class="skeleton" style="margin-top: 24px" aria-busy="true"></div>
       } @else {
+        <div class="cols cols--3"><div class="col">
         <p class="group__header">Quem</p>
         <div class="group">
           @if (equipe().length > 1) {
@@ -38,6 +40,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           }
         </div>
 
+        </div><div class="col">
         <p class="group__header">Quando</p>
         <div class="group">
           <div class="row">
@@ -46,16 +49,22 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </div>
           <div class="row row--field">
             <label for="de">De</label>
-            <input id="de" class="input" type="date" [value]="de()" [min]="hoje()" (change)="mudarDe($any($event.target).value)" />
-            @if (!diaInteiro()) { <input class="input input--time" type="time" aria-label="Hora de início" step="900" [value]="horaDe()" (change)="horaDe.set($any($event.target).value)" /> }
+            <div class="campo-par">
+              <hh-campo-data inputId="de" [valor]="de()" [min]="hoje()" (mudou)="mudarDe($event)" />
+              @if (!diaInteiro()) { <hh-campo-hora rotulo="Hora de início" [valor]="horaDe()" (mudou)="horaDe.set($event)" /> }
+            </div>
           </div>
-          <div class="row row--field">
+          <div class="row row--field" [class.is-invalid]="periodoInvertido()">
             <label for="ate">Até</label>
-            <input id="ate" class="input" type="date" [value]="ate()" [min]="de()" (change)="ate.set($any($event.target).value)" />
-            @if (!diaInteiro()) { <input class="input input--time" type="time" aria-label="Hora de fim" step="900" [value]="horaAte()" (change)="horaAte.set($any($event.target).value)" /> }
+            <div class="campo-par">
+              <hh-campo-data inputId="ate" [valor]="ate()" [min]="de()" (mudou)="ate.set($event)" />
+              @if (!diaInteiro()) { <hh-campo-hora rotulo="Hora de fim" [valor]="horaAte()" (mudou)="horaAte.set($event)" /> }
+            </div>
           </div>
+          @if (periodoInvertido()) { <p class="row error" role="alert">O fim precisa ser depois do início.</p> }
         </div>
 
+        </div><div class="col">
         <p class="group__header">Motivo (opcional)</p>
         <div class="group">
           <div class="row row--field">
@@ -64,6 +73,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </div>
         </div>
         <p class="group__footer">Quem já tem horário marcado nesse período continua marcado. Você escolhe o que fazer com cada um na agenda.</p>
+        </div></div>
       }
     </main>
     <div class="dock">
@@ -93,6 +103,14 @@ export class BloqueioPage {
   protected readonly motivo = signal('');
 
   protected readonly hoje = computed(() => hojeNoFuso(this.salaoStore.dados()?.fusoHorario ?? 'America/Sao_Paulo'));
+  /** Datas e horas já preenchidas, mas o fim não vem depois do início: mostra o motivo em vez de só travar o botão. */
+  protected readonly periodoInvertido = computed(() => {
+    if (!this.de() || !this.ate()) return false;
+    if (this.ate() < this.de()) return true;
+    if (this.diaInteiro() || !this.horaDe() || !this.horaAte()) return false;
+    return `${this.ate()}T${this.horaAte()}` <= `${this.de()}T${this.horaDe()}`;
+  });
+
   protected readonly valido = computed(() => {
     if (!this.profId() || !this.de() || !this.ate()) return false;
     if (this.ate() < this.de()) return false;

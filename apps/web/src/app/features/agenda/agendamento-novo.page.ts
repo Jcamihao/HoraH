@@ -10,12 +10,13 @@ import { EstabelecimentoStore } from '../../core/estabelecimento.store';
 import { formatarDuracao } from '../../core/horarios';
 import { formatarReais } from '../../core/money';
 import { mascaraWhatsapp, whatsappValido } from '../../core/whatsapp';
+import { CampoDataComponent } from '../../shared/campo-nativo.component';
 import { IconComponent } from '../../shared/icon.component';
 import { NavbarComponent } from '../../shared/navbar.component';
 
 @Component({
   selector: 'app-agendamento-novo',
-  imports: [IconComponent, NavbarComponent],
+  imports: [IconComponent, NavbarComponent, CampoDataComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <hh-navbar voltar="/painel/agenda" rotulo="Agenda" titulo="Novo agendamento" />
@@ -29,6 +30,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
       } @else if (!profissionais().length) {
         <div class="empty"><h2>Nenhum profissional com serviços</h2><p>Cadastre o serviço e o preço de pelo menos um profissional para marcar horários.</p></div>
       } @else {
+        <div class="cols cols--3"><div class="col">
         <p class="group__header">Atendimento</p>
         <div class="group">
           @if (profissionais().length > 1) {
@@ -47,10 +49,11 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </div>
           <div class="row row--field">
             <label for="dia">Dia</label>
-            <input id="dia" class="input" type="date" [value]="data()" [min]="hoje()" (change)="data.set($any($event.target).value); inicio.set('')" />
+            <hh-campo-data inputId="dia" [valor]="data()" [min]="hoje()" (mudou)="data.set($event); inicio.set('')" />
           </div>
         </div>
 
+        </div><div class="col">
         <p class="group__header">Horário</p>
         <div class="group">
           @if (buscando()) {
@@ -66,6 +69,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           }
         </div>
 
+        </div><div class="col">
         <p class="group__header">Cliente</p>
         <div class="group">
           <div class="row row--field">
@@ -78,6 +82,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </div>
         </div>
         <p class="group__footer">O número é obrigatório e precisa ser de celular, com DDD: é por ele que o cliente recebe os avisos.</p>
+        </div></div>
       }
     </main>
     @if (profissionais().length) {

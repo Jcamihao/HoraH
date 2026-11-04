@@ -1,148 +1,49 @@
-// Agenda no Meetgen Design System: três visões (dia, semana, mês) sobre a folha sálvia.
-// Texto sobre laranja é tinta (o creme dá 3,5:1); neutros esmaecidos usam #66675a (4,1:1 sobre sálvia-200).
+// Agenda: três visões (dia, semana, mês) sobre o fundo claro; cartões brancos, horários em laranja claro.
 
-// Abas Dia / Semana / Mês dentro da faixa escura. A faixa escura continua no subtítulo aberto (sem as
-// camadas da folha) e fecha aqui, onde a folha nasce. Mesmos truques do .large-sub: box-shadow com spread
-// para sangrar até a borda, clip-path para a emenda e alturas inteiras em px (sem fio de antialiasing).
-.large-sub--aberto {
-  padding: 15px 0 10px;
-
-  &::before,
-  &::after {
-    display: none;
-  }
-}
-
-.large-tabs {
-  position: relative;
-  margin: 0;
-  padding: 0 0 62px;
-  background: var(--ink-900);
-  box-shadow: 0 0 0 100vmax var(--ink-900);
-  clip-path: inset(0 -100vmax -2px);
-
-  // Alvo de toque de 44px; o bloco laranja visível segue com os 36px do desenho
-  .seg {
-    flex-wrap: nowrap;
-    gap: 0;
-  }
-
-  .seg [role='tab'] {
-    position: relative;
-    isolation: isolate;
-    min-height: var(--tap);
-    padding: 0 15px;
-    background: transparent;
-    color: var(--cream-50);
-    overflow: visible;
-
-    &::before {
-      content: '';
-      position: absolute;
-      z-index: -1;
-      inset: 4px 4px;
-      border-radius: var(--r-sm);
-      background: transparent;
-      transition: background-color var(--t-base) var(--ease-out);
-    }
-
-    &[aria-selected='true']::before {
-      background: var(--orange-500);
-    }
-  }
-
-  .seg [role='tab'][aria-selected='true'] {
-    background: transparent;
-    color: var(--ink-900);
-  }
-
-  .seg [role='tab'][aria-selected='false'] {
-    color: var(--cream-50);
-  }
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    left: calc(-1 * var(--gutter) - var(--sheet-edge));
-    right: calc(-1 * var(--gutter) - var(--sheet-edge));
-    bottom: -2px;
-    height: 46px;
-    background: var(--sage-400);
-    border-radius: var(--r-2xl) var(--r-2xl) 0 0;
-  }
-
-  &::after {
-    left: calc(-1 * var(--gutter));
-    right: calc(-1 * var(--gutter));
-    height: 34px;
-    background: var(--sage-200);
-    border-radius: var(--r-xl) var(--r-xl) 0 0;
-  }
-}
-
-.agenda-aviso {
-  margin-top: 12px;
-  font-size: var(--fs-small);
-  color: var(--ink-2);
-}
-
-// Seletor de data: anterior esmaecido, seta, atual em destaque, seta, próximo esmaecido
-.stepper {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--tap) auto var(--tap) minmax(0, 1fr);
-  align-items: center;
-  margin-top: 4px;
-  margin-bottom: 8px;
-}
-
-.stepper__lado,
-.stepper__atual {
+.agenda-barra {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  min-height: var(--tap);
-  line-height: 1;
+  gap: 12px;
+  margin-top: 12px;
 }
 
-.stepper__lado {
-  color: #66675a;
+// "Marcar horário": laranja, com o + num círculo à direita
+.btn--mais {
+  margin-left: auto;
+  padding: 0 6px 0 20px;
+  font-size: var(--fs-small);
 
-  .stepper__txt {
+  &::after {
+    content: '+';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 22%);
     font-size: 1.25rem;
     font-weight: 500;
+    line-height: 1;
   }
+}
 
-  &--ant {
-    align-items: flex-start;
-  }
-
-  &--prox {
-    align-items: flex-end;
-  }
+// Seletor de data: pílula branca com seta, rótulo e seta
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 
 .stepper__atual {
-  padding-inline: 4px;
-  color: var(--ink-900);
-
-  .stepper__txt {
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-}
-
-.stepper--dia .stepper__atual .stepper__txt {
-  font-size: 1.375rem;
-}
-
-.stepper small {
-  margin-top: 4px;
-  font-size: 0.5625rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  padding-inline: 8px;
+  font-size: var(--fs-small);
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -150,96 +51,121 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--tap);
-  height: var(--tap);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   color: var(--ink-900);
+
+  &:hover {
+    background: var(--sage-50);
+  }
 }
 
-// ---- Dia: hora vazia listrada ou atendimento
+// Filtro de profissional: pílula com o rótulo e o valor em negrito
+.filtro {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 36px 0 18px;
+  border: 1px solid var(--sage-250);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+
+  select {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    font-weight: 700;
+    color: var(--ink);
+    outline: none;
+    padding-right: 4px;
+    cursor: pointer;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    margin-top: -6px;
+    border-right: 2px solid var(--ink-900);
+    border-bottom: 2px solid var(--ink-900);
+    transform: rotate(45deg);
+    pointer-events: none;
+  }
+
+  &:focus-within {
+    border-color: var(--orange-500);
+  }
+}
+
+.agenda-aviso {
+  margin-top: 16px;
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+}
+
+// ---- Dia: linha por hora; à esquerda a hora, à direita o que há nela
+.agenda-dia {
+  display: grid;
+  gap: 24px;
+  margin-top: 20px;
+}
+
 .horas {
   display: grid;
-  gap: 6px;
-  margin-top: 12px;
 }
 
 .slot {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
   gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--divider-light);
+
+  &:first-child {
+    border-top: 0;
+  }
 }
 
 .slot__hora {
-  flex: none;
-  width: 34px;
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--ink-2);
+  padding-top: 2px;
+  font-size: var(--fs-small);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
-.slot__barra {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 30px;
-  border-radius: var(--r-sm);
-  background: var(--pattern-slot);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: var(--ink-2);
+.slot__vazio {
+  font-size: var(--fs-small);
+  color: var(--on-dark-muted);
 }
 
-// Bloqueio: mesma linha listrada, com o motivo e o botão de remover
-.slot--bloqueio .slot__barra {
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 56px;
-  padding: 4px 4px 4px 14px;
-  font-size: inherit;
-  font-weight: inherit;
+.slot__itens {
+  display: grid;
+  gap: 8px;
 }
 
-.slot__texto {
-  min-width: 0;
-}
-
-.slot__titulo {
-  display: block;
-  font-size: var(--fs-body);
-  font-weight: 600;
-  color: var(--ink-900);
-}
-
-.slot__sub {
-  display: block;
-  font-size: var(--fs-caption);
-  color: var(--ink-2);
-  overflow-wrap: anywhere;
-}
-
-.slot--bloqueio .btn {
-  flex: none;
-  min-height: var(--tap);
-}
-
-// Atendimento: cartão creme com o bloco laranja da hora à esquerda (início grande, fim no rodapé mais escuro)
+// Atendimento: cartão branco, início em negrito e fim embaixo, nome do cliente e etiqueta à direita
 .reuniao {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 14px;
-  margin-inline: -8px;
-  padding: 5px;
-  border-radius: var(--r-lg);
-  background: var(--cream-50);
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
   color: inherit;
   text-decoration: none;
   transition: transform var(--t-fast) var(--ease-out);
 
-  &:active {
-    transform: scale(0.99);
+  &:hover {
+    transform: translateY(-1px);
   }
 }
 
@@ -247,34 +173,17 @@
   flex: none;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 62px;
-  min-height: 68px;
-  overflow: hidden;
-  border-radius: var(--r-md);
-  background: var(--orange-500);
-  color: var(--ink-900);
-  font-size: 1rem;
+  gap: 2px;
+  font-size: var(--fs-small);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  line-height: 1;
+  line-height: 1.2;
 }
 
 .reuniao__hora small {
-  align-self: stretch;
-  margin-top: auto;
-  padding: 7px 0;
-  background: var(--orange-400);
-  text-align: center;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.reuniao__hora {
-  // o início ocupa o miolo e o fim fica colado no rodapé
-  padding-top: 14px;
+  font-size: var(--fs-small);
+  font-weight: 400;
+  color: var(--ink-2);
 }
 
 .reuniao__corpo {
@@ -282,156 +191,221 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
-
-.reuniao__topo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 6px 6px 0;
-}
-
-.reuniao__topo .row__title {
-  font-size: var(--fs-body);
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.reuniao__topo .row__sub {
-  font-size: var(--fs-caption);
-}
-
-.reuniao__rodape {
-  margin-top: 4px;
-  padding: 8px 0 6px;
-  border-top: 1px solid var(--divider-light);
 }
 
 .reuniao--cancelada {
-  opacity: 0.7;
+  box-shadow: none;
+  background: transparent;
+  border: 1px solid var(--sep);
 }
 
 .reuniao--cancelada .row__title {
+  color: var(--on-dark-subtle);
   text-decoration: line-through;
 }
 
-// ---- Semana: sete colunas (segunda a domingo); a do dia selecionado ganha fundo
+// Bloqueio: faixa preta listrada, motivo à esquerda e "Remover" em contorno branco
+.bloqueio {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  background: var(--pattern-block);
+  color: #fff;
+
+  .btn {
+    flex: none;
+    border-color: #fff;
+    color: #fff;
+
+    &:hover {
+      background: #fff;
+      color: #111;
+    }
+  }
+
+  .btn--bad {
+    border-color: var(--orange-500);
+    background: var(--orange-500);
+  }
+}
+
+.bloqueio__texto {
+  min-width: 0;
+}
+
+.bloqueio__titulo {
+  display: block;
+  font-weight: 700;
+}
+
+.bloqueio__sub {
+  display: block;
+  font-size: var(--fs-small);
+  color: rgb(255 255 255 / 80%);
+  overflow-wrap: anywhere;
+}
+
+.cartao-folgas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px;
+  border-radius: var(--r-group);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  font-size: var(--fs-body);
+  color: var(--ink-2);
+}
+
+.cartao-folgas--solto {
+  margin-top: 24px;
+}
+
+// ---- Semana: sete cartões em colunas
 .semana {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  margin-top: 12px;
+  grid-template-columns: repeat(7, minmax(104px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+  overflow-x: auto;
+  padding: 3px;
+  scrollbar-width: none;
 }
 
 .semana__col {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 6px;
-  padding: 8px 0;
-  border-radius: 16px;
+  min-height: 260px;
+  padding: 16px 6px 12px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
 }
 
 .semana__col--sel {
-  background: var(--sage-50);
+  box-shadow: 0 0 0 2px var(--ink-900);
 }
 
 .semana__dia {
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  text-align: center;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-2);
 }
 
-.tile {
-  display: flex;
-  flex-direction: column;
+.semana__num {
+  align-self: center;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  max-width: 56px;
-  height: 52px;
-  border-radius: var(--r-sm);
-  background: var(--pattern-tile);
-  color: var(--ink-2);
-  line-height: 1;
-}
-
-.tile__num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   font-size: var(--fs-body);
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.tile small {
-  margin-top: 3px;
-  font-size: 0.5625rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.tile--ocupado {
-  background: var(--orange-400);
-  color: var(--ink-900);
-}
-
-.tile--sel {
+.semana__num--hoje {
   background: var(--orange-500);
-  color: var(--ink-900);
+  color: #fff;
 }
 
-// Hoje, quando não é o selecionado: aro de tinta
-.tile--hoje:not(.tile--sel) {
-  box-shadow: inset 0 0 0 2px var(--ink-900);
+.semana__ponto {
+  align-self: center;
+  width: 6px;
+  height: 6px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.semana__ponto--on {
+  background: var(--green-500);
+}
+
+.semana__livre {
+  margin-top: 8px;
+  text-align: center;
+  font-size: var(--fs-small);
+  color: var(--on-dark-muted);
 }
 
 .chip-hora {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 1px;
-  width: 100%;
-  max-width: 56px;
-  height: 44px;
-  padding-top: 12px;
+  display: block;
+  padding: 7px 0;
   border-radius: var(--r-sm);
-  background: var(--orange-400);
-  color: var(--ink-900);
-  font-size: 0.8125rem;
-  font-weight: 600;
+  background: var(--orange-100);
+  color: var(--orange-ink);
+  text-align: center;
+  font-size: var(--fs-small);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-decoration: none;
-  line-height: 1;
+  line-height: 1.2;
+
+  &:hover {
+    background: var(--orange-200);
+  }
 }
 
-.chip-hora small {
-  font-size: 0.5rem;
-  font-weight: 600;
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  max-width: none;
+  margin-top: 16px;
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  i {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+  }
 }
 
-.chip-hora--vazio {
-  background: var(--pattern-tile);
+.legenda__hoje {
+  background: var(--orange-500);
 }
 
-.semana__col--sel .chip-hora--vazio {
-  background: repeating-linear-gradient(135deg, #e6e7cc 0 4px, #eef0d4 4px 8px);
+.legenda__sel {
+  box-shadow: inset 0 0 0 2px var(--ink-900);
+}
+
+.legenda__ponto {
+  width: 7px !important;
+  height: 7px !important;
+  background: var(--green-500);
 }
 
 // ---- Mês: grade de 7 colunas, semana começa na segunda
 .mes {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  row-gap: 6px;
-  margin-top: 12px;
+  gap: 6px;
+  margin-top: 20px;
 }
 
 .mes__cab {
-  padding-bottom: 6px;
+  padding-bottom: 4px;
   text-align: center;
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-2);
 }
@@ -439,85 +413,88 @@
 .mes__dia {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  width: 100%;
-  max-width: 56px;
-  height: 62px;
-  margin-inline: auto;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: 8px;
   border-radius: var(--r-sm);
-  color: var(--ink-900);
+  background: var(--surface);
+  text-align: left;
 }
 
 .mes__num {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--fs-small);
+  font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
 .mes__dia--hoje {
-  background: var(--cream-0);
+  background: var(--orange-500);
+  color: #fff;
+}
+
+.mes__dia--fora {
+  background: transparent;
 }
 
 .mes__dia--fora .mes__num {
-  color: #66675a;
+  color: var(--on-dark-muted);
   font-weight: 500;
 }
 
-// Contagem de atendimentos: laranja com número; fora do mês pálida; zero só com contorno
+// Contagem de atendimentos: bolinha preta com o número
 .contagem {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 26px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: 7px;
-  background: var(--orange-500);
-  color: var(--ink-900);
-  font-size: 0.625rem;
-  font-weight: 600;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 11px;
+  background: var(--panel);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
-.mes__dia--fora .contagem {
-  background: var(--orange-100);
-  color: var(--orange-ink);
+.mes__dia--hoje .contagem {
+  background: #fff;
+  color: var(--orange-500);
 }
 
-.contagem--zero,
-.mes__dia--fora .contagem--zero {
-  background: transparent;
-  box-shadow: inset 0 0 0 1px var(--sage-300);
-  color: var(--sage-300);
-}
-
-// Horários livres para escolher
+// Horários livres para escolher (novo agendamento)
 .chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px var(--gutter);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 4px var(--gutter) var(--gutter);
 }
 
 .chip {
-  min-width: 4.75rem;
-  min-height: var(--tap);
+  min-height: 44px;
   padding: 0 12px;
-  border-radius: var(--r-sm);
-  background: var(--sage-100);
+  border: 1px solid var(--sage-250);
+  border-radius: 999px;
+  background: var(--surface);
   color: var(--ink-900);
-  font-weight: 600;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  transition: background-color var(--t-fast) var(--ease-out);
+  transition:
+    background-color var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out);
+
+  &:hover {
+    border-color: var(--ink-900);
+  }
 }
 
 .chip[aria-pressed='true'] {
+  border-color: var(--orange-500);
   background: var(--orange-500);
-  color: var(--ink-900);
+  color: #fff;
 }
 
 .navbar__action a,
@@ -527,9 +504,29 @@
   gap: 4px;
   min-height: var(--tap);
   padding-inline: 8px;
-  margin-right: -8px;
-  color: var(--cream-50);
-  font-size: var(--fs-body);
+  color: var(--ink);
+  font-size: var(--fs-small);
   font-weight: 600;
   text-decoration: none;
+}
+
+@media (min-width: 960px) {
+  .agenda-dia {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 32px;
+  }
+
+  .slot {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .semana {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .mes__dia {
+    min-height: 112px;
+    padding: 10px 12px;
+  }
 }

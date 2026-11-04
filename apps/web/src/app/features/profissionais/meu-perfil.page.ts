@@ -23,6 +23,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
       @if (carregando()) {
         <div class="skeleton" style="margin-top: 24px" aria-busy="true"></div>
       } @else if (prof(); as p) {
+        <div class="cols cols--2"><div class="col">
         <p class="group__header">Serviços e preços</p>
         @if (p.servicos.length) {
           <div class="group">
@@ -37,6 +38,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           <p class="banner">Seus serviços ainda não foram definidos. Fale com quem cuida do salão.</p>
         }
 
+        </div><div class="col">
         <p class="group__header">Horário de trabalho</p>
         <div class="group">
           @for (d of dias; track d.id) {
@@ -47,6 +49,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           }
         </div>
         <p class="group__footer">Para mudar preços ou horários, fale com quem cuida do salão.</p>
+        </div></div>
       }
 
       <div class="danger-zone">

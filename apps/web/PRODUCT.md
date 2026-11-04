@@ -38,7 +38,7 @@ Foco em beleza em geral (não só barbearia), bot de agendamento completo no Wha
 
 ## Brand Commitments
 
-Nome provisório "Hora H". Não há logo, paleta nem tipografia definidos. Idioma da interface: português do Brasil.
+Nome provisório "Hora H". O logo (palavra "HORA" geométrica + símbolo laranja) está em `public/logo/`; paleta, tipografia e regras de uso em [DESIGN.md](DESIGN.md). Idioma da interface: português do Brasil.
 
 ## Evidence on Hand
 
