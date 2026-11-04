@@ -164,7 +164,8 @@ export class ProfissionalPage {
     this.nome.set(p.nome);
     this.semana.set(faixasParaSemana(p.horarios as FaixaHorario[]));
     const r: Record<string, Item> = {};
-    for (const s of p.servicos) r[s.servicoId] = { faz: true, centavos: s.precoCentavos };
+    // Serviço desativado no salão some da lista e não entra no que se salva (o servidor recusaria: "algum serviço está inativo").
+    for (const s of p.servicos) if (s.ativo) r[s.servicoId] = { faz: true, centavos: s.precoCentavos };
     this.rascunho.set(r);
   }
 

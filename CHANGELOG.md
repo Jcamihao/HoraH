@@ -2,6 +2,15 @@
 
 Formato livre, mais novo primeiro. As versões seguem o `package.json` da raiz e de `apps/web`.
 
+## 0.8.1 (2026-11-04)
+
+Só o site (`apps/web`).
+
+- **Desktop em largura total:** o conteúdo parava em 720px (ou 1120px) e deixava cerca de um terço da tela vazio em monitor largo. Agora a página usa a largura disponível (até 1680px) e as telas de formulário viram colunas, como no design: Ajustes, Novo agendamento (3), Bloquear horário (3), Equipe, Serviços, Assinatura, Profissional, Detalhe do agendamento, Meu perfil, Notificações (2) e WhatsApp (2). O cadastro do salão continua estreito. No celular nada muda.
+- **Editor de horário** decide o layout pela largura do próprio editor (container query), então cabe numa coluna estreita sem cortar os campos.
+- **Campo de dia** ocupa a largura certa ao lado do campo de hora.
+- **Profissional:** um serviço desativado no salão não entra mais no que se salva em "Serviços e preços". Antes o servidor recusava com "Algum serviço não existe ou está inativo" e a pessoa não via o serviço na lista para corrigir.
+
 ## 0.8.0 (2026-11-04)
 
 Só o site (`apps/web`) mudou; `apps/api` e `packages/shared` continuam na 0.4.0.
