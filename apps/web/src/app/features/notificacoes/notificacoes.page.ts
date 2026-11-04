@@ -28,7 +28,7 @@ const ROTULO: Record<TipoNotificacao, { texto: string; classe: string }> = {
 
       @if (carregando()) {
         <div class="stack" style="margin-top: 24px" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div></div>
-      } @else if (!lista().length) {
+      } @else if (!lista().length && !erro()) {
         <div class="empty"><h2>Nada por aqui</h2><p>Novos agendamentos, cancelamentos e avisos do WhatsApp aparecem aqui.</p></div>
       } @else {
         @if (naoLidas() > 0) {

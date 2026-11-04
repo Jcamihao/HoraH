@@ -23,7 +23,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
 
       @if (carregando()) {
         <div class="stack" style="margin-top: 24px" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div></div>
-      } @else if (!lista().length) {
+      } @else if (!lista().length && !erro()) {
         <div class="empty">
           <h2>Nenhum profissional ainda</h2>
           <p>Adicione quem atende no salão para definir horários e preços.</p>

@@ -106,7 +106,7 @@
   --t-push: 0.32s;
 }
 
-// Tema escuro (pacote "Hora H - Telas -escuro-"): segue a preferência do sistema.
+// Tema escuro (pacote "Hora H - Telas -escuro-"): o botão do app alterna; na primeira visita segue a preferência do sistema.
 // Fundo #0a0908, cartões #181614, painéis #24201d, textos em branco e cinza quente; laranja e verde ficam como no claro.
 @mixin escuro {
   color-scheme: dark;
@@ -151,8 +151,13 @@
   --pattern-block: repeating-linear-gradient(135deg, #1d1a18 0 12px, #262220 12px 24px);
 }
 
+// O app grava data-tema="claro|escuro" no <html> (botão no canto superior direito). Sem JavaScript, vale a preferência do sistema.
+:root[data-tema='escuro'] {
+  @include escuro;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-tema]) {
     @include escuro;
   }
 }

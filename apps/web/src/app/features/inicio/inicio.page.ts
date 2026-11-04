@@ -43,11 +43,11 @@ import { NavbarComponent } from '../../shared/navbar.component';
           <p class="kicker">Seu salão</p>
           <a class="row row--link" routerLink="/painel/profissionais">
             <span class="row__main"><span class="row__title">Equipe</span></span>
-            <span class="row__detail soft">{{ carregando() ? '…' : ativosProf() }}</span>
+            <span class="row__detail soft">{{ carregando() ? '…' : erro() ? '—' : ativosProf() }}</span>
           </a>
           <a class="row row--link" routerLink="/painel/servicos">
             <span class="row__main"><span class="row__title">Serviços</span></span>
-            <span class="row__detail soft">{{ carregando() ? '…' : ativosServ() }}</span>
+            <span class="row__detail soft">{{ carregando() ? '…' : erro() ? '—' : ativosServ() }}</span>
           </a>
           <a class="row row--link" routerLink="/painel/configuracoes">
             <span class="row__main"><span class="row__title">Horário e regras</span></span>
@@ -106,7 +106,7 @@ export class InicioPage {
   protected readonly linkPublico = computed(() => `${location.origin}/${this.salao()?.slug ?? ''}`);
   protected readonly resumoHoje = computed(() => {
     const ativos = (this.hoje()?.agendamentos ?? []).filter((a) => a.status !== 'CANCELADO');
-    if (!this.hoje()) return 'Carregando…';
+    if (!this.hoje()) return this.erro() ? 'Não foi possível carregar' : 'Carregando…';
     if (!ativos.length) return 'Nenhum agendamento para hoje';
     return ativos.length === 1 ? '1 agendamento hoje' : `${ativos.length} agendamentos hoje`;
   });

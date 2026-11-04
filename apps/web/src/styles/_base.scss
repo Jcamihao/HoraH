@@ -149,7 +149,7 @@ p {
 }
 
 // Tema escuro: títulos e botões em maiúsculas, como no pacote escuro
-@media (prefers-color-scheme: dark) {
+@mixin escuro-base {
   h1,
   .large-title,
   .pub-q {
@@ -171,5 +171,49 @@ p {
 
   select.input {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.5l4.5 4.5 4.5-4.5' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+}
+
+:root[data-tema='escuro'] {
+  @include escuro-base;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema]) {
+    @include escuro-base;
+  }
+}
+
+// Botão do tema (sol/lua): canto superior direito, em todas as telas
+.tema-botao {
+  position: fixed;
+  z-index: 60;
+  top: calc(12px + env(safe-area-inset-top));
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--sep);
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  color: var(--ink);
+  transition: transform var(--t-fast) var(--ease-out);
+
+  &:hover {
+    border-color: var(--orange-500);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+}
+
+@media (min-width: 960px) {
+  .tema-botao {
+    top: 20px;
+    right: 24px;
   }
 }

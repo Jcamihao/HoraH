@@ -28,7 +28,7 @@ body:has(.pub) {
   font-family: var(--font);
 }
 
-@media (prefers-color-scheme: dark) {
+@mixin pub-escuro {
   .pub {
     --p-bg: #0a0908;
     --p-surface: #181614;
@@ -40,6 +40,16 @@ body:has(.pub) {
     --p-accent-text: #ff6b47;
     --p-bad: #ff8a6b;
     --p-bad-bg: #3a1a12;
+  }
+}
+
+:root[data-tema='escuro'] {
+  @include pub-escuro;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema]) {
+    @include pub-escuro;
   }
 }
 
