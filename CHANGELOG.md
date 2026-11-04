@@ -2,6 +2,12 @@
 
 Formato livre, mais novo primeiro. As versões seguem o `package.json` da raiz e de `apps/web`.
 
+## 0.8.4 (2026-11-04)
+
+Só o site (`apps/web`).
+
+- **Refração do vidro (protótipo, só Chromium):** a barra de abas, o botão de voltar e o botão do tema passam o fundo por um filtro SVG de deslocamento (`index.html`, `#refracao-vidro`; regra em `_glass.scss`), que entorta o que está por baixo nas bordas, como o Liquid Glass do iOS. Safari e Firefox não aplicam filtro SVG em `backdrop-filter` e continuam com o vidro fosco da 0.8.3. A classe `refracao` no `<html>` liga o efeito (detecção por Chromium no `index.html`).
+
 ## 0.8.3 (2026-11-04)
 
 Só o site (`apps/web`).
