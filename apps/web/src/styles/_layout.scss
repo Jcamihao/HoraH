@@ -258,7 +258,7 @@
     gap: 6px;
     padding: 28px 20px;
     border-radius: 0;
-    background: var(--ink-900);
+    background: var(--panel);
     box-shadow: none;
   }
 
@@ -405,7 +405,7 @@
   min-height: 32px;
   padding: 0 16px;
   border-radius: 999px;
-  background: var(--ink-900);
+  background: #111;
   color: #fff;
   font-weight: 700;
   text-decoration: none;
@@ -514,7 +514,7 @@
     justify-content: space-between;
     padding: 56px;
     border-radius: 0 48px 48px 0;
-    background: var(--ink-900);
+    background: var(--panel);
     color: #fff;
   }
 

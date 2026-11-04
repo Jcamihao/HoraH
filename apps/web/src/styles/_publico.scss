@@ -2,7 +2,7 @@
 // topo escuro com o nome do salão como maior elemento da tela, folha sálvia com canto grande por baixo.
 // Sem sombras: a separação é degrau de tom e espaço.
 body:has(.pub) {
-  background: #fafafa;
+  background: var(--bg);
 }
 
 .pub {
@@ -26,6 +26,21 @@ body:has(.pub) {
   background: var(--p-bg);
   color: var(--p-ink);
   font-family: var(--font);
+}
+
+@media (prefers-color-scheme: dark) {
+  .pub {
+    --p-bg: #0a0908;
+    --p-surface: #181614;
+    --p-soft: #24201d;
+    --p-soft-press: #2a2725;
+    --p-ink: #ffffff;
+    --p-ink-2: #a8a29e;
+    --p-hero: #24201d;
+    --p-accent-text: #ff6b47;
+    --p-bad: #ff8a6b;
+    --p-bad-bg: #3a1a12;
+  }
 }
 
 .pub-wrap {
@@ -185,7 +200,7 @@ body:has(.pub) {
   height: 36px;
   border-radius: 50%;
   background: var(--p-ink);
-  color: #fff;
+  color: var(--p-bg);
 }
 
 .pub-choice > hh-icon svg {

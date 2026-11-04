@@ -20,7 +20,7 @@
     transform var(--t-fast) var(--ease-out);
 
   &:hover:not(:disabled) {
-    background: var(--ink-900);
+    background: var(--panel);
     color: #fff;
   }
 
@@ -47,13 +47,14 @@
 }
 
 .btn--dark {
-  border-color: var(--ink-900);
-  background: var(--ink-900);
+  border-color: var(--panel);
+  background: var(--panel);
   color: #fff;
 
   &:hover:not(:disabled) {
-    background: var(--ink-700);
-    border-color: var(--ink-700);
+    background: var(--panel-hover);
+    border-color: var(--panel-hover);
+    color: #fff;
   }
 }
 
@@ -218,7 +219,7 @@ select.input {
 }
 
 .banner--ok {
-  background: var(--ink-900);
+  background: var(--panel);
   box-shadow: none;
   color: #fff;
 }

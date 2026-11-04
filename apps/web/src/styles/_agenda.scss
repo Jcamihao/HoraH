@@ -195,7 +195,8 @@
 
 .reuniao--cancelada {
   box-shadow: none;
-  background: rgb(255 255 255 / 60%);
+  background: transparent;
+  border: 1px solid var(--sep);
 }
 
 .reuniao--cancelada .row__title {
@@ -221,7 +222,7 @@
 
     &:hover {
       background: #fff;
-      color: var(--ink-900);
+      color: #111;
     }
   }
 
@@ -451,7 +452,7 @@
   height: 22px;
   padding: 0 5px;
   border-radius: 11px;
-  background: var(--ink-900);
+  background: var(--panel);
   color: #fff;
   font-size: 0.6875rem;
   font-weight: 700;
