@@ -39,7 +39,7 @@ typography:
     fontWeight: 600
     letterSpacing: "0.1em"
     textTransform: uppercase
-  brand-h:
+  hand:
     fontFamily: "'Caveat', cursive"
     fontWeight: 700
 rounded:
@@ -69,7 +69,7 @@ Os valores vivem em `src/styles/_tokens.scss` e os estilos em `src/styles/` (`_b
 
 ## Marca
 
-O nome aparece como "Hora" em Poppins 800 seguido de um "H" em Caveat 700 laranja (classe `.brand`). Não há logo de imagem.
+O logo é a palavra "HORA" desenhada em formas geométricas (o "O" é um relógio) seguida de um símbolo redondo: círculo laranja com um "H" branco inclinado e um ponto verde. Arquivos em `public/logo/` (`marca-claro.svg`, `marca-escuro.svg`, `hora-h-claro.svg`, `hora-h-escuro.svg`, `hora-h-icone.svg`, `hora-h-simbolo.svg`); o favicon é o símbolo (`favicon.svg`, `favicon.ico` e `favicon-32.png`); `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` e `icon-maskable-512.png` usam o ícone de app (quadrado preto com o símbolo) e são listados em `manifest.webmanifest`. No app o logo é o componente `hh-logo` (`src/app/shared/logo.component.ts`), com o texto em `currentColor` (branco sobre faixa escura, preto sobre fundo claro, branco no tema escuro) e o símbolo sempre colorido. Alturas usadas: 28px na barra lateral e na lista de passos do cadastro, 30px no painel preto de entrada, 25px no topo das telas de entrada no celular e 22px na barra do topo. O "H" em Caveat deixou de ser a marca; a Caveat segue só no "agenda online" da página pública.
 
 ## Cor
 

@@ -31,6 +31,7 @@ interface Item {
         @if (aviso()) { <p class="banner banner--ok" style="margin-top: 16px" role="status">{{ aviso() }}</p> }
         @if (erro()) { <p class="banner banner--bad" style="margin-top: 16px" role="alert">{{ erro() }}</p> }
 
+        <div class="cols cols--2"><div class="col">
         <p class="group__header">Nome</p>
         <div class="group">
           <div class="row row--field">
@@ -61,6 +62,7 @@ interface Item {
           <button type="button" class="btn btn--block" style="margin-top: 12px" [disabled]="salvando()" (click)="salvarServicos()">Salvar serviços e preços</button>
         }
 
+        </div><div class="col">
         <p class="group__header">Horário de trabalho</p>
         <hh-horario-editor [(semana)]="semana" />
         <button type="button" class="btn btn--block" style="margin-top: 12px" [disabled]="salvando()" (click)="salvarHorarios()">Salvar horário</button>
@@ -108,6 +110,7 @@ interface Item {
             }
           }
         </div>
+        </div></div>
       } @else {
         <div class="empty"><h2>Profissional não encontrado</h2><button type="button" class="btn" (click)="voltar()">Voltar para a equipe</button></div>
       }
@@ -161,7 +164,8 @@ export class ProfissionalPage {
     this.nome.set(p.nome);
     this.semana.set(faixasParaSemana(p.horarios as FaixaHorario[]));
     const r: Record<string, Item> = {};
-    for (const s of p.servicos) r[s.servicoId] = { faz: true, centavos: s.precoCentavos };
+    // Serviço desativado no salão some da lista e não entra no que se salva (o servidor recusaria: "algum serviço está inativo").
+    for (const s of p.servicos) if (s.ativo) r[s.servicoId] = { faz: true, centavos: s.precoCentavos };
     this.rascunho.set(r);
   }
 

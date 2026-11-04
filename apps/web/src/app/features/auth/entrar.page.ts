@@ -1,4 +1,5 @@
 import { AuthLadoComponent } from '../../shared/auth-lado.component';
+import { LogoComponent } from '../../shared/logo.component';
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -7,13 +8,13 @@ import { mensagemDeErro } from '../../core/errors';
 
 @Component({
   selector: 'app-entrar',
-  imports: [ReactiveFormsModule, RouterLink, AuthLadoComponent],
+  imports: [ReactiveFormsModule, RouterLink, AuthLadoComponent, LogoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <main class="auth">
       <hh-auth-lado class="auth__lado" />
       <div class="auth__form">
-        <span class="brand auth__marca">Hora</span>
+        <span class="brand auth__marca"><hh-logo [altura]="25" /></span>
       <h1 class="large-title">Entrar</h1>
       <p class="large-sub">Hora H · a agenda do seu salão, no celular.</p>
 

@@ -16,7 +16,9 @@ import { IconComponent } from './icon.component';
     .dia__cab { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 32px; }
     .dia__cab strong { font-weight: 700; }
     .dia__cab .soft { margin-left: 8px; }
-    @media (min-width: 960px) {
+    // Quem decide é a largura do próprio editor (e não a da tela): numa coluna estreita os dias empilham.
+    :host { display: block; container-type: inline-size; }
+    @container (min-width: 560px) {
       .dia { display: grid; grid-template-columns: 180px 1fr; column-gap: 24px; align-items: center; }
     }
     .dia__corpo { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }

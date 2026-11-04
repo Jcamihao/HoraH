@@ -295,6 +295,20 @@ select.input {
   gap: 10px;
 }
 
+hh-campo-data,
+hh-campo-hora {
+  display: block;
+}
+
+.campo-par hh-campo-data {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.campo-par hh-campo-hora {
+  flex: none;
+}
+
 .row--field.is-invalid .campo-nativo {
   border-color: var(--danger);
   background: var(--danger-wash);

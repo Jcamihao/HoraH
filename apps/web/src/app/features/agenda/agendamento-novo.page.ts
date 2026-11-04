@@ -30,6 +30,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
       } @else if (!profissionais().length) {
         <div class="empty"><h2>Nenhum profissional com serviços</h2><p>Cadastre o serviço e o preço de pelo menos um profissional para marcar horários.</p></div>
       } @else {
+        <div class="cols cols--3"><div class="col">
         <p class="group__header">Atendimento</p>
         <div class="group">
           @if (profissionais().length > 1) {
@@ -52,6 +53,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </div>
         </div>
 
+        </div><div class="col">
         <p class="group__header">Horário</p>
         <div class="group">
           @if (buscando()) {
@@ -67,6 +69,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           }
         </div>
 
+        </div><div class="col">
         <p class="group__header">Cliente</p>
         <div class="group">
           <div class="row row--field">
@@ -79,6 +82,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </div>
         </div>
         <p class="group__footer">O número é obrigatório e precisa ser de celular, com DDD: é por ele que o cliente recebe os avisos.</p>
+        </div></div>
       }
     </main>
     @if (profissionais().length) {

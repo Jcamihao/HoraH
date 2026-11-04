@@ -10,6 +10,7 @@ import { EstabelecimentoStore } from '../../core/estabelecimento.store';
 import { DURACOES, SemanaCampos, faixasParaSemana, formatarDuracao, semanaPadrao, semanaParaFaixas } from '../../core/horarios';
 import { HorarioEditorComponent } from '../../shared/horario-editor.component';
 import { IconComponent } from '../../shared/icon.component';
+import { LogoComponent } from '../../shared/logo.component';
 import { NavbarComponent } from '../../shared/navbar.component';
 import { PrecoCampoComponent } from '../../shared/preco-campo.component';
 
@@ -44,11 +45,13 @@ type Rascunho = Record<string, Record<string, Item>>;
 
 @Component({
   selector: 'app-cadastro',
-  imports: [ReactiveFormsModule, RouterLink, HorarioEditorComponent, IconComponent, NavbarComponent, PrecoCampoComponent],
+  imports: [ReactiveFormsModule, RouterLink, HorarioEditorComponent, IconComponent, LogoComponent, NavbarComponent, PrecoCampoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+
+    <div class="onb">
     <aside class="onb-lado" aria-label="Passos do cadastro">
-      <span class="brand">Hora</span>
+      <span class="brand"><hh-logo [altura]="28" /></span>
       <p class="kicker">Cadastro do salão</p>
       <ol>
         @for (e of etapas; track e.id; let i = $index) {
@@ -62,10 +65,10 @@ type Rascunho = Record<string, Record<string, Item>>;
         }
       </ol>
     </aside>
-    <div class="onb">
+    <div class="onb__corpo">
     <hh-navbar [voltar]="indice() > 0 ? ['/painel/cadastro', etapas[indice() - 1].id] : null" [rotulo]="indice() > 0 ? etapas[indice() - 1].nome : ''" [titulo]="etapa().titulo" />
 
-    <main class="page page--dock">
+    <main class="page page--dock page--narrow">
       <p class="progress-label">Etapa {{ indice() + 1 }} de {{ etapas.length }}</p>
       <div class="progress" role="progressbar" [attr.aria-valuenow]="indice() + 1" aria-valuemin="1" [attr.aria-valuemax]="etapas.length" [attr.aria-label]="'Passo ' + (indice() + 1) + ' de ' + etapas.length + ': ' + etapa().nome">
         @for (e of etapas; track e.id; let i = $index) { <i [class.on]="i <= indice()"></i> }
@@ -195,6 +198,7 @@ type Rascunho = Record<string, Record<string, Item>>;
           {{ salvando() ? 'Salvando…' : indice() === etapas.length - 1 ? 'Concluir cadastro' : 'Salvar e continuar' }}
         </button>
       </div>
+    </div>
     </div>
     </div>
   `,

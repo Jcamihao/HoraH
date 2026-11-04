@@ -4,6 +4,7 @@ import { AuthStore } from '../../core/auth.store';
 import { EstabelecimentoStore } from '../../core/estabelecimento.store';
 import { AssinaturaAvisoComponent } from '../../shared/assinatura-aviso.component';
 import { IconComponent, IconeNome } from '../../shared/icon.component';
+import { LogoComponent } from '../../shared/logo.component';
 
 interface Aba {
   caminho: string;
@@ -14,16 +15,17 @@ interface Aba {
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, IconComponent, AssinaturaAvisoComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, IconComponent, LogoComponent, AssinaturaAvisoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <div class="shell" [class.shell--tabbed]="abas().length > 0">
     <div class="app" [class.app--tabbed]="abas().length > 0">
       @if (auth.ehDono() && salao.cadastroConcluido()) { <hh-assinatura-aviso /> }
       <router-outlet />
     </div>
     @if (abas().length) {
       <nav class="tabbar" aria-label="Principal">
-        <span class="brand tabbar__marca">Hora</span>
+        <span class="brand tabbar__marca"><hh-logo [altura]="28" /></span>
         <span class="tabbar__salao">{{ salao.dados()?.nome }}</span>
         @for (aba of abas(); track aba.caminho) {
           <a [routerLink]="aba.caminho" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: !!aba.exato }" #rla="routerLinkActive" [attr.aria-current]="rla.isActive ? 'page' : null">
@@ -35,6 +37,7 @@ interface Aba {
         }
       </nav>
     }
+    </div>
   `,
 })
 export class ShellComponent {
