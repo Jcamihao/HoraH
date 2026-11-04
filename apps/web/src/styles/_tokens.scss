@@ -1,86 +1,96 @@
-// Identidade "Meetgen Design System" aplicada ao Hora H (pacote de design recebido em 2026-10-31).
-// Três famílias de cor: laranja (o que se toca, está selecionado ou ocupado), tinta e sálvia/creme.
-// Sem sombras: a profundidade vem de camadas tonais com cantos grandes.
+// Identidade do Hora H (pacote "Hora H - Telas", Claude Design, 2026-11).
+// Poppins nos textos, Caveat só no "H" da marca; laranja-vermelho para o que se toca,
+// verde para "confirmado/ligado", preto para as faixas fortes e branco nos cartões sobre fundo claro.
 // Cores, fonte, raios e movimento moram aqui: trocar a marca do Hora H é editar este arquivo.
 :root {
   color-scheme: light;
 
-  // Laranja de marca
-  --orange-500: #e86a30;
-  --orange-400: #ee7f4c; // ocupado
-  --orange-200: #f3b693;
-  --orange-100: #efcbb2;
-  --orange-ink: #9a3b0c; // laranja legível como texto sobre sálvia (4,9:1)
+  // Marca
+  --orange-500: #e84a27; // ação principal
+  --orange-400: #f06a4a; // ocupado
+  --orange-bright: #f97316; // faixa de teste e destaque de título
+  --orange-200: #f7c2b2;
+  --orange-100: #fdeee6; // fundo de aviso
+  --orange-ink: #c53a1a; // laranja legível como texto sobre claro
+  --green-500: #65a30d;
+  --green-ink: #3f6212;
+  --green-100: #ecfccb;
 
   // Tinta
-  --ink-900: #262721;
-  --ink-700: #3a3b34;
-  --text-secondary: #4a4b41;
-  --on-dark-muted: #c9caba;
-  --on-dark-subtle: #a9aa98;
+  --ink-900: #111111;
+  --ink-700: #2b2a28;
+  --text-secondary: #57534e;
+  --on-dark-muted: #a8a29e;
+  --on-dark-subtle: #78716c;
 
-  // Sálvia e creme
-  --olive-400: #9fa08a; // meta e inativo (só decorativo: 1,9:1 sobre sálvia-200, não serve para texto)
-  --sage-400: #b2b49e;
-  --sage-300: #c3c4a9;
-  --sage-250: #cfd0b4;
-  --sage-200: #dadbbb;
-  --sage-100: #e6e7cc;
-  --sage-50: #eef0d4;
-  --cream-50: #fbfbea;
-  --cream-0: #fffff3;
-  --divider-light: #e2e2cf;
+  // Neutros quentes (antigas folhas sálvia: agora tons de papel)
+  --olive-400: #a8a29e;
+  --sage-400: #a8a29e;
+  --sage-300: #d6d3cd;
+  --sage-250: #e5e2dc;
+  --sage-200: #ece9e4;
+  --sage-100: #f0eee9;
+  --sage-50: #f5f4f1;
+  --cream-50: #ffffff;
+  --cream-0: #ffffff;
+  --divider-light: #eeece8;
 
   // Só avatares
   --blue-200: #a5b9de;
   --green-200: #a7d9a4;
 
-  // Erro: o pacote não define cor de erro; esta é a única exceção às três famílias
-  --danger: #a8281c;
-  --danger-wash: #f4d3cc;
+  // Erro
+  --danger: #c53a1a;
+  --danger-wash: #fdeee6;
 
   // Papéis semânticos (as telas usam estes nomes)
-  --bg: var(--sage-200);
-  --surface: var(--cream-50);
+  --bg: #fafafa;
+  --surface: #ffffff;
   --ink: var(--ink-900);
   --ink-2: var(--text-secondary);
   --sep: var(--divider-light);
   --sep-strong: var(--sage-300);
-  --press: var(--sage-100);
+  --press: var(--sage-50);
   --tint: var(--orange-500);
-  --tint-press: #d45a22;
+  --tint-press: #cf3f1e;
   --tint-bg: var(--orange-100);
-  --ok: var(--cream-50);
-  --ok-bg: var(--ink-900);
+  --ok: var(--green-ink);
+  --ok-bg: var(--green-100);
   --wait: var(--orange-ink);
   --wait-bg: var(--orange-100);
   --bad: var(--danger);
   --bad-bg: var(--danger-wash);
-  --off-bg: var(--sage-250);
+  --off-bg: var(--sage-100);
 
-  // Padrão listrado: horário vazio ou indisponível (135°)
-  --pattern-slot: repeating-linear-gradient(135deg, #e6e7cc 0 5px, #eef0d4 5px 10px);
-  --pattern-tile: repeating-linear-gradient(135deg, #c3c4a9 0 4px, #ccccb2 4px 8px);
+  // Sombra única, suave
+  --shadow-card: 0 1px 2px rgb(17 17 17 / 4%), 0 10px 28px -14px rgb(17 17 17 / 14%);
+  --shadow-float: 0 18px 40px -16px rgb(17 17 17 / 28%);
 
-  // Forma
+  // Padrão listrado: bloqueio e horário indisponível (135°)
+  --pattern-slot: repeating-linear-gradient(135deg, #f0eee9 0 5px, #f7f6f3 5px 10px);
+  --pattern-tile: repeating-linear-gradient(135deg, #e5e2dc 0 4px, #ece9e4 4px 8px);
+  --pattern-block: repeating-linear-gradient(135deg, #1c1b1a 0 12px, #262422 12px 24px);
+
+  // Forma: cantos grandes, botões e campos em pílula
   --r-xs: 8px;
   --r-sm: 12px;
-  --r-md: 14px;
-  --r-lg: 18px;
+  --r-md: 16px;
+  --r-lg: 22px;
   --r-xl: 28px;
-  --r-2xl: 34px;
+  --r-2xl: 36px;
   --r-group: var(--r-lg);
-  --r-ctl: var(--r-md);
+  --r-ctl: 999px;
   --tap: 44px;
-  --gutter: 16px;
-  --sheet-edge: 10px;
+  --gutter: 20px;
+  --sheet-edge: 0px;
 
-  // Tipo: Figtree (arquivos locais)
-  --font: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --fs-body: 1.0625rem;
-  --fs-small: 0.9375rem;
-  --fs-caption: 0.78125rem;
-  --fs-title: 2.125rem;
+  // Tipo: Poppins (arquivos locais) e Caveat para o H
+  --font: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-hand: 'Caveat', 'Segoe Script', cursive;
+  --fs-body: 0.9375rem;
+  --fs-small: 0.8125rem;
+  --fs-caption: 0.75rem;
+  --fs-title: 2.5rem;
 
   // Movimento
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);

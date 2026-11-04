@@ -23,6 +23,8 @@ interface Aba {
     </div>
     @if (abas().length) {
       <nav class="tabbar" aria-label="Principal">
+        <span class="brand tabbar__marca">Hora</span>
+        <span class="tabbar__salao">{{ salao.dados()?.nome }}</span>
         @for (aba of abas(); track aba.caminho) {
           <a [routerLink]="aba.caminho" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: !!aba.exato }" #rla="routerLinkActive" [attr.aria-current]="rla.isActive ? 'page' : null">
             <hh-icon [nome]="aba.icone" /> {{ aba.rotulo }}

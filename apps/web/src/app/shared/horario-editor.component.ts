@@ -8,13 +8,14 @@ import { IconComponent } from './icon.component';
   imports: [IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
-    .faixa { display: flex; align-items: center; gap: 8px; }
-    .faixa .input { flex: 1 1 0; min-width: 0; }
-    .faixa span { color: var(--ink-2); }
-    .faixa .btn { margin-left: auto; min-width: 44px; padding: 0; }
+    .faixa { display: flex; align-items: center; gap: 10px; }
+    .faixa span { color: var(--ink-2); font-size: var(--fs-small); }
+    .faixa .btn { min-width: 36px; min-height: 36px; padding: 0; color: var(--ink-2); }
     .dia { align-items: flex-start; flex-direction: column; gap: 8px; }
     .dia__cab { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 32px; }
-    .dia__cab strong { flex: 1; font-weight: 400; }
+    .dia__cab strong { font-weight: 700; }
+    .dia__cab .soft { margin-left: 8px; }
+    .mais { color: var(--orange-ink); font-size: var(--fs-caption); font-weight: 700; text-decoration: none; min-height: 28px; padding: 0; }
   `,
   template: `
     <div class="stack">
@@ -23,8 +24,6 @@ import { IconComponent } from './icon.component';
           @let faixas = semana()[dia.id];
           <div class="row dia">
             <div class="dia__cab">
-              <strong>{{ dia.longo }}</strong>
-              @if (!faixas.length) { <span class="soft small">Fechado</span> }
               <button
                 type="button"
                 class="switch"
@@ -33,6 +32,8 @@ import { IconComponent } from './icon.component';
                 [attr.aria-label]="dia.longo + ': ' + (faixas.length ? 'aberto' : 'fechado')"
                 (click)="alternar(dia.id)"
               ></button>
+              <strong>{{ dia.longo }}</strong>
+              @if (!faixas.length) { <span class="soft small">Fechado</span> }
             </div>
             @for (f of faixas; track $index; let i = $index) {
               <div class="faixa">
@@ -45,13 +46,13 @@ import { IconComponent } from './icon.component';
               </div>
             }
             @if (faixas.length > 0 && faixas.length < 3) {
-              <button type="button" class="btn btn--plain btn--small" (click)="adicionar(dia.id)"><hh-icon nome="plus" /> Outro horário no dia</button>
+              <button type="button" class="btn btn--plain mais" (click)="adicionar(dia.id)">+ Outro horário no dia</button>
             }
           </div>
         }
       </div>
-      <button type="button" class="btn btn--plain" style="align-self: flex-start" (click)="repetirPrimeiro()" [disabled]="!temAberto()">
-        Repetir o primeiro dia nos outros dias abertos
+      <button type="button" class="btn btn--small" style="align-self: flex-start" (click)="repetirPrimeiro()" [disabled]="!temAberto()">
+        Repetir o primeiro dia nos outros
       </button>
     </div>
   `,

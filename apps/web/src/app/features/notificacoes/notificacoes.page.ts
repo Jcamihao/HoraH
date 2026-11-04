@@ -32,16 +32,16 @@ const ROTULO: Record<TipoNotificacao, { texto: string; classe: string }> = {
         <div class="empty"><h2>Nada por aqui</h2><p>Novos agendamentos, cancelamentos e avisos do WhatsApp aparecem aqui.</p></div>
       } @else {
         @if (naoLidas() > 0) {
-          <button type="button" class="btn btn--plain" style="margin-top: 8px" (click)="marcarTodas()">Marcar todas como lidas</button>
+          <button type="button" class="btn btn--small" (click)="marcarTodas()">Marcar todas como lidas</button>
         }
-        <div class="group" style="margin-top: 16px">
+        <div class="notifs">
           @for (n of lista(); track n.id) {
-            <button type="button" class="row row--link" (click)="abrir(n)">
-              <span class="row__main">
-                <span class="row__title" [style.font-weight]="n.lida ? 400 : 700">{{ n.titulo }}</span>
-                <span class="row__sub">{{ n.corpo }}</span>
-                <span class="row__sub">{{ quando(n) }}</span>
+            <button type="button" class="notif" [class.notif--nova]="!n.lida" (click)="abrir(n)">
+              <span class="notif__topo">
+                <span class="notif__titulo">{{ n.titulo }}</span>
+                <span class="notif__quando">{{ quando(n) }}</span>
               </span>
+              <span class="notif__corpo">{{ n.corpo }}</span>
               <span [class]="'badge ' + rotulo(n).classe">{{ rotulo(n).texto }}</span>
             </button>
           }

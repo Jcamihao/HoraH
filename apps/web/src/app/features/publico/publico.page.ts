@@ -31,6 +31,7 @@ const ETAPAS: Etapa[] = ['quem', 'servico', 'quando', 'dados', 'pronto'];
             <button type="button" class="pub-back" (click)="ir(destino)"><hh-icon nome="chevron-left" /> Voltar</button>
           }
           @if (salao(); as s) {
+            <span class="pub-tag">agenda online</span>
             <h1 class="pub-nome" [class.pub-nome--medio]="s.nome.length > 14 && s.nome.length <= 28" [class.pub-nome--longo]="s.nome.length > 28">{{ s.nome }}</h1>
             @if (etapaAtual() === 'quem') { <p class="pub-lead">Marque seu horário aqui, em menos de um minuto.</p> }
           } @else if (!carregando()) {
@@ -64,6 +65,7 @@ const ETAPAS: Etapa[] = ['quem', 'servico', 'quando', 'dados', 'pronto'];
                   <h2 class="pub-q">Com quem você quer marcar?</h2>
                   @for (p of s.profissionais; track p.id) {
                     <button type="button" class="pub-choice" (click)="escolherProfissional(p)">
+                      <span class="pub-avatar" [class]="'pub-avatar pub-avatar--' + ($index % 3)" aria-hidden="true">{{ iniciais(p.nome) }}</span>
                       <span class="pub-choice__main">
                         <span class="pub-choice__title">{{ p.nome }}</span>
                         <span class="pub-choice__sub">{{ resumoServicos(p) }}</span>
@@ -259,6 +261,11 @@ export class PublicoPage {
 
   protected ir(etapa: Etapa, substituir = false): Promise<boolean> {
     return this.router.navigate([], { queryParams: { etapa, profissional: null, servico: null }, queryParamsHandling: 'merge', replaceUrl: substituir });
+  }
+
+  protected iniciais(nome: string): string {
+    const partes = nome.trim().split(/\s+/);
+    return ((partes[0]?.[0] ?? '') + (partes.length > 1 ? (partes[partes.length - 1]?.[0] ?? '') : '')).toUpperCase();
   }
 
   protected resumoServicos(p: ProfissionalPublicoDto): string {

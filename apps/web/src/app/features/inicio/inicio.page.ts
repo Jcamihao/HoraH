@@ -14,68 +14,75 @@ import { NavbarComponent } from '../../shared/navbar.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <hh-navbar titulo="Início" />
-    <main class="page page--tabbed">
+    <main class="page page--wide page--tabbed">
       <h1 class="large-title">Início</h1>
       <p class="large-sub">{{ salao()?.nome }}</p>
 
-      @if (erro()) { <p class="banner banner--bad" style="margin-top: 16px" role="alert">{{ erro() }}</p> }
+      @if (erro()) { <p class="banner banner--bad" style="margin-bottom: 16px" role="alert">{{ erro() }}</p> }
 
       @if (diasDeTeste() !== null) {
-        <p class="banner" style="margin-top: 24px">
-          Teste grátis: {{ diasDeTeste() === 0 ? 'último dia' : diasDeTeste() === 1 ? 'falta 1 dia' : 'faltam ' + diasDeTeste() + ' dias' }}. Nenhum cartão foi pedido.
-        </p>
-      }
-
-      <p class="group__header">Seu salão</p>
-      <div class="group">
-        <a class="row row--link" routerLink="/painel/profissionais">
-          <span class="row__main"><span class="row__title">Equipe</span></span>
-          <span class="row__detail">{{ carregando() ? '…' : ativosProf() }}</span>
-        </a>
-        <a class="row row--link" routerLink="/painel/servicos">
-          <span class="row__main"><span class="row__title">Serviços</span></span>
-          <span class="row__detail">{{ carregando() ? '…' : ativosServ() }}</span>
-        </a>
-        <a class="row row--link" routerLink="/painel/configuracoes">
-          <span class="row__main"><span class="row__title">Horário e regras</span></span>
-        </a>
-      </div>
-
-      <p class="group__header">Hoje</p>
-      <div class="group">
-        <a class="row row--link" routerLink="/painel/agenda">
-          <span class="row__main"><span class="row__title">Agenda</span><span class="row__sub">{{ resumoHoje() }}</span></span>
-        </a>
-      </div>
-
-      @if (naoLidas() > 0 || whatsappDesligado()) {
-        <p class="group__header">Atenção</p>
-        <div class="group">
-          @if (naoLidas() > 0) {
-            <a class="row row--link" routerLink="/painel/notificacoes">
-              <span class="row__main"><span class="row__title">Notificações</span><span class="row__sub">{{ naoLidas() === 1 ? '1 aviso novo' : naoLidas() + ' avisos novos' }}</span></span>
-              <span class="badge badge--wait">{{ naoLidas() }}</span>
-            </a>
-          }
-          @if (whatsappDesligado()) {
-            <a class="row row--link" routerLink="/painel/whatsapp">
-              <span class="row__main"><span class="row__title">Conectar o WhatsApp</span><span class="row__sub">Seus clientes passam a receber confirmação e lembrete, e marcam horário pelo número do salão.</span></span>
-            </a>
-          }
+        <div class="faixa-teste" style="margin-bottom: 16px">
+          <div>
+            <span class="tag-escura">Teste grátis</span>
+            <strong>{{ diasDeTeste() === 0 ? 'Último dia' : diasDeTeste() === 1 ? 'Falta 1 dia' : 'Faltam ' + diasDeTeste() + ' dias' }}</strong>
+          </div>
+          <a class="btn btn--dark btn--seta" routerLink="/painel/assinatura">Assinar</a>
         </div>
       }
 
-      <p class="group__header">Link de agendamento</p>
-      <div class="group">
-        <div class="row">
-          <span class="row__main"><span class="row__title" style="word-break: break-all" data-testid="link-publico">{{ linkPublico() }}</span><span class="row__sub">Envie para seus clientes marcarem sozinhos.</span></span>
-        </div>
+      <div class="cards">
+        <a class="hero" routerLink="/painel/agenda">
+          <span class="kicker">Hoje</span>
+          <span class="hero__linha">
+            <span><small>Agenda</small><strong>{{ resumoHoje() }}</strong></span>
+            <span class="hero__seta" aria-hidden="true"><hh-icon nome="arrow-right" /></span>
+          </span>
+        </a>
+
+        <section class="card">
+          <p class="kicker">Seu salão</p>
+          <a class="row row--link" routerLink="/painel/profissionais">
+            <span class="row__main"><span class="row__title">Equipe</span></span>
+            <span class="row__detail soft">{{ carregando() ? '…' : ativosProf() }}</span>
+          </a>
+          <a class="row row--link" routerLink="/painel/servicos">
+            <span class="row__main"><span class="row__title">Serviços</span></span>
+            <span class="row__detail soft">{{ carregando() ? '…' : ativosServ() }}</span>
+          </a>
+          <a class="row row--link" routerLink="/painel/configuracoes">
+            <span class="row__main"><span class="row__title">Horário e regras</span></span>
+          </a>
+        </section>
+
+        @if (naoLidas() > 0 || whatsappDesligado()) {
+          <section class="card">
+            <p class="kicker kicker--atencao">Atenção</p>
+            @if (naoLidas() > 0) {
+              <a class="row row--link" routerLink="/painel/notificacoes">
+                <span class="row__main"><span class="row__title">Notificações</span><span class="row__sub">{{ naoLidas() === 1 ? '1 aviso novo' : naoLidas() + ' avisos novos' }}</span></span>
+                <span class="dot-count">{{ naoLidas() }}</span>
+              </a>
+            }
+            @if (whatsappDesligado()) {
+              <a class="row row--link" routerLink="/painel/whatsapp">
+                <span class="row__main"><span class="row__title">Conectar o WhatsApp</span><span class="row__sub">Confirmação e lembrete automáticos.</span></span>
+              </a>
+            }
+          </section>
+        }
+
+        <section class="card">
+          <p class="kicker">Link de agendamento</p>
+          <div class="card__corpo">
+            <p class="card__link" data-testid="link-publico">{{ linkPublico() }}</p>
+            <div class="cluster">
+              <button type="button" class="btn btn--filled btn--small" (click)="copiarLink()">Copiar link</button>
+              <a class="btn btn--small" [href]="linkPublico()" target="_blank" rel="noopener noreferrer">Abrir página <hh-icon nome="external" /></a>
+            </div>
+            @if (copiado()) { <p class="hint" role="status">Link copiado.</p> }
+          </div>
+        </section>
       </div>
-      <div class="cluster" style="margin-top: 12px">
-        <button type="button" class="btn" style="flex: 1" (click)="copiarLink()"><hh-icon nome="copy" /> Copiar link</button>
-        <a class="btn" style="flex: 1" [href]="linkPublico()" target="_blank" rel="noopener noreferrer"><hh-icon nome="link" /> Abrir página</a>
-      </div>
-      @if (copiado()) { <p class="hint" style="margin-top: 8px" role="status">Link copiado.</p> }
     </main>
   `,
 })

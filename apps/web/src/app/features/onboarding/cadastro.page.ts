@@ -47,15 +47,14 @@ type Rascunho = Record<string, Record<string, Item>>;
   imports: [ReactiveFormsModule, HorarioEditorComponent, IconComponent, NavbarComponent, PrecoCampoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <hh-navbar [voltar]="indice() > 0 ? ['/painel/cadastro', etapas[indice() - 1].id] : null" [rotulo]="indice() > 0 ? etapas[indice() - 1].nome : ''" [titulo]="etapa().titulo">
-      Passo {{ indice() + 1 }} de {{ etapas.length }}
-    </hh-navbar>
+    <hh-navbar [voltar]="indice() > 0 ? ['/painel/cadastro', etapas[indice() - 1].id] : null" [rotulo]="indice() > 0 ? etapas[indice() - 1].nome : ''" [titulo]="etapa().titulo" />
 
     <main class="page page--dock">
+      <p class="progress-label">Etapa {{ indice() + 1 }} de {{ etapas.length }}</p>
       <div class="progress" role="progressbar" [attr.aria-valuenow]="indice() + 1" aria-valuemin="1" [attr.aria-valuemax]="etapas.length" [attr.aria-label]="'Passo ' + (indice() + 1) + ' de ' + etapas.length + ': ' + etapa().nome">
-        <i [style.width.%]="((indice() + 1) / etapas.length) * 100"></i>
+        @for (e of etapas; track e.id; let i = $index) { <i [class.on]="i <= indice()"></i> }
       </div>
-      <h1 class="large-title" style="margin-top: 16px">{{ etapa().titulo }}</h1>
+      <h1 class="large-title">{{ etapa().titulo }}</h1>
       <p class="large-sub">{{ etapa().sub }}</p>
 
       @if (carregando()) {

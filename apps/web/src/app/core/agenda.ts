@@ -24,7 +24,7 @@ export function rotuloStatus(s: StatusAgendamento): string {
 
 /** Só estados que dizem algo ganham etiqueta; "agendado" é o normal e fica sem. */
 export function classeStatus(s: StatusAgendamento): string {
-  return { AGENDADO: '', CONCLUIDO: 'badge--ok', FALTOU: 'badge--bad', CANCELADO: '' }[s];
+  return { AGENDADO: '', CONCLUIDO: 'badge--done', FALTOU: 'badge--wait', CANCELADO: '' }[s];
 }
 
 export function rotuloConfirmacao(c: ConfirmacaoAgendamento): string {

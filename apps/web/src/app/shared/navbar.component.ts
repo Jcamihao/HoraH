@@ -12,7 +12,7 @@ import { IconComponent } from './icon.component';
       @if (voltar(); as destino) {
         <a class="navbar__back" [routerLink]="destino"><hh-icon nome="chevron-left" /> {{ rotulo() }}</a>
       } @else {
-        <span></span>
+        <span class="brand">Hora</span>
       }
       <span class="navbar__title" aria-hidden="true">{{ titulo() }}</span>
       <span class="navbar__action"><ng-content /></span>

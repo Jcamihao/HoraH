@@ -64,15 +64,42 @@ const PROXIMO = { dia: 'Próximo dia', semana: 'Próxima semana', mes: 'Próximo
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <hh-navbar titulo="Agenda" />
-    <main class="page page--tabbed page--fab">
+    <main class="page page--wide page--tabbed">
       <h1 class="large-title">Agenda</h1>
-      <p class="large-sub large-sub--aberto">{{ subtitulo() }}</p>
-      <div class="large-tabs">
-        <div class="seg seg--dark" role="tablist" aria-label="Visão da agenda">
+      <p class="large-sub">{{ subtitulo() }}</p>
+
+      <div class="agenda-barra">
+        <div class="seg" role="tablist" aria-label="Visão da agenda">
           @for (aba of abas; track aba.modo) {
             <button type="button" role="tab" id="aba-{{ aba.modo }}" aria-controls="agenda-painel" [attr.aria-selected]="estado.modo() === aba.modo" (click)="estado.modo.set(aba.modo)">{{ aba.rotulo }}</button>
           }
         </div>
+        <div class="stepper" [class.stepper--dia]="estado.modo() === 'dia'">
+          <button type="button" class="stepper__seta" [attr.aria-label]="rotuloAnterior()" (click)="andar(-1)"><hh-icon nome="chevron-left" /></button>
+          <span class="stepper__atual" aria-live="polite">
+            <span class="sr-only">{{ rotulo() }}</span>
+            <span class="stepper__txt" aria-hidden="true">{{ subtitulo() }}</span>
+          </span>
+          <button type="button" class="stepper__seta" [attr.aria-label]="rotuloProximo()" (click)="andar(1)"><hh-icon nome="chevron-right" /></button>
+        </div>
+      </div>
+
+      <div class="agenda-barra">
+        @if (equipe().length > 1) {
+          <label class="filtro" for="filtro-prof">
+            <span>Profissional</span>
+            <select id="filtro-prof" [value]="estado.profissionalId()" (change)="estado.profissionalId.set($any($event.target).value)">
+              <option value="">Todos</option>
+              @for (p of equipe(); track p.id) { <option [value]="p.id">{{ p.nome }}</option> }
+            </select>
+          </label>
+        }
+        @if (!hojeVisivel()) {
+          <button type="button" class="btn btn--small" (click)="irParaHoje()">Voltar para hoje</button>
+        }
+        @if (!restrito()) {
+          <a class="btn btn--filled btn--mais" routerLink="/painel/agenda/novo">Marcar horário</a>
+        }
       </div>
 
       @if (estado.aviso(); as aviso) {
@@ -83,141 +110,113 @@ const PROXIMO = { dia: 'Próximo dia', semana: 'Próxima semana', mes: 'Próximo
         <p class="banner" style="margin-top: 16px">Os horários seguem o relógio do salão ({{ nomeFuso() }}), que é diferente do seu aparelho.</p>
       }
 
-      <div class="stepper" [class.stepper--dia]="estado.modo() === 'dia'">
-        <button type="button" class="stepper__lado stepper__lado--ant" tabindex="-1" aria-hidden="true" (click)="andar(-1)">
-          <span class="stepper__txt">{{ anterior().texto }}</span><small>{{ anterior().micro }}</small>
-        </button>
-        <button type="button" class="stepper__seta" [attr.aria-label]="rotuloAnterior()" (click)="andar(-1)"><hh-icon nome="chevron-left" /></button>
-        <span class="stepper__atual" aria-live="polite">
-          <span class="sr-only">{{ rotulo() }}</span>
-          <span class="stepper__txt" aria-hidden="true">{{ atual().texto }}</span><small aria-hidden="true">{{ atual().micro }}</small>
-        </span>
-        <button type="button" class="stepper__seta" [attr.aria-label]="rotuloProximo()" (click)="andar(1)"><hh-icon nome="chevron-right" /></button>
-        <button type="button" class="stepper__lado stepper__lado--prox" tabindex="-1" aria-hidden="true" (click)="andar(1)">
-          <span class="stepper__txt">{{ proximo().texto }}</span><small>{{ proximo().micro }}</small>
-        </button>
-      </div>
-
-      @if (equipe().length > 1) {
-        <div class="group">
-          <div class="row row--field">
-            <label for="filtro-prof">Profissional</label>
-            <select id="filtro-prof" class="input" [value]="estado.profissionalId()" (change)="estado.profissionalId.set($any($event.target).value)">
-              <option value="">Todos</option>
-              @for (p of equipe(); track p.id) { <option [value]="p.id">{{ p.nome }}</option> }
-            </select>
-          </div>
-        </div>
-      }
-      @if (!hojeVisivel()) {
-        <button type="button" class="btn btn--plain" style="margin-top: 4px" (click)="irParaHoje()">Voltar para hoje</button>
-      }
-
       <div id="agenda-painel" role="tabpanel" [attr.aria-labelledby]="'aba-' + estado.modo()" [attr.aria-busy]="carregando()">
       @if (carregando()) {
         <div class="stack" style="margin-top: 24px"><div class="skeleton"></div><div class="skeleton"></div></div>
       } @else if (estado.modo() === 'dia') {
-        @if (!temItensNoDia()) {
-          <p class="agenda-aviso">Dia livre: nenhum agendamento ou bloqueio.</p>
-        }
+        <div class="agenda-dia">
         <div class="horas">
           @for (bloco of blocosDoDia(); track bloco.hora) {
-            @if (bloco.itens.length) {
-              @for (item of bloco.itens; track item.chave) {
-                @if (item.tipo === 'agendamento') {
-                  @let a = item.ag;
-                  @let selo = seloDe(a);
-                  <a class="reuniao" [class.reuniao--cancelada]="a.status === 'CANCELADO'" [routerLink]="['/painel/agenda', a.id]">
-                    <span class="reuniao__hora">{{ item.hora }}<small><span class="sr-only">até </span>{{ hora(a.fim) }}</small></span>
-                    <span class="reuniao__corpo">
-                      <span class="reuniao__topo">
-                        <span class="row__main">
-                          <span class="row__title">{{ a.cliente.nome }}</span>
-                          <span class="row__sub">{{ a.servico.nome }}@if (mostrarProfissional()) { · {{ a.profissional.nome }} }</span>
-                        </span>
-                        <hh-icon nome="chevron-right" />
+            <div class="slot">
+              <span class="slot__hora">{{ horaCheiaTexto(bloco.hora) }}</span>
+              @if (bloco.itens.length) {
+                <div class="slot__itens">
+                @for (item of bloco.itens; track item.chave) {
+                  @if (item.tipo === 'agendamento') {
+                    @let a = item.ag;
+                    @let selo = seloDe(a);
+                    <a class="reuniao" [class.reuniao--cancelada]="a.status === 'CANCELADO'" [routerLink]="['/painel/agenda', a.id]">
+                      <span class="reuniao__hora">{{ item.hora }}<small><span class="sr-only">até </span>{{ hora(a.fim) }}</small></span>
+                      <span class="reuniao__corpo">
+                        <span class="row__title">{{ a.cliente.nome }}</span>
+                        <span class="row__sub">{{ a.servico.nome }}@if (mostrarProfissional()) { · {{ a.profissional.nome }} }</span>
                       </span>
-                      @if (selo) { <span class="reuniao__rodape"><span [class]="'badge ' + selo.classe">{{ selo.texto }}</span></span> }
-                    </span>
-                  </a>
-                } @else {
-                  <div class="slot slot--bloqueio">
-                    <span class="slot__hora">@if (item.inteiro) { Dia } @else { {{ item.hora }} }</span>
-                    <span class="slot__barra">
-                      <span class="slot__texto">
-                        <span class="slot__titulo">Bloqueado{{ item.inteiro ? ' o dia todo' : ' até ' + item.ate }}</span>
-                        <span class="slot__sub">{{ item.bl.motivo ?? 'Sem motivo' }}@if (mostrarProfissional()) { · {{ nomeDe(item.bl.profissionalId) }} }</span>
+                      @if (selo) { <span [class]="'badge ' + selo.classe">{{ selo.texto }}</span> }
+                    </a>
+                  } @else {
+                    <div class="bloqueio">
+                      <span class="bloqueio__texto">
+                        <span class="bloqueio__titulo">Bloqueado{{ item.inteiro ? ' o dia todo' : ' até ' + item.ate }}</span>
+                        <span class="bloqueio__sub">{{ item.inteiro ? 'Dia inteiro' : item.hora + '–' + item.ate }} · {{ item.bl.motivo ?? 'Sem motivo' }}@if (mostrarProfissional()) { · {{ nomeDe(item.bl.profissionalId) }} }</span>
                       </span>
                       <button type="button" class="btn btn--small" [class.btn--bad]="removendoId() === item.bl.id" (click)="remover(item.bl.id)">
                         {{ removendoId() === item.bl.id ? 'Confirmar' : 'Remover' }}
                       </button>
-                    </span>
-                  </div>
+                    </div>
+                  }
                 }
-              }
-            } @else {
-              <div class="slot">
-                <span class="slot__hora">{{ bloco.hora }}h</span>
-                <span class="slot__barra slot__barra--vazio">Sem horários</span>
-              </div>
-            }
-          }
-        </div>
-      } @else if (estado.modo() === 'semana') {
-        @if (!temAtendimentoNaSemana()) {
-          <p class="agenda-aviso">Nenhum agendamento nesta semana.</p>
-        }
-        <div class="semana">
-          @for (col of semana().colunas; track col.dia) {
-            <div class="semana__col" [class.semana__col--sel]="col.selecionado">
-              <span class="semana__dia">{{ col.rotulo }}</span>
-              <button type="button" class="tile" [class.tile--ocupado]="col.ocupado" [class.tile--sel]="col.selecionado" [class.tile--hoje]="col.hoje"
-                [attr.aria-current]="col.hoje ? 'date' : null" [attr.aria-label]="rotuloDoTile(col)" (click)="abrirDia(col.dia)">
-                <span class="tile__num">{{ col.num }}</span><small>{{ col.mes }}</small>
-              </button>
-              @for (chip of col.chips; track chip.hora) {
-                @if (chip.ags.length === 1) {
-                  <a class="chip-hora" [routerLink]="['/painel/agenda', chip.ags[0].id]" [attr.aria-label]="rotuloDoChip(chip)">{{ chip.hora }}<small>h</small></a>
-                } @else if (chip.ags.length > 1) {
-                  <button type="button" class="chip-hora" [attr.aria-label]="rotuloDoChip(chip)" (click)="abrirDia(col.dia)">{{ chip.hora }}<small>h</small></button>
-                } @else {
-                  <span class="chip-hora chip-hora--vazio" aria-hidden="true"></span>
-                }
+                </div>
+              } @else {
+                <span class="slot__vazio">Sem horários</span>
               }
             </div>
           }
         </div>
-      } @else {
-        @if (!temAtendimentoNoMes()) {
-          <p class="agenda-aviso">Nenhum agendamento neste mês.</p>
+        @if (!restrito()) {
+          <aside class="cartao-folgas">
+            <p class="kicker">Folgas</p>
+            <p>Folga, almoço extra ou consulta: o cliente não vê esses horários.</p>
+            <a class="btn" routerLink="/painel/agenda/bloquear">Bloquear horário</a>
+          </aside>
         }
+        </div>
+        @if (!temItensNoDia()) {
+          <p class="agenda-aviso">Dia livre: nenhum agendamento ou bloqueio.</p>
+        }
+      } @else if (estado.modo() === 'semana') {
+        <div class="semana">
+          @for (col of semana().colunas; track col.dia) {
+            <div class="semana__col" [class.semana__col--sel]="col.selecionado">
+              <span class="semana__dia">{{ col.rotulo }}</span>
+              <button type="button" class="semana__num" [class.semana__num--hoje]="col.hoje"
+                [attr.aria-current]="col.hoje ? 'date' : null" [attr.aria-label]="rotuloDoTile(col)" (click)="abrirDia(col.dia)">{{ col.num }}</button>
+              <span class="semana__ponto" [class.semana__ponto--on]="col.ocupado" aria-hidden="true"></span>
+              @for (chip of col.chips; track chip.hora) {
+                @if (chip.ags.length === 1) {
+                  <a class="chip-hora" [routerLink]="['/painel/agenda', chip.ags[0].id]" [attr.aria-label]="rotuloDoChip(chip)">{{ horaCheiaTexto(chip.hora) }}</a>
+                } @else if (chip.ags.length > 1) {
+                  <button type="button" class="chip-hora" [attr.aria-label]="rotuloDoChip(chip)" (click)="abrirDia(col.dia)">{{ horaCheiaTexto(chip.hora) }}</button>
+                }
+              }
+              @if (!col.ocupado) { <span class="semana__livre">Livre</span> }
+            </div>
+          }
+        </div>
+        <p class="legenda">
+          <span><i class="legenda__hoje"></i> Hoje</span>
+          <span><i class="legenda__sel"></i> Selecionado</span>
+          <span><i class="legenda__ponto"></i> Com atendimento</span>
+        </p>
+        @if (!temAtendimentoNaSemana()) {
+          <p class="agenda-aviso">Nenhum agendamento nesta semana.</p>
+        }
+      } @else {
         <div class="mes">
           @for (nome of rotulosDaSemana; track nome) { <span class="mes__cab">{{ nome }}</span> }
           @for (semana of mes(); track semana[0].data) {
             @for (c of semana; track c.data) {
               <button type="button" class="mes__dia" [class.mes__dia--fora]="!c.dentro" [class.mes__dia--hoje]="c.hoje"
                 [attr.aria-current]="c.hoje ? 'date' : null" [attr.aria-label]="rotuloDaCelula(c)" (click)="abrirDia(c.data)">
-                <span class="contagem" [class.contagem--zero]="!c.qtd" aria-hidden="true">{{ c.qtd }}</span>
                 <span class="mes__num" aria-hidden="true">{{ c.num }}</span>
+                @if (c.dentro && c.qtd) { <span class="contagem" aria-hidden="true">{{ c.qtd }}</span> }
               </button>
             }
           }
         </div>
+        @if (!temAtendimentoNoMes()) {
+          <p class="agenda-aviso">Nenhum agendamento neste mês.</p>
+        }
       }
       </div>
 
-      @if (!restrito()) {
-        <p class="group__header">Folgas</p>
-        <div class="group">
-          <a class="row row--link" routerLink="/painel/agenda/bloquear">
-            <span class="row__main"><span class="row__title">Bloquear horário</span><span class="row__sub">Folga, almoço extra, consulta: o cliente deixa de ver esses horários.</span></span>
-          </a>
-        </div>
+      @if (!restrito() && estado.modo() !== 'dia') {
+        <aside class="cartao-folgas cartao-folgas--solto">
+          <p class="kicker">Folgas</p>
+          <p>Folga, almoço extra ou consulta: o cliente não vê esses horários.</p>
+          <a class="btn" routerLink="/painel/agenda/bloquear">Bloquear horário</a>
+        </aside>
       }
     </main>
-    @if (!restrito()) {
-      <a class="fab" routerLink="/painel/agenda/novo"><hh-icon nome="plus" /> Marcar horário</a>
-    }
   `,
 })
 export class AgendaPage {
@@ -255,11 +254,23 @@ export class AgendaPage {
     const dias = diasDaSemana(this.dataAtual());
     return intervaloCurto(dias[0], dias[6]);
   });
+  /** "Quarta, 4 de novembro", "2 a 8 de novembro" ou "Novembro de 2026": vale para o subtítulo e para o seletor. */
   protected readonly subtitulo = computed(() => {
     const modo = this.estado.modo();
-    if (modo === 'dia') return diaLongo(this.dataAtual());
-    if (modo === 'mes') return mesEAno(this.dataAtual());
-    return this.salaoStore.dados()?.nome ?? '';
+    if (modo === 'mes') {
+      const mes = mesEAno(this.dataAtual());
+      return mes.charAt(0).toUpperCase() + mes.slice(1);
+    }
+    if (modo === 'semana') {
+      const dias = diasDaSemana(this.dataAtual());
+      const [mesIni] = mesEAno(dias[0]).split(' ');
+      const [mesFim] = mesEAno(dias[6]).split(' ');
+      return mesIni === mesFim
+        ? `${diaDoMes(dias[0])} a ${diaDoMes(dias[6])} de ${mesFim}`
+        : `${diaDoMes(dias[0])} de ${mesIni} a ${diaDoMes(dias[6])} de ${mesFim}`;
+    }
+    const longo = diaLongo(this.dataAtual()).replace('-feira', '');
+    return longo.charAt(0).toUpperCase() + longo.slice(1);
   });
 
   protected readonly anterior = computed(() => pontoDoSeletor(this.estado.modo(), andarNaVisao(this.estado.modo(), this.dataAtual(), -1)));
@@ -386,6 +397,10 @@ export class AgendaPage {
   }
 
   /** Só estados que dizem algo ganham selo; "agendado" é o normal, a não ser que o cliente já tenha confirmado. */
+  protected horaCheiaTexto(h: number): string {
+    return `${String(h).padStart(2, '0')}:00`;
+  }
+
   protected seloDe(a: AgendamentoDto): { classe: string; texto: string } | null {
     if (a.status !== 'AGENDADO') return { classe: classeStatus(a.status), texto: rotuloStatus(a.status) };
     if (a.confirmacao === 'CONFIRMADO') return { classe: 'badge--ok', texto: rotuloConfirmacao(a.confirmacao) };

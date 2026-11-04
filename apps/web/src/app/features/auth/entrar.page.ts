@@ -1,3 +1,4 @@
+import { AuthLadoComponent } from '../../shared/auth-lado.component';
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -6,14 +7,17 @@ import { mensagemDeErro } from '../../core/errors';
 
 @Component({
   selector: 'app-entrar',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AuthLadoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <main class="page" style="padding-top: 72px">
+    <main class="auth">
+      <hh-auth-lado class="auth__lado" />
+      <div class="auth__form">
+        <span class="brand auth__marca">Hora</span>
       <h1 class="large-title">Entrar</h1>
       <p class="large-sub">Hora H · a agenda do seu salão, no celular.</p>
 
-      <form class="stack" style="margin-top: 24px" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <form class="stack" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
         @if (motivo() === 'expirou') {
           <p class="banner" role="status">Sua sessão acabou. Entre de novo para continuar.</p>
         }
@@ -33,10 +37,9 @@ import { mensagemDeErro } from '../../core/errors';
         <button class="btn btn--filled btn--block" type="submit" [disabled]="enviando()">
           {{ enviando() ? 'Entrando…' : 'Entrar' }}
         </button>
-        <p class="soft small" style="text-align: center">
-          Ainda não tem conta? <a routerLink="/cadastrar">Criar conta, 7 dias grátis</a>
-        </p>
+        <p class="auth__troca"><a routerLink="/cadastrar">Criar conta, 7 dias grátis</a></p>
       </form>
+      </div>
     </main>
   `,
 })
