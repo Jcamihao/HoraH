@@ -18,6 +18,10 @@ O WA-AKG é um programa separado que conversa com o WhatsApp. O Hora H fala com 
 
 **Armadilha principal:** o WA-AKG só chama endereço HTTPS público e recusa `localhost`. Para receber a confirmação de entrega e as respostas do cliente no seu computador, o webhook precisa de um túnel (passo B6). Sem túnel dá para conectar e enviar, mas as respostas "1" e "2" e o menu do bot não chegam ao app.
 
+**Armadilha do endereço:** o WA-AKG roda dentro do WSL. No navegador do Windows, abra sempre `http://localhost:3100`. O endereço `http://127.0.0.1:3100` **não conecta** a partir do Windows (conferido). Dentro do WSL (curl, o Hora H) o `127.0.0.1` funciona normalmente.
+
+**Ordem importante:** o WA-AKG usa o mesmo banco do Hora H. Suba primeiro o `npm run dev` do Hora H; sem ele a tela inicial do WA-AKG abre, mas o login falha e o terminal mostra "Can't reach database server".
+
 **B1. Instalar (fora da pasta do Hora H)**
 
 ```bash
@@ -36,8 +40,8 @@ Troque `COLE_AQUI` pelo resultado de `openssl rand -base64 32`.
 ```
 PORT=3100
 HOSTNAME=127.0.0.1
-BASE_URL=http://127.0.0.1:3100
-NEXTAUTH_URL=http://127.0.0.1:3100
+BASE_URL=http://localhost:3100
+NEXTAUTH_URL=http://localhost:3100
 AUTH_TRUST_HOST=true
 AUTH_SECRET=COLE_AQUI
 DATABASE_URL=postgresql://horah:horah@localhost:5440/horah?schema=wa_akg
@@ -57,7 +61,7 @@ node scripts/setup-admin.js seu@email.com UmaSenhaForte123
 npm run dev
 ```
 
-Deixe o `npm run dev` rodando num terminal à parte. Abra http://127.0.0.1:3100 e entre com esse e-mail e senha. Esse usuário nasce SUPERADMIN, o que serve para teste local. Em produção use um usuário comum, porque webhooks de SUPERADMIN recebem eventos de todas as sessões.
+Deixe o `npm run dev` rodando num terminal à parte. No log aparece `invalid input value for enum "Role": "OWNER"`: é código de migração do WA-AKG escrito para MySQL, falha no PostgreSQL e pode ser ignorado. Abra http://localhost:3100, clique em **Sign In** e entre com esse e-mail e senha. Esse usuário nasce SUPERADMIN, o que serve para teste local. O `setup-admin.js` com um e-mail que já existe só promove a SUPERADMIN e **não troca a senha**; se esquecer a senha, crie outro usuário com outro e-mail. Basta um usuário. Em produção use um usuário comum, porque webhooks de SUPERADMIN recebem eventos de todas as sessões.
 
 **B4. Pegar a chave de API**
 
@@ -69,10 +73,12 @@ No painel do WA-AKG, abra **Webhooks** (`/dashboard/webhooks`). Há um cartão d
 
 **B6. Endereço público para o webhook (só para teste local)**
 
-Instale o `cloudflared` e rode, num terminal à parte:
+Num terminal à parte, no WSL, baixe o `cloudflared` (uma vez) e rode o túnel:
 
 ```bash
-cloudflared tunnel --url http://localhost:3000
+curl -L -o ~/cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+chmod +x ~/cloudflared
+~/cloudflared tunnel --url http://localhost:3000
 ```
 
 Ele imprime um endereço como `https://algo.trycloudflare.com`. Esse endereço muda toda vez que o túnel reinicia. Alternativa: `ngrok http 3000`. Nenhum dos dois foi testado neste projeto.
@@ -191,4 +197,5 @@ As respostas "1" e "2" só chegam ao app se o túnel do B6 estiver ativo.
 - O texto exato do menu do bot não foi conferido na tela; os passos da D4 seguem o que o bot mostrar.
 - O envio e a entrega reais de mensagem **nunca foram vistos funcionando** antes: foram testados só contra um WA-AKG de mentira. A Parte D é a primeira vez de verdade; trate falhas ali como achados, não como erro seu.
 - O túnel (`cloudflared` ou `ngrok`) não foi testado neste projeto.
+- Conferido: a tela do WA-AKG abre em `http://localhost:3100` a partir do Windows e **não** abre em `http://127.0.0.1:3100`.
 - Esperados das partes C2, C3 (itens 3 a 5), C5 e C6 vêm dos testes automáticos, não de ter olhado a tela.
