@@ -22,8 +22,10 @@ Agendamento online para salões, barbearias e estúdios de beleza. Especificaç�
 Precisa de Node 20.19+ e npm. Sem Docker: o banco roda embutido.
 
 ```bash
-npm run dev     # tudo de uma vez: banco, API e site; Ctrl+C para parar
+npm run dev     # tudo de uma vez: banco, WA-AKG, túnel, API e site; Ctrl+C para parar
 ```
+
+O `dev` também liga o WhatsApp sozinho quando a pasta do WA-AKG existe ao lado do Hora H (`../wa-akg`, ou outra em `WAAKG_DIR`): sobe o WA-AKG na porta do `.env` dele, acha (ou cria) a chave de API, abre o túnel público (baixa o `cloudflared` se faltar; `TUNEL=0` desliga) e grava `WAAKG_URL`, `WAAKG_API_KEY`, `WAAKG_WEBHOOK_SECRET` e `WAAKG_WEBHOOK_URL` em `apps/api/.env` antes de subir a API. Se o WA-AKG ou o túnel já estiverem rodando, são reaproveitados. Sem o WA-AKG, tudo sobe normalmente, sem WhatsApp. O painel do WA-AKG abre em `http://localhost:3100` (use `localhost`, não `127.0.0.1`). Instalação do WA-AKG: [docs/roteiro-de-testes.md](docs/roteiro-de-testes.md), parte B.
 
 Na primeira vez o `dev` também faz o que falta: `npm install`, cria `apps/api/.env` com um `JWT_SECRET` aleatório e compila o pacote `shared`. Depois abra http://localhost:4200. Se uma das portas (5440, 3000, 4200) já estiver em uso, ele avisa e não sobe nada.
 
