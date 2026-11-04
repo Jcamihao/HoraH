@@ -1,6 +1,6 @@
 {
   "name": "hora-h",
-  "version": "0.8.4",
+  "version": "0.9.0",
   "private": true,
   "description": "Hora H — agendamento online para negócios de beleza",
   "workspaces": [
@@ -15,6 +15,9 @@
     "dev:db": "npm run db:dev -w @hora-h/api",
     "dev:api": "npm run start:dev -w @hora-h/api",
     "dev:web": "npm run start -w @hora-h/web",
-    "asaas:sandbox": "node apps/api/scripts/asaas-sandbox.mjs"
+    "asaas:sandbox": "node apps/api/scripts/asaas-sandbox.mjs",
+    "mobile:sync": "npm run mobile:sync -w @hora-h/web",
+    "mobile:android": "npm run mobile:android -w @hora-h/web",
+    "mobile:ios": "npm run mobile:ios -w @hora-h/web"
   }
 }

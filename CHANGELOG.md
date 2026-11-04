@@ -2,6 +2,15 @@
 
 Formato livre, mais novo primeiro. As versões seguem o `package.json` da raiz e de `apps/web`.
 
+## 0.9.0 (2026-11-04)
+
+Só o site (`apps/web`).
+
+- **PWA:** service worker (`@angular/service-worker`, só em produção) que guarda o casco do site para abrir rápido e funcionar sem internet até a tela do app; a API nunca entra no cache. Meta tags para o "Adicionar à Tela de Início" do iPhone; o manifest e os ícones já existiam (0.8.4).
+- **App nativo com Capacitor 8** (Android e iOS): projetos gerados em `apps/web/android` e `apps/web/ios`, configuração em `apps/web/capacitor.config.ts`, scripts `npm run mobile:sync`, `mobile:android`, `mobile:ios` e `mobile:assets`. O app carrega o site publicado (`HORAH_URL`), porque o login usa cookie `httpOnly` na mesma origem da API. `NativoService` ajusta a barra de status ao tema, trata o botão "voltar" do Android e esconde o splash. Ícones e splash (claro e escuro) gerados do logo (`apps/web/assets/`).
+- Dependências: `@capacitor/core`, `app`, `status-bar`, `splash-screen`, `keyboard` (e `cli`, `android`, `ios`, `assets` em desenvolvimento). `@angular/service-worker` fixado em 20.3.34 para casar com o `@angular/core` do projeto.
+- **README:** novo "Passo 10. App no celular: PWA e Capacitor", com o passo a passo, o teste em casa pela rede local, o aviso sobre o identificador do app e o que não foi verificado.
+
 ## 0.8.4 (2026-11-04)
 
 Só o site (`apps/web`).

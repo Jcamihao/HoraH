@@ -2,7 +2,7 @@
 
 Agendamento online para salões, barbearias e estúdios de beleza. Especificação completa em [ESPECIFICACAO.md](ESPECIFICACAO.md).
 
-**Versão 0.8.0.** Fases 1 a 4 prontas e interface nova (telas do Claude Design, com modo escuro). O contrato com o Asaas (sandbox) e com o WA-AKG (sessão, QR, pareamento, webhook) foi conferido contra instâncias reais; **envio de mensagem e confirmação de entrega do WhatsApp só foram testados contra um WA-AKG de mentira** (falta um celular para ler o QR): ver "WhatsApp" abaixo.
+**Versão 0.9.0.** Fases 1 a 4 prontas, interface nova (telas do Claude Design, com modo escuro) e app para celular (PWA e Capacitor). O contrato com o Asaas (sandbox) e com o WA-AKG (sessão, QR, pareamento, webhook) foi conferido contra instâncias reais; **envio de mensagem e confirmação de entrega do WhatsApp só foram testados contra um WA-AKG de mentira** (falta um celular para ler o QR): ver "WhatsApp" abaixo.
 - Fase 1 (fundação): multi-tenant, login e papéis, cadastro do dono com passo a passo, profissionais, serviços, preços por profissional, convite por link.
 - Fase 2 (agenda e link público): disponibilidade com fuso horário, página pública `/{slug}`, marcação sem conflito (garantida no banco), agendamento manual, situação do atendimento, folgas e bloqueios, cancelar e remarcar pelo link único `/agendamento/{token}`, agenda do painel (dia e semana).
 - Fase 3 (assinatura): teste de 7 dias, faixas por número de profissionais, cobrança mensal pelo Asaas (Pix, cartão ou boleto), webhooks, tolerância de 5 dias, bloqueio e modo restrito, mudança de faixa com confirmação, e-mails (cobrança e avisos ao dono de novo agendamento e cancelamento).
@@ -282,6 +282,69 @@ Arquitetura: um domínio com HTTPS na frente (Caddy, abaixo, ou Nginx) → `/api
 | Painel avisa "assinatura pendente" e recusa salvar (402) | assinatura bloqueada (modo restrito): regularize em Ajustes → Assinatura |
 | O PostgreSQL não sobe | ele recusa rodar como `root`; use um usuário comum |
 | Cliente não consegue marcar na página pública | assinatura bloqueada, ou nenhum profissional com serviço e preço definidos |
+
+### Passo 10. App no celular: PWA e Capacitor
+
+O Hora H roda no celular de duas formas, que podem conviver: como **PWA** (instalado direto do navegador, sem loja) e como **app nativo** de Android e iOS, feito com [Capacitor](https://capacitorjs.com/). Nas duas o site é o mesmo.
+
+#### PWA (instalar pelo navegador)
+
+Já vem pronto: `manifest.webmanifest`, ícones, e um service worker (`@angular/service-worker`) que guarda o "casco" do site (HTML, JavaScript, CSS, fontes e imagens) para abrir rápido e, sem internet, mostrar o app em vez do erro do navegador. **A API nunca é guardada em cache**: sem internet o app abre, mas não mostra dados.
+
+- **Precisa de HTTPS** (ou `localhost`) e do build de produção: o service worker fica desligado em `npm run dev` e só roda depois de `npm run build` (ver passo 8).
+- **Android (Chrome):** menu ⋮ → **Instalar app**.
+- **iPhone (Safari):** Compartilhar → **Adicionar à Tela de Início**. O ícone vem de `apple-touch-icon.png` e o app abre sem a barra do Safari.
+- Depois de uma atualização do site, o app instalado pega a versão nova na abertura seguinte.
+
+#### App nativo com Capacitor (Android e iOS)
+
+**Como funciona.** O app nativo é uma casca que **carrega o site publicado** (variável `HORAH_URL`), em vez de levar uma cópia dos arquivos. Isso é de propósito: o login usa um cookie `httpOnly` na mesma origem da API (`/api`), que só funciona quando o app e a API estão no mesmo endereço. Rodar uma cópia embutida exigiria mudar a autenticação (por exemplo, guardar o token no cofre do aparelho e liberar CORS), e isso **não foi feito**. Em contrapartida, o app nativo sempre mostra a versão mais nova do site. Dentro do app, o Hora H ajusta a barra de status ao tema (claro ou escuro), trata o botão "voltar" do Android e esconde o splash (`apps/web/src/app/core/nativo.service.ts`).
+
+**Pré-requisitos**
+
+| Para | Precisa de |
+|---|---|
+| Android | Android Studio (traz o SDK e o JDK) |
+| iOS | um Mac com Xcode e uma conta Apple Developer |
+| os dois | o site no ar (passo 8) em HTTPS, ou, só para teste, rodando no seu computador (veja abaixo) |
+
+**Passo a passo**
+
+1. **Defina o endereço do site e o identificador do app** (use o terminal da pasta do projeto):
+   ```bash
+   export HORAH_URL=https://horah.exemplo.com        # o seu domínio, sem barra no fim
+   export HORAH_APP_ID=br.com.suaempresa.horah        # identificador nas lojas
+   ```
+   **Atenção ao identificador:** os projetos que estão em `apps/web/android` e `apps/web/ios` foram gerados com `br.com.horah.app`. Se você quiser outro, **antes de publicar** apague as duas pastas e gere de novo com o seu: `cd apps/web && rm -rf android ios && npx cap add android && npx cap add ios && npm run mobile:assets`. Depois de publicado na loja o identificador não muda mais.
+2. **Gere o site e sincronize com os projetos nativos:**
+   ```bash
+   npm run mobile:sync
+   ```
+3. **Abra no Android Studio ou no Xcode e rode:**
+   ```bash
+   npm run mobile:android     # Android Studio → botão Run, com um aparelho ou emulador
+   npm run mobile:ios         # Xcode (só no Mac) → escolha o seu time em Signing & Capabilities → Run
+   ```
+4. **Ícones e splash:** as imagens de origem estão em `apps/web/assets/` (`icon-only.png`, `icon-foreground.png`, `icon-background.png`, `splash.png` e `splash-dark.png`, feitas a partir do logo). Para gerar de novo todos os tamanhos: `npm run mobile:assets -w @hora-h/web`.
+
+**Testar em casa, sem publicar o site.** Com o seu computador e o celular na mesma rede Wi-Fi:
+
+```bash
+npm run dev:api                                        # terminal 1 (e o banco: npm run dev:db)
+npm run start -w @hora-h/web -- --host 0.0.0.0        # terminal 2: o site na rede, com proxy de /api
+export HORAH_URL=http://192.168.0.10:4200              # o IP do seu computador na rede
+npm run mobile:sync && npm run mobile:android
+```
+
+Com `http://` o Capacitor liga sozinho o tráfego sem HTTPS (`cleartext`) no Android. No iPhone, `http` puro é bloqueado pelo sistema: para testar no iOS use HTTPS (por exemplo um túnel `cloudflared`).
+
+**Publicar nas lojas.** O Google Play aceita este formato. A App Store é mais exigente: apps que são só um site embrulhado podem ser recusados (diretriz 4.2, funcionalidade mínima). O Hora H já usa recursos próprios do aparelho (barra de status, botão voltar, splash), mas **a aprovação não foi testada**; considere adicionar notificações push ou outro recurso nativo antes de enviar à Apple.
+
+**O que foi e o que não foi verificado**
+
+- PWA: no Chromium, o service worker ativa e passa a controlar a página, o manifest é válido (4 ícones, `display: standalone`, início em `/painel`) e, sem internet, a tela do app carrega do cache.
+- Capacitor: os projetos Android e iOS foram gerados, o `cap sync` roda e o `cap doctor` aprova o Android.
+- **Não foi feito:** compilar o APK, rodar no emulador, rodar no iPhone, publicar nas lojas. Neste ambiente não há Android SDK nem Xcode; o primeiro build é um teste, e o que divergir deve ser anotado.
 
 ## Roteiro de testes
 

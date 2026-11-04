@@ -14,6 +14,8 @@ CHROME_BIN=/caminho/do/chrome npm run test:web   # 51 testes unitários, Chrome 
 
 Ou, dentro de `apps/web`: `npx ng serve`, `npx ng build`, `npx ng test --watch=false --browsers=ChromeHeadlessCI`.
 
+App para celular (PWA e Capacitor): `npm run mobile:sync`, `mobile:android` e `mobile:ios` na raiz, com `HORAH_URL` definido. Detalhes no [Passo 10 do README](../../README.md#passo-10-app-no-celular-pwa-e-capacitor).
+
 O pacote `@hora-h/shared` precisa estar compilado antes (`npm run build -w @hora-h/shared`); o `npm run dev` da raiz já faz isso.
 
 ## Estrutura

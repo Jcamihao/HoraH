@@ -207,3 +207,21 @@ p {
     right: 24px;
   }
 }
+
+// Dentro do app nativo: sem seleção de texto acidental nem "puxar para atualizar" do WebView
+.app-nativo {
+  overscroll-behavior-y: none;
+  -webkit-touch-callout: none;
+}
+
+.app-nativo body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.app-nativo input,
+.app-nativo textarea,
+.app-nativo select {
+  -webkit-user-select: text;
+  user-select: text;
+}
