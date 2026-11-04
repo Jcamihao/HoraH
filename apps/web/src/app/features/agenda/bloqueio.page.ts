@@ -7,12 +7,13 @@ import { AuthStore } from '../../core/auth.store';
 import { hojeNoFuso, somarDias } from '../../core/datas';
 import { mensagemDeErro } from '../../core/errors';
 import { EstabelecimentoStore } from '../../core/estabelecimento.store';
+import { CampoDataComponent, CampoHoraComponent } from '../../shared/campo-nativo.component';
 import { IconComponent } from '../../shared/icon.component';
 import { NavbarComponent } from '../../shared/navbar.component';
 
 @Component({
   selector: 'app-bloqueio',
-  imports: [IconComponent, NavbarComponent],
+  imports: [IconComponent, NavbarComponent, CampoDataComponent, CampoHoraComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <hh-navbar voltar="/painel/agenda" rotulo="Agenda" titulo="Bloquear horário" />
@@ -46,13 +47,17 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </div>
           <div class="row row--field">
             <label for="de">De</label>
-            <input id="de" class="input" type="date" [value]="de()" [min]="hoje()" (change)="mudarDe($any($event.target).value)" />
-            @if (!diaInteiro()) { <input class="input input--time" type="time" aria-label="Hora de início" step="900" [value]="horaDe()" (change)="horaDe.set($any($event.target).value)" /> }
+            <div class="campo-par">
+              <hh-campo-data inputId="de" [valor]="de()" [min]="hoje()" (mudou)="mudarDe($event)" />
+              @if (!diaInteiro()) { <hh-campo-hora rotulo="Hora de início" [valor]="horaDe()" (mudou)="horaDe.set($event)" /> }
+            </div>
           </div>
           <div class="row row--field" [class.is-invalid]="periodoInvertido()">
             <label for="ate">Até</label>
-            <input id="ate" class="input" type="date" [value]="ate()" [min]="de()" (change)="ate.set($any($event.target).value)" />
-            @if (!diaInteiro()) { <input class="input input--time" type="time" aria-label="Hora de fim" step="900" [value]="horaAte()" (change)="horaAte.set($any($event.target).value)" /> }
+            <div class="campo-par">
+              <hh-campo-data inputId="ate" [valor]="ate()" [min]="de()" (mudou)="ate.set($event)" />
+              @if (!diaInteiro()) { <hh-campo-hora rotulo="Hora de fim" [valor]="horaAte()" (mudou)="horaAte.set($event)" /> }
+            </div>
           </div>
           @if (periodoInvertido()) { <p class="row error" role="alert">O fim precisa ser depois do início.</p> }
         </div>

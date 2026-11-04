@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, model } from '@angular/core';
 import { DIAS, FaixaCampo, SemanaCampos } from '../core/horarios';
+import { CampoHoraComponent } from './campo-nativo.component';
 import { IconComponent } from './icon.component';
 
 /** Editor da semana: cada dia liga e desliga, e aceita mais de um horário (ex.: antes e depois do almoço). */
 @Component({
   selector: 'hh-horario-editor',
-  imports: [IconComponent],
+  imports: [IconComponent, CampoHoraComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
     .faixa { display: flex; align-items: center; gap: 10px; }
@@ -42,9 +43,9 @@ import { IconComponent } from './icon.component';
             <div class="dia__corpo">
             @for (f of faixas; track $index; let i = $index) {
               <div class="faixa">
-                <input type="time" class="input input--time" [value]="f.inicio" [attr.aria-label]="dia.longo + ', horário ' + (i + 1) + ', início'" (input)="mudar(dia.id, i, 'inicio', $event)" />
+                <hh-campo-hora [chip]="true" [valor]="f.inicio" [rotulo]="dia.longo + ', horário ' + (i + 1) + ', início'" (mudou)="mudarValor(dia.id, i, \'inicio\', $event)" />
                 <span aria-hidden="true">às</span>
-                <input type="time" class="input input--time" [value]="f.fim" [attr.aria-label]="dia.longo + ', horário ' + (i + 1) + ', fim'" (input)="mudar(dia.id, i, 'fim', $event)" />
+                <hh-campo-hora [chip]="true" [valor]="f.fim" [rotulo]="dia.longo + ', horário ' + (i + 1) + ', fim'" (mudou)="mudarValor(dia.id, i, \'fim\', $event)" />
                 <button type="button" class="btn btn--plain" [attr.aria-label]="'Remover horário ' + (i + 1) + ' de ' + dia.longo" (click)="remover(dia.id, i)">
                   <hh-icon nome="x" />
                 </button>
@@ -85,8 +86,7 @@ export class HorarioEditorComponent {
     this.semana.set({ ...s, [dia]: s[dia].filter((_, i) => i !== indice) });
   }
 
-  protected mudar(dia: number, indice: number, campo: keyof FaixaCampo, evento: Event): void {
-    const valor = (evento.target as HTMLInputElement).value;
+  protected mudarValor(dia: number, indice: number, campo: keyof FaixaCampo, valor: string): void {
     const s = this.semana();
     this.semana.set({ ...s, [dia]: s[dia].map((f, i) => (i === indice ? { ...f, [campo]: valor } : f)) });
   }

@@ -65,6 +65,12 @@ h3 {
   font-weight: 700;
 }
 
+h1,
+.large-title,
+.pub-q {
+  text-transform: uppercase;
+}
+
 h1 {
   font-size: var(--fs-title);
   font-weight: 800;
@@ -150,12 +156,6 @@ p {
 
 // Tema escuro: títulos e botões em maiúsculas, como no pacote escuro
 @mixin escuro-base {
-  h1,
-  .large-title,
-  .pub-q {
-    text-transform: uppercase;
-  }
-
   .btn,
   .pub-btn {
     text-transform: uppercase;
