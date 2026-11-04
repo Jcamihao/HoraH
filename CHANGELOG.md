@@ -2,16 +2,6 @@
 
 Formato livre, mais novo primeiro. As versões seguem o `package.json` da raiz e de `apps/web`.
 
-## 0.8.3 (2026-11-04)
-
-Só o site (`apps/web`).
-
-- **Vidro líquido no celular** (abaixo de 960px; o desktop não muda). Equivalente web do `expo-glass-effect`, feito com CSS (`backdrop-filter` com prefixo `-webkit-`), em `src/styles/_glass.scss`:
-  - **Barras:** a barra de abas flutuante, a barra do topo (agora fixa ao rolar, com o conteúdo desfocado por baixo), o seletor Dia/Semana/Mês, o seletor de data e o filtro de profissional.
-  - **Botões:** botão de voltar, botão do tema, botões de contorno, horários e a faixa de botões do rodapé. Os botões de ação (laranja e preto) ganham brilho de vidro por cima da cor da marca.
-  - **Página pública:** botões e horários no mesmo estilo; o botão "Voltar" sobre a faixa preta vira vidro claro.
-  - **Tokens `--glass-*`** em `_tokens.scss`, com variante escura. Sem suporte a `backdrop-filter`, vale o visual opaco de antes.
-
 ## 0.8.2 (2026-11-04)
 
 Só o site (`apps/web`).
