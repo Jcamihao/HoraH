@@ -10,12 +10,13 @@ import { EstabelecimentoStore } from '../../core/estabelecimento.store';
 import { formatarDuracao } from '../../core/horarios';
 import { formatarReais } from '../../core/money';
 import { mascaraWhatsapp, whatsappValido } from '../../core/whatsapp';
+import { CampoDataComponent } from '../../shared/campo-nativo.component';
 import { IconComponent } from '../../shared/icon.component';
 import { NavbarComponent } from '../../shared/navbar.component';
 
 @Component({
   selector: 'app-agendamento-novo',
-  imports: [IconComponent, NavbarComponent],
+  imports: [IconComponent, NavbarComponent, CampoDataComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <hh-navbar voltar="/painel/agenda" rotulo="Agenda" titulo="Novo agendamento" />
@@ -47,7 +48,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </div>
           <div class="row row--field">
             <label for="dia">Dia</label>
-            <input id="dia" class="input" type="date" [value]="data()" [min]="hoje()" (change)="data.set($any($event.target).value); inicio.set('')" />
+            <hh-campo-data inputId="dia" [valor]="data()" [min]="hoje()" (mudou)="data.set($event); inicio.set('')" />
           </div>
         </div>
 

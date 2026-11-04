@@ -100,6 +100,11 @@ components:
     height: "24px"
 ---
 
+> **Atualização (2026-11):** a identidade visual foi trocada pelo pacote "Hora H - Telas" (Claude Design): Poppins e Caveat (só o "H" da marca),
+> laranja `#e84a27`, verde `#65a30d`, preto `#111` e fundo `#fafafa`, com cartões brancos de sombra suave, botões em pílula e barra lateral escura no desktop.
+> Os tokens ficam em `src/styles/_tokens.scss`. O tema escuro (pacote "Hora H - Telas -escuro-") vive no mixin `escuro` do mesmo arquivo e liga com `data-tema="escuro"` no `<html>`. O botão sol/lua no canto superior direito (`TemaStore`) alterna e guarda a escolha em `localStorage` (`hh_tema`); sem escolha, vale a preferência do sistema. O texto abaixo descreve a identidade anterior (Meetgen) e está desatualizado.
+
+
 # Design System: Hora H, painel
 
 ## Overview

@@ -1,20 +1,26 @@
 import { ChangeDetectionStrategy, Component, computed, model } from '@angular/core';
 import { DIAS, FaixaCampo, SemanaCampos } from '../core/horarios';
+import { CampoHoraComponent } from './campo-nativo.component';
 import { IconComponent } from './icon.component';
 
 /** Editor da semana: cada dia liga e desliga, e aceita mais de um horário (ex.: antes e depois do almoço). */
 @Component({
   selector: 'hh-horario-editor',
-  imports: [IconComponent],
+  imports: [IconComponent, CampoHoraComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
-    .faixa { display: flex; align-items: center; gap: 8px; }
-    .faixa .input { flex: 1 1 0; min-width: 0; }
-    .faixa span { color: var(--ink-2); }
-    .faixa .btn { margin-left: auto; min-width: 44px; padding: 0; }
+    .faixa { display: flex; align-items: center; gap: 10px; }
+    .faixa span { color: var(--ink-2); font-size: var(--fs-small); }
+    .faixa .btn { min-width: 36px; min-height: 36px; padding: 0; color: var(--ink-2); }
     .dia { align-items: flex-start; flex-direction: column; gap: 8px; }
     .dia__cab { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 32px; }
-    .dia__cab strong { flex: 1; font-weight: 400; }
+    .dia__cab strong { font-weight: 700; }
+    .dia__cab .soft { margin-left: 8px; }
+    @media (min-width: 960px) {
+      .dia { display: grid; grid-template-columns: 180px 1fr; column-gap: 24px; align-items: center; }
+    }
+    .dia__corpo { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .mais { color: var(--orange-ink); font-size: var(--fs-caption); font-weight: 700; text-decoration: none; min-height: 28px; padding: 0; }
   `,
   template: `
     <div class="stack">
@@ -23,8 +29,6 @@ import { IconComponent } from './icon.component';
           @let faixas = semana()[dia.id];
           <div class="row dia">
             <div class="dia__cab">
-              <strong>{{ dia.longo }}</strong>
-              @if (!faixas.length) { <span class="soft small">Fechado</span> }
               <button
                 type="button"
                 class="switch"
@@ -33,25 +37,29 @@ import { IconComponent } from './icon.component';
                 [attr.aria-label]="dia.longo + ': ' + (faixas.length ? 'aberto' : 'fechado')"
                 (click)="alternar(dia.id)"
               ></button>
+              <strong>{{ dia.longo }}</strong>
+              @if (!faixas.length) { <span class="soft small">Fechado</span> }
             </div>
+            <div class="dia__corpo">
             @for (f of faixas; track $index; let i = $index) {
               <div class="faixa">
-                <input type="time" class="input input--time" [value]="f.inicio" [attr.aria-label]="dia.longo + ', horário ' + (i + 1) + ', início'" (input)="mudar(dia.id, i, 'inicio', $event)" />
+                <hh-campo-hora [chip]="true" [valor]="f.inicio" [rotulo]="dia.longo + ', horário ' + (i + 1) + ', início'" (mudou)="mudarValor(dia.id, i, \'inicio\', $event)" />
                 <span aria-hidden="true">às</span>
-                <input type="time" class="input input--time" [value]="f.fim" [attr.aria-label]="dia.longo + ', horário ' + (i + 1) + ', fim'" (input)="mudar(dia.id, i, 'fim', $event)" />
+                <hh-campo-hora [chip]="true" [valor]="f.fim" [rotulo]="dia.longo + ', horário ' + (i + 1) + ', fim'" (mudou)="mudarValor(dia.id, i, \'fim\', $event)" />
                 <button type="button" class="btn btn--plain" [attr.aria-label]="'Remover horário ' + (i + 1) + ' de ' + dia.longo" (click)="remover(dia.id, i)">
                   <hh-icon nome="x" />
                 </button>
               </div>
             }
             @if (faixas.length > 0 && faixas.length < 3) {
-              <button type="button" class="btn btn--plain btn--small" (click)="adicionar(dia.id)"><hh-icon nome="plus" /> Outro horário no dia</button>
+              <button type="button" class="btn btn--plain mais" (click)="adicionar(dia.id)">+ Outro horário no dia</button>
             }
+            </div>
           </div>
         }
       </div>
-      <button type="button" class="btn btn--plain" style="align-self: flex-start" (click)="repetirPrimeiro()" [disabled]="!temAberto()">
-        Repetir o primeiro dia nos outros dias abertos
+      <button type="button" class="btn btn--small" style="align-self: flex-start" (click)="repetirPrimeiro()" [disabled]="!temAberto()">
+        Repetir o primeiro dia nos outros
       </button>
     </div>
   `,
@@ -78,8 +86,7 @@ export class HorarioEditorComponent {
     this.semana.set({ ...s, [dia]: s[dia].filter((_, i) => i !== indice) });
   }
 
-  protected mudar(dia: number, indice: number, campo: keyof FaixaCampo, evento: Event): void {
-    const valor = (evento.target as HTMLInputElement).value;
+  protected mudarValor(dia: number, indice: number, campo: keyof FaixaCampo, valor: string): void {
     const s = this.semana();
     this.semana.set({ ...s, [dia]: s[dia].map((f, i) => (i === indice ? { ...f, [campo]: valor } : f)) });
   }

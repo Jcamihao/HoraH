@@ -21,7 +21,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
 
       @if (carregando()) {
         <div class="stack" style="margin-top: 24px" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div></div>
-      } @else if (!lista().length) {
+      } @else if (!lista().length && !erro()) {
         <div class="empty"><h2>Nenhum serviço ainda</h2><p>Adicione o primeiro abaixo.</p></div>
       } @else {
         <div class="group" style="margin-top: 24px">

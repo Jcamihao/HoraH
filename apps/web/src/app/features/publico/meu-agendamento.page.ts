@@ -24,6 +24,7 @@ import { SeletorHorarioComponent } from './seletor-horario.component';
           @if (remarcando()) {
             <button type="button" class="pub-back" (click)="remarcando.set(false)"><hh-icon nome="chevron-left" /> Voltar</button>
           }
+          <span class="pub-tag">agenda online</span>
           <h1 class="pub-nome">{{ ag()?.salao?.nome ?? 'Seu horário' }}</h1>
         </div>
       </header>

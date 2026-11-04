@@ -30,10 +30,12 @@
               }
             ],
             "styles": [
-              "@fontsource/figtree/latin-400.css",
-              "@fontsource/figtree/latin-500.css",
-              "@fontsource/figtree/latin-600.css",
-              "@fontsource/figtree/latin-700.css",
+              "@fontsource/poppins/latin-400.css",
+              "@fontsource/poppins/latin-500.css",
+              "@fontsource/poppins/latin-600.css",
+              "@fontsource/poppins/latin-700.css",
+              "@fontsource/poppins/latin-800.css",
+              "@fontsource/caveat/latin-700.css",
               "src/styles.scss"
             ]
           },
@@ -91,10 +93,12 @@
               }
             ],
             "styles": [
-              "@fontsource/figtree/latin-400.css",
-              "@fontsource/figtree/latin-500.css",
-              "@fontsource/figtree/latin-600.css",
-              "@fontsource/figtree/latin-700.css",
+              "@fontsource/poppins/latin-400.css",
+              "@fontsource/poppins/latin-500.css",
+              "@fontsource/poppins/latin-600.css",
+              "@fontsource/poppins/latin-700.css",
+              "@fontsource/poppins/latin-800.css",
+              "@fontsource/caveat/latin-700.css",
               "src/styles.scss"
             ],
             "karmaConfig": "karma.conf.js"

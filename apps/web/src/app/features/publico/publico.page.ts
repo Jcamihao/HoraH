@@ -31,6 +31,7 @@ const ETAPAS: Etapa[] = ['quem', 'servico', 'quando', 'dados', 'pronto'];
             <button type="button" class="pub-back" (click)="ir(destino)"><hh-icon nome="chevron-left" /> Voltar</button>
           }
           @if (salao(); as s) {
+            <span class="pub-tag">agenda online</span>
             <h1 class="pub-nome" [class.pub-nome--medio]="s.nome.length > 14 && s.nome.length <= 28" [class.pub-nome--longo]="s.nome.length > 28">{{ s.nome }}</h1>
             @if (etapaAtual() === 'quem') { <p class="pub-lead">Marque seu horário aqui, em menos de um minuto.</p> }
           } @else if (!carregando()) {
@@ -64,6 +65,7 @@ const ETAPAS: Etapa[] = ['quem', 'servico', 'quando', 'dados', 'pronto'];
                   <h2 class="pub-q">Com quem você quer marcar?</h2>
                   @for (p of s.profissionais; track p.id) {
                     <button type="button" class="pub-choice" (click)="escolherProfissional(p)">
+                      <span class="pub-avatar" [class]="'pub-avatar pub-avatar--' + ($index % 3)" aria-hidden="true">{{ iniciais(p.nome) }}</span>
                       <span class="pub-choice__main">
                         <span class="pub-choice__title">{{ p.nome }}</span>
                         <span class="pub-choice__sub">{{ resumoServicos(p) }}</span>
@@ -99,6 +101,7 @@ const ETAPAS: Etapa[] = ['quem', 'servico', 'quando', 'dados', 'pronto'];
                   } @else {
                     <hh-seletor-horario [dias]="dias()" [selecionado]="slot()?.inicio ?? ''" [buscar]="buscarHorarios" [observacao]="observacaoFuso()" (escolher)="escolherHorario($event)" />
                   }
+                  @if (ocupado()) { <p class="pub-aviso pub-aviso--erro" role="alert">{{ ocupado() }}</p> }
                   @if (erro()) { <p class="pub-aviso pub-aviso--erro" role="alert">{{ erro() }}</p> }
                 </main>
               }
@@ -167,6 +170,8 @@ export class PublicoPage {
   protected readonly naoEncontrado = signal(false);
   protected readonly erroGeral = signal('');
   protected readonly erro = signal('');
+  /** Aviso de horário tomado por outra pessoa: fica na etapa "quando" até a pessoa escolher outro. */
+  protected readonly ocupado = signal('');
   protected readonly salao = signal<SalaoPublicoDto | null>(null);
 
   /** Onde começa quando a URL não diz: pula o que já está decidido (um profissional só, ou link de "marcar outro"). */
@@ -261,6 +266,11 @@ export class PublicoPage {
     return this.router.navigate([], { queryParams: { etapa, profissional: null, servico: null }, queryParamsHandling: 'merge', replaceUrl: substituir });
   }
 
+  protected iniciais(nome: string): string {
+    const partes = nome.trim().split(/\s+/);
+    return ((partes[0]?.[0] ?? '') + (partes.length > 1 ? (partes[partes.length - 1]?.[0] ?? '') : '')).toUpperCase();
+  }
+
   protected resumoServicos(p: ProfissionalPublicoDto): string {
     const menor = Math.min(...p.servicos.map((s) => s.precoCentavos));
     return `${p.servicos.length === 1 ? '1 serviço' : `${p.servicos.length} serviços`} · a partir de ${formatarReais(menor)}`;
@@ -282,6 +292,7 @@ export class PublicoPage {
   protected escolherHorario(slot: SlotDto): void {
     this.slot.set(slot);
     this.erro.set('');
+    this.ocupado.set('');
     void this.ir('dados');
   }
 
@@ -317,11 +328,14 @@ export class PublicoPage {
       this.feito.set(f);
       await this.ir('pronto', true);
     } catch (e) {
-      this.erro.set(mensagemDeErro(e));
       if (e instanceof HttpErrorResponse && e.status === 409) {
         // Horário tomado por outra pessoa (ou teto de agendamentos): volta para escolher de novo.
+        // O aviso vai num sinal à parte, porque ao entrar na etapa "quando" o erro comum é limpo.
+        this.ocupado.set(mensagemDeErro(e, 'Esse horário acabou de ser ocupado. Escolha outro.'));
         this.slot.set(null);
         await this.ir('quando', true);
+      } else {
+        this.erro.set(mensagemDeErro(e));
       }
     } finally {
       this.enviando.set(false);

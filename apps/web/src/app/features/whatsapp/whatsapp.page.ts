@@ -5,7 +5,6 @@ import { dataBRDoInstante } from '../../core/datas';
 import { mensagemDeErro } from '../../core/errors';
 import { EstabelecimentoStore } from '../../core/estabelecimento.store';
 import { mascaraWhatsapp, whatsappValido } from '../../core/whatsapp';
-import { IconComponent } from '../../shared/icon.component';
 import { NavbarComponent } from '../../shared/navbar.component';
 
 const SITUACAO: Record<string, { rotulo: string; classe: string }> = {
@@ -16,11 +15,11 @@ const SITUACAO: Record<string, { rotulo: string; classe: string }> = {
 
 @Component({
   selector: 'app-whatsapp',
-  imports: [IconComponent, NavbarComponent],
+  imports: [NavbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <hh-navbar voltar="/painel/configuracoes" rotulo="Ajustes" titulo="WhatsApp" />
-    <main class="page page--tabbed">
+    <main class="page page--wide page--tabbed">
       <h1 class="large-title">WhatsApp</h1>
       <p class="large-sub">Confirmação, lembrete e agendamento pelo número do salão.</p>
       @if (aviso()) { <p class="banner banner--ok" style="margin-top: 16px" role="status">{{ aviso() }}</p> }
@@ -33,57 +32,70 @@ const SITUACAO: Record<string, { rotulo: string; classe: string }> = {
           <p class="banner" style="margin-top: 16px">O WhatsApp ainda não está configurado neste ambiente. O resto do Hora H funciona normalmente.</p>
         }
 
-        <p class="group__header">Situação</p>
-        <div class="group">
-          <div class="row">
-            <span class="row__main"><span class="row__title">Número do salão</span></span>
-            <span [class]="'badge ' + situacao().classe">{{ situacao().rotulo }}</span>
-          </div>
-          @if (c.status === 'CONECTADA' && c.conectadoEm) {
-            <div class="row"><span class="row__main"><span class="row__title">Conectado desde</span></span><span class="row__detail">{{ dia(c.conectadoEm) }}</span></div>
-          }
-          @if (c.status !== 'CONECTADA' && c.ultimaQuedaEm) {
-            <div class="row"><span class="row__main"><span class="row__title">Última queda</span></span><span class="row__detail">{{ dia(c.ultimaQuedaEm) }}</span></div>
-          }
-          @if (c.naFila > 0) {
-            <div class="row"><span class="row__main"><span class="row__title">Mensagens esperando</span><span class="row__sub">Saem sozinhas quando o número estiver conectado.</span></span><span class="row__detail">{{ c.naFila }}</span></div>
-          }
-        </div>
-
-        @if (c.status === 'CONECTADA') {
-          <p class="group__footer">Seus clientes recebem a confirmação ao marcar, o lembrete 24 horas antes (entre 8h e 20h) e podem marcar, remarcar e cancelar conversando com o número.</p>
-        } @else {
-          <p class="group__footer">Use um número só do negócio, não o seu pessoal: o WhatsApp pode bloquear números que mandam muitas mensagens, e o Hora H manda poucas e espaçadas para reduzir esse risco.</p>
-        }
-
-        @if (c.status === 'AGUARDANDO_QR') {
-          <p class="group__header">Leia o QR code</p>
-          <div class="group">
-            <div class="row" style="justify-content: center; padding: 20px">
-              @if (qr()) { <img [src]="qr()" alt="QR code para conectar o WhatsApp" width="260" height="260" /> } @else { <span class="row__sub">Gerando o QR code…</span> }
+        <div class="wa" [class.wa--qr]="c.status === 'AGUARDANDO_QR'">
+          <section class="card wa__situacao">
+            <div class="row">
+              <span class="row__main"><span class="row__title">Situação</span></span>
+              <span [class]="'badge ' + situacao().classe">{{ situacao().rotulo }}</span>
             </div>
-          </div>
-          <p class="group__footer">No celular do número do salão: WhatsApp, Aparelhos conectados, Conectar um aparelho, e aponte para o código. Ele se renova sozinho; esta tela avisa quando conectar.</p>
-
-          <p class="group__header">Sem outro aparelho para ler o QR?</p>
-          <div class="group">
-            <div class="row row--field" [class.is-invalid]="telefone().length > 0 && !telefoneOk()">
-              <label for="tel">WhatsApp do salão</label>
-              <input id="tel" class="input" type="tel" inputmode="tel" placeholder="(11) 99999-8888" [value]="telefone()" (input)="digitarTelefone($event)" />
+            @if (c.status === 'CONECTADA' && c.conectadoEm) {
+              <div class="row"><span class="row__main"><span class="row__title">Conectado desde</span></span><span class="row__detail">{{ dia(c.conectadoEm) }}</span></div>
+            }
+            @if (c.status !== 'CONECTADA' && c.ultimaQuedaEm) {
+              <div class="row"><span class="row__main"><span class="row__title">Última queda</span></span><span class="row__detail">{{ dia(c.ultimaQuedaEm) }}</span></div>
+            }
+            <div class="row">
+              <span class="row__main"><span class="row__title">Mensagens esperando</span>@if (c.naFila > 0) { <span class="row__sub">Saem sozinhas quando o número estiver conectado.</span> }</span>
+              <span class="row__detail">{{ c.naFila }}</span>
             </div>
-          </div>
-          <button type="button" class="btn btn--block" style="margin-top: 12px" [disabled]="!telefoneOk() || trabalhando()" (click)="parear()">Gerar código de conexão</button>
-          @if (codigo()) {
-            <div class="group" style="margin-top: 12px"><div class="row"><span class="row__main"><span class="row__title" style="font-size: 1.5rem; letter-spacing: 0.1em" data-testid="codigo-pareamento">{{ codigo() }}</span><span class="row__sub">No WhatsApp: Aparelhos conectados, Conectar um aparelho, Conectar com número de telefone, e digite este código.</span></span></div></div>
-          }
-        }
+          </section>
 
-        <div class="stack" style="margin-top: 24px">
-          @if (c.status !== 'CONECTADA') {
-            <button type="button" class="btn btn--filled btn--block" [disabled]="trabalhando() || !c.configurado" (click)="conectar()"><hh-icon nome="whatsapp" /> {{ c.status === 'AGUARDANDO_QR' ? 'Gerar novo QR code' : 'Conectar WhatsApp' }}</button>
-          } @else {
-            <button type="button" class="btn btn--bad btn--block" [disabled]="trabalhando()" (click)="desconectar()">{{ confirmando() ? 'Toque de novo para desconectar' : 'Desconectar' }}</button>
-            @if (confirmando()) { <p class="hint">Sem conexão, lembretes e o agendamento pelo WhatsApp param. Os horários já marcados continuam guardados.</p> }
+          <section class="card wa__recebe">
+            <p class="kicker">O que o cliente recebe</p>
+            <ol class="passos">
+              <li><span class="passos__n">1</span>Confirmação ao marcar.</li>
+              <li><span class="passos__n">2</span>Lembrete 24 horas antes (entre 8h e 20h).</li>
+              <li><span class="passos__n">3</span>Agendar, remarcar e cancelar pelo número.</li>
+            </ol>
+            <p class="nota">Use um número só do negócio, não o seu pessoal: o WhatsApp pode bloquear números que mandam muitas mensagens.</p>
+          </section>
+
+          @if (c.status === 'AGUARDANDO_QR') {
+            <section class="cartao-escuro wa__qr">
+              <h2>Leia o QR code</h2>
+              <div class="qr-caixa">
+                @if (qr()) { <img [src]="qr()" alt="QR code para conectar o WhatsApp" width="220" height="220" /> } @else { <span class="row__sub">Gerando o QR code…</span> }
+              </div>
+              <ol class="instrucoes">
+                <li>Abra o WhatsApp no celular do salão.</li>
+                <li>Toque em <strong>Aparelhos conectados</strong>.</li>
+                <li>Toque em <strong>Conectar um aparelho</strong> e aponte para o código.</li>
+              </ol>
+              <button type="button" class="btn btn--block" [disabled]="trabalhando() || !c.configurado" (click)="conectar()">Gerar novo QR code</button>
+              <div class="cartao-escuro__sep">
+                <p class="cartao-escuro__t">Sem outro aparelho para ler o QR?</p>
+                <div class="row row--field" [class.is-invalid]="telefone().length > 0 && !telefoneOk()">
+                  <label for="tel">WhatsApp do salão</label>
+                  <input id="tel" class="input" type="tel" inputmode="tel" placeholder="(11) 99999-8888" [value]="telefone()" (input)="digitarTelefone($event)" />
+                </div>
+                <button type="button" class="btn btn--filled btn--block" style="margin-top: 12px" [disabled]="!telefoneOk() || trabalhando()" (click)="parear()">Gerar código de conexão</button>
+                @if (codigo()) {
+                  <p class="cartao-escuro__codigo" data-testid="codigo-pareamento">{{ codigo() }}</p>
+                  <p class="row__sub">No WhatsApp: Aparelhos conectados, Conectar um aparelho, Conectar com número de telefone, e digite este código.</p>
+                }
+              </div>
+            </section>
+          }
+
+          @if (c.status !== 'AGUARDANDO_QR') {
+            <div class="stack wa__acoes">
+              @if (c.status !== 'CONECTADA') {
+                <button type="button" class="btn btn--filled btn--block" [disabled]="trabalhando() || !c.configurado" (click)="conectar()">Conectar WhatsApp</button>
+              } @else {
+                <button type="button" class="btn btn--bad btn--block" [disabled]="trabalhando()" (click)="desconectar()">{{ confirmando() ? 'Toque de novo para desconectar' : 'Desconectar' }}</button>
+                @if (confirmando()) { <p class="hint">Sem conexão, lembretes e o agendamento pelo WhatsApp param. Os horários já marcados continuam guardados.</p> }
+              }
+            </div>
           }
         </div>
       }
