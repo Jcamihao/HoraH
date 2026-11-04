@@ -17,6 +17,7 @@ interface Aba {
   imports: [RouterOutlet, RouterLink, RouterLinkActive, IconComponent, AssinaturaAvisoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <div class="shell" [class.shell--tabbed]="abas().length > 0">
     <div class="app" [class.app--tabbed]="abas().length > 0">
       @if (auth.ehDono() && salao.cadastroConcluido()) { <hh-assinatura-aviso /> }
       <router-outlet />
@@ -35,6 +36,7 @@ interface Aba {
         }
       </nav>
     }
+    </div>
   `,
 })
 export class ShellComponent {

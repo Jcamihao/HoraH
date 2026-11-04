@@ -2,6 +2,13 @@
 
 Formato livre, mais novo primeiro. As versões seguem o `package.json` da raiz e de `apps/web`.
 
+## 0.8.2 (2026-11-04)
+
+Só o site (`apps/web`).
+
+- **Barra lateral "sticky" no desktop:** a barra lateral do painel e a lista de passos do cadastro agora são uma coluna do layout (`position: sticky`, altura da tela) e acompanham a rolagem.
+- **Troca de tela sem a barra deslizar:** a animação de troca de tela movia o "instantâneo" da página inteira, inclusive a barra lateral, as abas do celular e o botão de tema. Esses elementos ganharam nome próprio na transição (`view-transition-name`) e ficam parados.
+
 ## 0.8.1 (2026-11-04)
 
 Só o site (`apps/web`).

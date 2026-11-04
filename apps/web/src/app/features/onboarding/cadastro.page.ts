@@ -47,6 +47,8 @@ type Rascunho = Record<string, Record<string, Item>>;
   imports: [ReactiveFormsModule, RouterLink, HorarioEditorComponent, IconComponent, NavbarComponent, PrecoCampoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+
+    <div class="onb">
     <aside class="onb-lado" aria-label="Passos do cadastro">
       <span class="brand">Hora</span>
       <p class="kicker">Cadastro do salão</p>
@@ -62,7 +64,7 @@ type Rascunho = Record<string, Record<string, Item>>;
         }
       </ol>
     </aside>
-    <div class="onb">
+    <div class="onb__corpo">
     <hh-navbar [voltar]="indice() > 0 ? ['/painel/cadastro', etapas[indice() - 1].id] : null" [rotulo]="indice() > 0 ? etapas[indice() - 1].nome : ''" [titulo]="etapa().titulo" />
 
     <main class="page page--dock page--narrow">
@@ -195,6 +197,7 @@ type Rascunho = Record<string, Record<string, Item>>;
           {{ salvando() ? 'Salvando…' : indice() === etapas.length - 1 ? 'Concluir cadastro' : 'Salvar e continuar' }}
         </button>
       </div>
+    </div>
     </div>
     </div>
   `,

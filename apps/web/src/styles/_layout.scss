@@ -242,9 +242,39 @@
   bottom: calc(96px + env(safe-area-inset-bottom));
 }
 
+// A barra de abas, o botão do tema e a barra lateral ficam fora da animação de troca de tela:
+// sem um nome próprio eles entrariam no "instantâneo" da página e deslizariam junto com ela.
+.tabbar {
+  view-transition-name: barra-principal;
+}
+
+.tema-botao {
+  view-transition-name: botao-tema;
+}
+
 @media (min-width: 960px) {
-  .app--tabbed {
-    padding-left: 256px;
+  // Barra lateral "sticky": uma coluna de 256px que acompanha a rolagem; o conteúdo ocupa o resto
+  .shell--tabbed {
+    display: grid;
+    grid-template-columns: 256px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .shell--tabbed > .tabbar {
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    inset: 0 auto auto 0;
+    height: 100dvh;
+    width: auto;
+    padding: 28px 20px;
+    border-radius: 0;
+  }
+
+  .shell--tabbed > .app {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
   }
 
   .tabbar {
@@ -579,7 +609,14 @@
 
 @media (min-width: 960px) {
   .onb {
-    padding-left: 320px;
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .onb__corpo {
+    grid-column: 2;
+    min-width: 0;
   }
 
   .onb .dock {
@@ -588,11 +625,14 @@
   }
 
   .onb-lado {
-    position: fixed;
-    inset: 0 auto 0 0;
+    position: sticky;
+    inset: 0 auto auto 0;
+    grid-column: 1;
+    height: 100dvh;
     z-index: 30;
     display: block;
     width: 320px;
+    view-transition-name: barra-passos;
     padding: 36px 32px;
     background: var(--panel);
     color: #fff;
