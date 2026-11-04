@@ -2,6 +2,13 @@
 
 Formato livre, mais novo primeiro. As versões seguem o `package.json` da raiz e de `apps/web`.
 
+## 0.8.3 (2026-11-04)
+
+Só o site (`apps/web`).
+
+- **Logo nas telas** (arquivos do pacote "Hora H - Telas 3"): a marca em texto ("Hora" + "H" em Caveat) foi trocada pelo logo (palavra "HORA" geométrica + símbolo laranja) em todos os lugares onde aparecia: barra lateral do painel, painel preto das telas de entrada, topo das telas de entrada no celular, barra do topo no celular e lista de passos do cadastro. Novo componente `hh-logo` (texto em `currentColor`, símbolo colorido), então o logo acompanha o tema claro e o escuro sozinho.
+- **Favicon** passa a ser o símbolo redondo do logo; os seis arquivos do logo ficam em `public/logo/`.
+
 ## 0.8.2 (2026-11-04)
 
 Só o site (`apps/web`).

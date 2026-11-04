@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { LogoComponent } from './logo.component';
 
 /** Faixa preta ao lado dos formulários de entrada (só no desktop): marca, promessa do produto e a linha de público. */
 @Component({
   selector: 'hh-auth-lado',
+  imports: [LogoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { 'aria-hidden': 'true' },
   template: `
-    <span class="brand">Hora</span>
+    <span class="brand"><hh-logo [altura]="30" /></span>
     <div>
       <p class="auth__titulo">A agenda do seu salão, <em>no celular.</em></p>
       <svg class="auth__onda" width="180" height="22" viewBox="0 0 180 22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">

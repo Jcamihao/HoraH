@@ -10,6 +10,7 @@ import { EstabelecimentoStore } from '../../core/estabelecimento.store';
 import { DURACOES, SemanaCampos, faixasParaSemana, formatarDuracao, semanaPadrao, semanaParaFaixas } from '../../core/horarios';
 import { HorarioEditorComponent } from '../../shared/horario-editor.component';
 import { IconComponent } from '../../shared/icon.component';
+import { LogoComponent } from '../../shared/logo.component';
 import { NavbarComponent } from '../../shared/navbar.component';
 import { PrecoCampoComponent } from '../../shared/preco-campo.component';
 
@@ -44,13 +45,13 @@ type Rascunho = Record<string, Record<string, Item>>;
 
 @Component({
   selector: 'app-cadastro',
-  imports: [ReactiveFormsModule, RouterLink, HorarioEditorComponent, IconComponent, NavbarComponent, PrecoCampoComponent],
+  imports: [ReactiveFormsModule, RouterLink, HorarioEditorComponent, IconComponent, LogoComponent, NavbarComponent, PrecoCampoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
 
     <div class="onb">
     <aside class="onb-lado" aria-label="Passos do cadastro">
-      <span class="brand">Hora</span>
+      <span class="brand"><hh-logo [altura]="28" /></span>
       <p class="kicker">Cadastro do salão</p>
       <ol>
         @for (e of etapas; track e.id; let i = $index) {

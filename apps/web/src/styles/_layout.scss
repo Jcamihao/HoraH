@@ -69,10 +69,6 @@
   padding: calc(16px + env(safe-area-inset-top)) var(--gutter) 0;
 }
 
-.navbar .brand {
-  font-size: 1.0625rem;
-}
-
 .navbar__back {
   display: inline-flex;
   align-items: center;
@@ -300,12 +296,8 @@
   .tabbar__marca {
     padding: 0 12px;
     color: #fff;
-    font-size: 1.75rem;
   }
 
-  .tabbar__marca::after {
-    font-size: 1.5em;
-  }
 
   .tabbar__salao {
     margin: 4px 12px 28px;
@@ -490,7 +482,6 @@
 .auth__marca {
   display: flex;
   margin-bottom: 28px;
-  font-size: 1.25rem;
 }
 
 .auth .group {
@@ -563,7 +554,6 @@
 
   .auth__lado .brand {
     color: #fff;
-    font-size: 2rem;
   }
 
   .auth__titulo {
@@ -640,7 +630,6 @@
 
   .onb-lado .brand {
     color: #fff;
-    font-size: 1.75rem;
   }
 
   .onb-lado .kicker {

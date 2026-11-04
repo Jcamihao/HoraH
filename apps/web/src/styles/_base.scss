@@ -85,23 +85,13 @@ h2 {
   letter-spacing: -0.01em;
 }
 
-// Marca: "Hora" em Poppins e o H em Caveat laranja
+// Marca: o logo (componente hh-logo) usa a cor do texto; o símbolo redondo é sempre laranja
 .brand {
   display: inline-flex;
-  align-items: baseline;
-  gap: 1px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1;
+  align-items: center;
   color: var(--ink);
   text-decoration: none;
-}
-
-.brand::after {
-  content: 'H';
-  font: 700 1.5em / 0.6 var(--font-hand);
-  letter-spacing: 0;
-  color: var(--orange-500);
+  line-height: 0;
 }
 
 // Rótulo pequeno de seção, em maiúsculas

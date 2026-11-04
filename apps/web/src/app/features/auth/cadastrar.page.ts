@@ -1,4 +1,5 @@
 import { AuthLadoComponent } from '../../shared/auth-lado.component';
+import { LogoComponent } from '../../shared/logo.component';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -19,13 +20,13 @@ const TEXTO_SLUG: Record<string, string> = {
 
 @Component({
   selector: 'app-cadastrar',
-  imports: [ReactiveFormsModule, RouterLink, AuthLadoComponent],
+  imports: [ReactiveFormsModule, RouterLink, AuthLadoComponent, LogoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <main class="auth">
       <hh-auth-lado class="auth__lado" />
       <div class="auth__form">
-        <span class="brand auth__marca">Hora</span>
+        <span class="brand auth__marca"><hh-logo [altura]="25" /></span>
       <span class="tag-verde">7 dias grátis</span>
       <h1 class="large-title">Criar conta</h1>
       <p class="large-sub">7 dias grátis. Não pede cartão.</p>
