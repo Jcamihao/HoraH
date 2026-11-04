@@ -38,7 +38,7 @@ Foco em beleza em geral (não só barbearia), bot de agendamento completo no Wha
 
 ## Brand Commitments
 
-Nome provisório "Hora H". Não há logo, paleta nem tipografia definidos. Idioma da interface: português do Brasil.
+Nome provisório "Hora H". A marca é o texto "Hora" em Poppins 800 seguido de um "H" em Caveat laranja; paleta e tipografia em [DESIGN.md](DESIGN.md) (telas do Claude Design, v0.8.0). Idioma da interface: português do Brasil.
 
 ## Evidence on Hand
 

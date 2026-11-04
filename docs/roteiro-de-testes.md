@@ -1,6 +1,6 @@
 # Roteiro de testes do Hora H
 
-Para testar o app inteiro, do zero, no celular ou numa janela de navegador estreita (390px). A parte B liga o WhatsApp de verdade pelo WA-AKG.
+Para testar o app inteiro, do zero, no celular ou numa janela de navegador estreita (390px). A parte B liga o WhatsApp de verdade pelo WA-AKG. O passo a passo de instalação e configuração, incluindo produção, está no [README](../README.md#guia-completo-do-zero-até-o-app-rodando-com-whatsapp); este roteiro é para **conferir** que tudo funciona.
 
 Legenda: **Esperado** é o que deve acontecer. Se algo diferente acontecer, anote o passo e o texto da tela ou do terminal.
 
@@ -184,8 +184,12 @@ As respostas "1" e "2" só chegam ao app se o túnel do B6 estiver ativo.
 
 ## Parte E. Visual e uso geral
 1. Todas as telas em 390px: sem rolagem horizontal, botões fáceis de tocar, texto legível.
-2. Desktop em 1440px: barra lateral e coluna centrada.
+2. Desktop em 1440px: barra lateral escura à esquerda e conteúdo alinhado à esquerda.
 3. Sair da conta e entrar de novo. Esperado: volta ao painel.
+4. Modo escuro: toque no botão sol/lua no canto superior direito. Esperado: o app inteiro muda de tema, o botão troca de ícone e a escolha continua depois de recarregar a página.
+5. Títulos de página em maiúsculas nos dois temas.
+6. Bloquear horário (desligue "Dia inteiro"): os campos mostram "Qua, 4 nov" e "14:00" na fonte do app; tocar abre o seletor do aparelho. Coloque o fim antes do início. Esperado: mensagem "O fim precisa ser depois do início." e botão desabilitado.
+7. Página pública com dois aparelhos no mesmo horário: quem confirma por último vê "Esse horário não está mais disponível. Escolha outro." e volta à escolha de dia e horário.
 
 ## O que este roteiro não garante
 - O texto exato do menu do bot não foi conferido na tela; os passos da D4 seguem o que o bot mostrar.
