@@ -1,6 +1,5 @@
-// Página pública do salão (cliente final, celular primeiro). Mesma identidade do painel (Meetgen Design System):
-// topo escuro com o nome do salão como maior elemento da tela, folha sálvia com canto grande por baixo.
-// Sem sombras: a separação é degrau de tom e espaço.
+// Página pública do salão (cliente final, celular primeiro). Mesma identidade do painel: faixa preta com o nome do salão,
+// formas redondas laranja e verde, cartões brancos. No desktop a faixa vira um painel lateral.
 body:has(.pub) {
   background: var(--bg);
 }
