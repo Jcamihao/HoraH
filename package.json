@@ -1,6 +1,6 @@
 {
   "name": "hora-h",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "private": true,
   "description": "Hora H — agendamento online para negócios de beleza",
   "workspaces": [
@@ -12,6 +12,7 @@
     "test": "npm run test -w @hora-h/api",
     "test:web": "npm run test -w @hora-h/web",
     "dev": "node scripts/dev.mjs",
+    "cloudflare": "curl -L -o ~/cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && chmod +x ~/cloudflared && ~/cloudflared tunnel --url http://localhost:3000",
     "dev:db": "npm run db:dev -w @hora-h/api",
     "dev:api": "npm run start:dev -w @hora-h/api",
     "dev:web": "npm run start -w @hora-h/web",
