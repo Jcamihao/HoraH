@@ -7,6 +7,7 @@
 }
 
 .group__header {
+  max-width: none;
   margin: 20px 0 0;
   padding: 20px var(--gutter) 4px;
   border-radius: var(--r-group) var(--r-group) 0 0;
