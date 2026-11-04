@@ -342,9 +342,10 @@ Com `http://` o Capacitor liga sozinho o tráfego sem HTTPS (`cleartext`) no And
 
 **O que foi e o que não foi verificado**
 
-- PWA: no Chromium, o service worker ativa e passa a controlar a página, o manifest é válido (4 ícones, `display: standalone`, início em `/painel`) e, sem internet, a tela do app carrega do cache.
-- Capacitor: os projetos Android e iOS foram gerados, o `cap sync` roda e o `cap doctor` aprova o Android.
-- **Não foi feito:** compilar o APK, rodar no emulador, rodar no iPhone, publicar nas lojas. Neste ambiente não há Android SDK nem Xcode; o primeiro build é um teste, e o que divergir deve ser anotado.
+- **PWA** (Chromium, contra a API real): o service worker ativa e controla a página; o manifest é válido (4 ícones, `display: standalone`, início em `/painel`); o login funciona e a sessão sobrevive ao recarregar; o cache do service worker guarda só o casco do site, **nenhuma chamada de `/api`**; sem internet a tela do app abre do cache; ao voltar a internet a sessão é retomada sem pedir a senha de novo.
+- **Camada nativa, simulada no navegador:** imitando a ponte do Android, o app marca `html.app-nativo` e chama o splash, o botão voltar e a barra de status, com `LIGHT` e `#fafafa` no tema claro e `DARK` e `#0a0908` no escuro, e de novo ao alternar o tema. Fora do app (navegador e PWA) nada é chamado.
+- **Capacitor:** os projetos Android e iOS foram gerados; `cap sync` roda e leva o `HORAH_URL` para os dois (com `http://`, o Android recebe `cleartext`); sem `HORAH_URL` o `cap` recusa com uma mensagem clara; `cap doctor` aprova o Android.
+- **Não foi feito:** compilar o APK, rodar no emulador ou num aparelho, abrir no Xcode, publicar. Neste ambiente o download do Android SDK (`dl.google.com`) é bloqueado e não há Xcode. O primeiro build é um teste: anote o que divergir. Sem ter rodado num aparelho, não está confirmado que `cleartext` basta para o teste por `http://` no Android.
 
 ## Roteiro de testes
 

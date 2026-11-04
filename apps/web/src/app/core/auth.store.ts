@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -58,8 +58,16 @@ export class AuthStore {
         this.aplicar(r);
         return true;
       })
-      .catch(() => {
-        this.limpar();
+      .catch((e: unknown) => {
+        // Sem rede (status 0, ou 504 que o service worker devolve offline) e erro do servidor (5xx) não são "sessão
+        // vencida": o cookie continua valendo. Esquecemos só o usuário em memória e mantemos o marcador, para a próxima
+        // abertura com internet (PWA ou app) retomar a sessão sem pedir a senha de novo.
+        if (e instanceof HttpErrorResponse && (e.status === 0 || e.status >= 500)) {
+          this.token = null;
+          this.usuario.set(null);
+        } else {
+          this.limpar();
+        }
         return false;
       })
       .finally(() => {

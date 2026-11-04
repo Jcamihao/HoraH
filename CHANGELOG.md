@@ -2,6 +2,14 @@
 
 Formato livre, mais novo primeiro. As versões seguem o `package.json` da raiz e de `apps/web`.
 
+## 0.9.1 (2026-11-04)
+
+Só o site (`apps/web`). Achados ao verificar o PWA e o app nativo.
+
+- **Sessão sem internet:** abrir o app (PWA ou nativo) sem rede apagava o marcador de sessão do aparelho, e ao voltar a internet o app pedia a senha de novo mesmo com o cookie ainda válido. Agora falha de rede (status 0), erro de servidor (5xx) e o 504 que o service worker devolve offline mantêm o marcador; só uma recusa real (401 e semelhantes) esquece a sessão. Dois testes novos cobrem os casos (54 testes no total).
+- **Mensagem do Capacitor** sem `HORAH_URL` citava um script que não existe; agora cita `npm run mobile:sync`.
+- **README, Passo 10:** lista do que foi e do que não foi verificado reescrita com o resultado real (PWA contra a API real, camada nativa simulada, Capacitor).
+
 ## 0.9.0 (2026-11-04)
 
 Só o site (`apps/web`).

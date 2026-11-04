@@ -13,7 +13,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const url = (process.env['HORAH_URL'] ?? '').replace(/\/+$/, '');
 if (!url) {
   throw new Error(
-    'Defina HORAH_URL com o endereço do Hora H (ex.: HORAH_URL=https://horah.exemplo.com npm run cap:sync). ' +
+    'Defina HORAH_URL com o endereço do Hora H (ex.: HORAH_URL=https://horah.exemplo.com npm run mobile:sync). ' +
       'Veja o README, "App no celular".',
   );
 }
