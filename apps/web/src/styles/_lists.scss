@@ -685,8 +685,16 @@
 }
 
 @media (min-width: 960px) {
+  // Conectado ou desconectado: situação à esquerda, "o que o cliente recebe" à direita, ações embaixo
   .wa:not(.wa--qr) {
-    max-width: 560px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 24px;
+  }
+
+  .wa:not(.wa--qr) .wa__acoes {
+    grid-column: 1;
+    grid-row: 2;
   }
 
   .wa--qr {
@@ -714,5 +722,61 @@
   .wa--qr .wa__acoes {
     grid-column: 2;
     grid-row: 3;
+  }
+}
+
+// Colunas das telas de formulário no desktop; no celular tudo empilha
+.cols {
+  display: grid;
+  gap: 0 24px;
+}
+
+.col,
+.cols__a,
+.cols__b,
+.cols__c {
+  min-width: 0;
+}
+
+@media (min-width: 960px) {
+  .cols {
+    align-items: start;
+    gap: 0 24px;
+  }
+
+  .cols--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cols--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  // Ajustes: salão e regras à esquerda, horário de funcionamento à direita, avisos e conta embaixo da esquerda
+  .cols--ajustes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cols--ajustes .cols__a {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .cols--ajustes .cols__b {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .cols--ajustes .cols__c {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .notifs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .notifs .notif {
+    height: 100%;
   }
 }

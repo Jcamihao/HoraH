@@ -65,7 +65,7 @@ type Rascunho = Record<string, Record<string, Item>>;
     <div class="onb">
     <hh-navbar [voltar]="indice() > 0 ? ['/painel/cadastro', etapas[indice() - 1].id] : null" [rotulo]="indice() > 0 ? etapas[indice() - 1].nome : ''" [titulo]="etapa().titulo" />
 
-    <main class="page page--dock">
+    <main class="page page--dock page--narrow">
       <p class="progress-label">Etapa {{ indice() + 1 }} de {{ etapas.length }}</p>
       <div class="progress" role="progressbar" [attr.aria-valuenow]="indice() + 1" aria-valuemin="1" [attr.aria-valuemax]="etapas.length" [attr.aria-label]="'Passo ' + (indice() + 1) + ' de ' + etapas.length + ': ' + etapa().nome">
         @for (e of etapas; track e.id; let i = $index) { <i [class.on]="i <= indice()"></i> }

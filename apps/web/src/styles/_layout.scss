@@ -324,6 +324,19 @@
     padding-inline: 48px;
   }
 
+  // No desktop o conteúdo ocupa a largura toda (até 1680px); só o cadastro do salão fica estreito, como no design
+  .page,
+  .page--wide,
+  .navbar {
+    width: 100%;
+    max-width: 1680px;
+  }
+
+  .page--narrow,
+  .navbar--narrow {
+    max-width: 720px;
+  }
+
   .navbar .brand {
     display: none;
   }

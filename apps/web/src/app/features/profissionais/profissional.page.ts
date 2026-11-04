@@ -31,6 +31,7 @@ interface Item {
         @if (aviso()) { <p class="banner banner--ok" style="margin-top: 16px" role="status">{{ aviso() }}</p> }
         @if (erro()) { <p class="banner banner--bad" style="margin-top: 16px" role="alert">{{ erro() }}</p> }
 
+        <div class="cols cols--2"><div class="col">
         <p class="group__header">Nome</p>
         <div class="group">
           <div class="row row--field">
@@ -61,6 +62,7 @@ interface Item {
           <button type="button" class="btn btn--block" style="margin-top: 12px" [disabled]="salvando()" (click)="salvarServicos()">Salvar serviços e preços</button>
         }
 
+        </div><div class="col">
         <p class="group__header">Horário de trabalho</p>
         <hh-horario-editor [(semana)]="semana" />
         <button type="button" class="btn btn--block" style="margin-top: 12px" [disabled]="salvando()" (click)="salvarHorarios()">Salvar horário</button>
@@ -108,6 +110,7 @@ interface Item {
             }
           }
         </div>
+        </div></div>
       } @else {
         <div class="empty"><h2>Profissional não encontrado</h2><button type="button" class="btn" (click)="voltar()">Voltar para a equipe</button></div>
       }

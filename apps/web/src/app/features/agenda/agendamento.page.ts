@@ -26,6 +26,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
         @if (aviso()) { <p class="banner banner--ok" style="margin-top: 16px" role="status">{{ aviso() }}</p> }
         @if (erro()) { <p class="banner banner--bad" style="margin-top: 16px" role="alert">{{ erro() }}</p> }
 
+        <div class="cols cols--2"><div class="col">
         <p class="group__header">Atendimento</p>
         <div class="group">
           <div class="row"><span class="row__main"><span class="row__title">Serviço</span></span><span class="row__detail">{{ a.servico.nome }}</span></div>
@@ -43,6 +44,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </a>
         </div>
 
+        </div><div class="col">
         <p class="group__header">Situação</p>
         <div class="group">
           <div class="row">
@@ -85,6 +87,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           <button type="button" class="btn btn--block" style="margin-top: 24px" [disabled]="trabalhando()" (click)="mudar('AGENDADO')">Desfazer e voltar para agendado</button>
           <p class="group__footer">Use se marcou {{ a.status === 'CONCLUIDO' ? 'concluído' : 'falta' }} sem querer.</p>
         }
+        </div></div>
       } @else if (erro()) {
         <p class="banner banner--bad" style="margin-top: 24px" role="alert">{{ erro() }}</p>
       }

@@ -25,6 +25,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
       @if (carregando()) {
         <div class="skeleton" style="margin-top: 24px" aria-busy="true"></div>
       } @else {
+        <div class="cols cols--3"><div class="col">
         <p class="group__header">Quem</p>
         <div class="group">
           @if (equipe().length > 1) {
@@ -39,6 +40,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           }
         </div>
 
+        </div><div class="col">
         <p class="group__header">Quando</p>
         <div class="group">
           <div class="row">
@@ -62,6 +64,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           @if (periodoInvertido()) { <p class="row error" role="alert">O fim precisa ser depois do início.</p> }
         </div>
 
+        </div><div class="col">
         <p class="group__header">Motivo (opcional)</p>
         <div class="group">
           <div class="row row--field">
@@ -70,6 +73,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
           </div>
         </div>
         <p class="group__footer">Quem já tem horário marcado nesse período continua marcado. Você escolhe o que fazer com cada um na agenda.</p>
+        </div></div>
       }
     </main>
     <div class="dock">

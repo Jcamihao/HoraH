@@ -42,6 +42,7 @@ const PRAZOS: [number, string][] = [[0, 'Até a hora'], [60, '1 hora antes'], [1
       @if (carregando()) {
         <div class="stack" style="margin-top: 24px" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div></div>
       } @else {
+        <div class="cols cols--ajustes"><div class="cols__a">
         <form [formGroup]="form" (ngSubmit)="salvarSalao()" novalidate>
           <p class="group__header">Salão</p>
           <div class="group">
@@ -82,11 +83,13 @@ const PRAZOS: [number, string][] = [[0, 'Até a hora'], [60, '1 hora antes'], [1
           <p class="group__footer">A antecedência é o tempo mínimo entre a marcação e o horário. O cancelamento vale só para o cliente; o cancelamento automático por falta de confirmação ignora esse prazo.</p>
           <button type="submit" class="btn btn--block" style="margin-top: 16px" [disabled]="salvando()">Salvar salão e regras</button>
         </form>
+        </div><div class="cols__b">
 
         <p class="group__header">Horário de funcionamento</p>
         <hh-horario-editor [(semana)]="semana" />
         <button type="button" class="btn btn--block" style="margin-top: 12px" [disabled]="salvando()" (click)="salvarHorario()">Salvar horário</button>
 
+        </div><div class="cols__c">
         <p class="group__header">Avisos</p>
         <div class="group">
           <div class="row">
@@ -118,6 +121,7 @@ const PRAZOS: [number, string][] = [[0, 'Até a hora'], [60, '1 hora antes'], [1
           <div class="row"><span class="row__main"><span class="row__title">{{ auth.usuario()?.nome }}</span><span class="row__sub">{{ auth.usuario()?.email }}</span></span></div>
         </div>
         <div class="danger-zone"><button type="button" class="btn btn--block" (click)="auth.sair()">Sair</button></div>
+        </div></div>
       }
     </main>
   `,

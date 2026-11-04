@@ -21,6 +21,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
 
       @if (erro()) { <p class="banner banner--bad" style="margin-top: 16px" role="alert">{{ erro() }}</p> }
 
+      <div class="cols cols--2"><div class="col">
       @if (carregando()) {
         <div class="stack" style="margin-top: 24px" aria-busy="true"><div class="skeleton"></div><div class="skeleton"></div></div>
       } @else if (!lista().length && !erro()) {
@@ -45,6 +46,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
         </div>
       }
 
+      </div><div class="col">
       <p class="group__header">Novo profissional</p>
       <form [formGroup]="form" (ngSubmit)="adicionar()" class="stack" novalidate>
         <div class="group">
@@ -61,6 +63,7 @@ import { NavbarComponent } from '../../shared/navbar.component';
         </div>
         <button type="submit" class="btn btn--block" [disabled]="salvando() || form.controls.nome.value.trim().length < 2"><hh-icon nome="plus" /> Adicionar</button>
       </form>
+      </div></div>
       @if (faixaAviso(); as f) {
         <div class="banner banner--wait" style="margin-top: 16px" role="alertdialog" aria-label="Confirmar mudança de plano">
           <p>{{ f.message }}</p>

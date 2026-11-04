@@ -44,6 +44,7 @@ const COBRANCA: Record<string, { rotulo: string; classe: string }> = {
           <p class="banner" style="margin-top: 16px">A cobrança ainda não está configurada neste ambiente. Seu teste e a agenda funcionam normalmente.</p>
         }
 
+        <div class="cols cols--2"><div class="col">
         <p class="group__header">Seu plano</p>
         <div class="group">
           <div class="row"><span class="row__main"><span class="row__title">Plano</span></span><span class="row__detail">{{ plano().rotulo }}</span></div>
@@ -104,6 +105,7 @@ const COBRANCA: Record<string, { rotulo: string; classe: string }> = {
           <button type="button" class="btn btn--block" style="margin-top: 12px" [disabled]="trabalhando()" (click)="atualizar()"><hh-icon nome="clock" /> Já paguei: atualizar situação</button>
         }
 
+        </div><div class="col">
         @if (a.cobrancas.length) {
           <p class="group__header">Cobranças</p>
           <div class="group">
@@ -122,6 +124,7 @@ const COBRANCA: Record<string, { rotulo: string; classe: string }> = {
             <p class="hint" style="margin-top: 8px">Não haverá nova cobrança. O que você já pagou vale até o fim do período e seus dados continuam guardados.</p>
           </div>
         }
+        </div></div>
       }
     </main>
   `,
