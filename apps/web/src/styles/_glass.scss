@@ -166,13 +166,5 @@
     .btn--filled:disabled {
       opacity: 0.5;
     }
-
-    // Refração (protótipo): só no Chromium, nas barras e botões pequenos
-    html.refracao .tabbar,
-    html.refracao .navbar__back,
-    html.refracao .tema-botao {
-      -webkit-backdrop-filter: url('#refracao-vidro') blur(9px) saturate(170%);
-      backdrop-filter: url('#refracao-vidro') blur(9px) saturate(170%);
-    }
   }
 }
