@@ -9,7 +9,7 @@ Na raiz do repositório:
 ```bash
 npm run dev:web      # http://localhost:4200 (proxy de /api para http://localhost:3000)
 npm run build -w @hora-h/web
-CHROME_BIN=/caminho/do/chrome npm run test:web   # 51 testes unitários, Chrome headless
+CHROME_BIN=/caminho/do/chrome npm run test:web   # 54 testes unitários, Chrome headless
 ```
 
 Ou, dentro de `apps/web`: `npx ng serve`, `npx ng build`, `npx ng test --watch=false --browsers=ChromeHeadlessCI`.

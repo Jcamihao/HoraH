@@ -2,7 +2,7 @@
 
 Agendamento online para salões, barbearias e estúdios de beleza. Especificação completa em [ESPECIFICACAO.md](ESPECIFICACAO.md).
 
-**Versão 0.9.0.** Fases 1 a 4 prontas, interface nova (telas do Claude Design, com modo escuro) e app para celular (PWA e Capacitor). O contrato com o Asaas (sandbox) e com o WA-AKG (sessão, QR, pareamento, webhook) foi conferido contra instâncias reais; **envio de mensagem e confirmação de entrega do WhatsApp só foram testados contra um WA-AKG de mentira** (falta um celular para ler o QR): ver "WhatsApp" abaixo.
+**Versão 0.9.1.** Fases 1 a 4 prontas, interface nova (telas do Claude Design, com modo escuro) e app para celular (PWA e Capacitor). O contrato com o Asaas (sandbox) e com o WA-AKG (sessão, QR, pareamento, webhook) foi conferido contra instâncias reais; **envio de mensagem e confirmação de entrega do WhatsApp só foram testados contra um WA-AKG de mentira** (falta um celular para ler o QR): ver "WhatsApp" abaixo.
 - Fase 1 (fundação): multi-tenant, login e papéis, cadastro do dono com passo a passo, profissionais, serviços, preços por profissional, convite por link.
 - Fase 2 (agenda e link público): disponibilidade com fuso horário, página pública `/{slug}`, marcação sem conflito (garantida no banco), agendamento manual, situação do atendimento, folgas e bloqueios, cancelar e remarcar pelo link único `/agendamento/{token}`, agenda do painel (dia e semana).
 - Fase 3 (assinatura): teste de 7 dias, faixas por número de profissionais, cobrança mensal pelo Asaas (Pix, cartão ou boleto), webhooks, tolerância de 5 dias, bloqueio e modo restrito, mudança de faixa com confirmação, e-mails (cobrança e avisos ao dono de novo agendamento e cancelamento).
@@ -14,7 +14,7 @@ Agendamento online para salões, barbearias e estúdios de beleza. Especificaç�
 | Pasta | O que é |
 |---|---|
 | `apps/api` | NestJS 11 + Prisma 6 + PostgreSQL |
-| `apps/web` | Angular 20 (Signals, sem Zone.js). Design em [`apps/web/DESIGN.md`](apps/web/DESIGN.md), tokens e tema escuro em `apps/web/src/styles/_tokens.scss` |
+| `apps/web` | Angular 20 (Signals, sem Zone.js), PWA e app nativo (Capacitor). Design em [`apps/web/DESIGN.md`](apps/web/DESIGN.md), tokens e tema escuro em `apps/web/src/styles/_tokens.scss`. Projetos nativos em `apps/web/android` e `apps/web/ios`, imagens de ícone e splash em `apps/web/assets`, logo e ícones do site em `apps/web/public` |
 | `packages/shared` | Contratos usados pelos dois (papéis, slug, horários, tipos de resposta) |
 
 ## Guia completo: do zero até o app rodando com WhatsApp
@@ -355,7 +355,7 @@ Com `http://` o Capacitor liga sozinho o tráfego sem HTTPS (`cleartext`) no And
 
 ```bash
 npm test                                   # API: unitários + e2e contra um PostgreSQL embutido (374 testes)
-CHROME_BIN=/caminho/do/chrome npm run test:web   # Angular: 51 testes em Chrome headless
+CHROME_BIN=/caminho/do/chrome npm run test:web   # Angular: 54 testes em Chrome headless
 npm run build                              # compila shared, api e web
 ASAAS_API_KEY='$aact_...' npm run asaas:sandbox   # confere o contrato com o Asaas de verdade (só sandbox)
 ```
