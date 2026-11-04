@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import type { EstabelecimentoDto, FaixaHorario, ProfissionalDto, ServicoDto } from '@hora-h/shared';
 import { Api } from '../../core/api';
 import { AuthStore } from '../../core/auth.store';
@@ -44,9 +44,25 @@ type Rascunho = Record<string, Record<string, Item>>;
 
 @Component({
   selector: 'app-cadastro',
-  imports: [ReactiveFormsModule, HorarioEditorComponent, IconComponent, NavbarComponent, PrecoCampoComponent],
+  imports: [ReactiveFormsModule, RouterLink, HorarioEditorComponent, IconComponent, NavbarComponent, PrecoCampoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <aside class="onb-lado" aria-label="Passos do cadastro">
+      <span class="brand">Hora</span>
+      <p class="kicker">Cadastro do salão</p>
+      <ol>
+        @for (e of etapas; track e.id; let i = $index) {
+          <li [class.onb-lado__atual]="i === indice()" [class.onb-lado__feito]="i < indice()">
+            @if (i < indice()) {
+              <a [routerLink]="['/painel/cadastro', e.id]"><span class="onb-lado__n">{{ i + 1 }}</span>{{ e.nome }}</a>
+            } @else {
+              <span class="onb-lado__item" [attr.aria-current]="i === indice() ? 'step' : null"><span class="onb-lado__n">{{ i + 1 }}</span>{{ e.nome }}</span>
+            }
+          </li>
+        }
+      </ol>
+    </aside>
+    <div class="onb">
     <hh-navbar [voltar]="indice() > 0 ? ['/painel/cadastro', etapas[indice() - 1].id] : null" [rotulo]="indice() > 0 ? etapas[indice() - 1].nome : ''" [titulo]="etapa().titulo" />
 
     <main class="page page--dock">
@@ -179,6 +195,7 @@ type Rascunho = Record<string, Record<string, Item>>;
           {{ salvando() ? 'Salvando…' : indice() === etapas.length - 1 ? 'Concluir cadastro' : 'Salvar e continuar' }}
         </button>
       </div>
+    </div>
     </div>
   `,
 })

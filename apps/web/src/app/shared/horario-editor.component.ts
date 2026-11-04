@@ -15,6 +15,10 @@ import { IconComponent } from './icon.component';
     .dia__cab { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 32px; }
     .dia__cab strong { font-weight: 700; }
     .dia__cab .soft { margin-left: 8px; }
+    @media (min-width: 960px) {
+      .dia { display: grid; grid-template-columns: 180px 1fr; column-gap: 24px; align-items: center; }
+    }
+    .dia__corpo { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
     .mais { color: var(--orange-ink); font-size: var(--fs-caption); font-weight: 700; text-decoration: none; min-height: 28px; padding: 0; }
   `,
   template: `
@@ -35,6 +39,7 @@ import { IconComponent } from './icon.component';
               <strong>{{ dia.longo }}</strong>
               @if (!faixas.length) { <span class="soft small">Fechado</span> }
             </div>
+            <div class="dia__corpo">
             @for (f of faixas; track $index; let i = $index) {
               <div class="faixa">
                 <input type="time" class="input input--time" [value]="f.inicio" [attr.aria-label]="dia.longo + ', horário ' + (i + 1) + ', início'" (input)="mudar(dia.id, i, 'inicio', $event)" />
@@ -48,6 +53,7 @@ import { IconComponent } from './icon.component';
             @if (faixas.length > 0 && faixas.length < 3) {
               <button type="button" class="btn btn--plain mais" (click)="adicionar(dia.id)">+ Outro horário no dia</button>
             }
+            </div>
           </div>
         }
       </div>

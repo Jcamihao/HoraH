@@ -537,3 +537,173 @@
 .plano--on small {
   color: var(--on-dark-muted);
 }
+
+// WhatsApp: situação e "o que o cliente recebe" à direita; o QR code num cartão escuro à esquerda
+.wa {
+  display: grid;
+  gap: 16px;
+}
+
+.passos {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 4px var(--gutter) 12px;
+  list-style: none;
+}
+
+.passos li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.passos__n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--green-100);
+  color: var(--green-ink);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+
+.nota {
+  max-width: none;
+  margin: 0 var(--gutter) 14px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--orange-100);
+  color: var(--orange-ink);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.cartao-escuro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px var(--gutter);
+  border-radius: var(--r-xl);
+  background: var(--panel);
+  color: #fff;
+}
+
+.cartao-escuro h2 {
+  font-size: 1.375rem;
+  font-weight: 800;
+}
+
+.cartao-escuro .btn {
+  border-color: #fff;
+  color: #fff;
+}
+
+.cartao-escuro .btn:hover:not(:disabled) {
+  background: #fff;
+  color: #111;
+}
+
+.cartao-escuro .btn--filled {
+  border-color: var(--orange-500);
+  background: var(--orange-500);
+}
+
+.cartao-escuro .btn--filled:hover:not(:disabled) {
+  background: var(--tint-press);
+  color: #fff;
+}
+
+.cartao-escuro .row--field {
+  padding: 0;
+}
+
+.cartao-escuro .row--field label {
+  color: #fff;
+}
+
+.cartao-escuro .input {
+  border-color: #33302d;
+  background: #1f1d1b;
+  color: #fff;
+}
+
+.cartao-escuro .row__sub {
+  color: var(--on-dark-muted);
+}
+
+.cartao-escuro__sep {
+  padding-top: 16px;
+  border-top: 1px solid #33302d;
+}
+
+.cartao-escuro__t {
+  margin-bottom: 12px;
+  max-width: none;
+  font-weight: 700;
+}
+
+.cartao-escuro__codigo {
+  margin-top: 16px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.qr-caixa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 244px;
+  height: 244px;
+  border-radius: 28px;
+  background: #fff;
+  color: #57534e;
+}
+
+.instrucoes {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 20px;
+  font-size: var(--fs-small);
+  color: var(--on-dark-muted);
+}
+
+.instrucoes strong {
+  color: #fff;
+}
+
+@media (min-width: 960px) {
+  .wa {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    align-items: start;
+    gap: 24px;
+  }
+
+  .wa__qr {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+  }
+
+  .wa__situacao {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .wa__recebe {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .wa__acoes {
+    grid-column: 2;
+    grid-row: 3;
+  }
+}
