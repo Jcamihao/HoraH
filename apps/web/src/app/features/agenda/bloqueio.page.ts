@@ -49,11 +49,12 @@ import { NavbarComponent } from '../../shared/navbar.component';
             <input id="de" class="input" type="date" [value]="de()" [min]="hoje()" (change)="mudarDe($any($event.target).value)" />
             @if (!diaInteiro()) { <input class="input input--time" type="time" aria-label="Hora de início" step="900" [value]="horaDe()" (change)="horaDe.set($any($event.target).value)" /> }
           </div>
-          <div class="row row--field">
+          <div class="row row--field" [class.is-invalid]="periodoInvertido()">
             <label for="ate">Até</label>
             <input id="ate" class="input" type="date" [value]="ate()" [min]="de()" (change)="ate.set($any($event.target).value)" />
             @if (!diaInteiro()) { <input class="input input--time" type="time" aria-label="Hora de fim" step="900" [value]="horaAte()" (change)="horaAte.set($any($event.target).value)" /> }
           </div>
+          @if (periodoInvertido()) { <p class="row error" role="alert">O fim precisa ser depois do início.</p> }
         </div>
 
         <p class="group__header">Motivo (opcional)</p>
@@ -93,6 +94,14 @@ export class BloqueioPage {
   protected readonly motivo = signal('');
 
   protected readonly hoje = computed(() => hojeNoFuso(this.salaoStore.dados()?.fusoHorario ?? 'America/Sao_Paulo'));
+  /** Datas e horas já preenchidas, mas o fim não vem depois do início: mostra o motivo em vez de só travar o botão. */
+  protected readonly periodoInvertido = computed(() => {
+    if (!this.de() || !this.ate()) return false;
+    if (this.ate() < this.de()) return true;
+    if (this.diaInteiro() || !this.horaDe() || !this.horaAte()) return false;
+    return `${this.ate()}T${this.horaAte()}` <= `${this.de()}T${this.horaDe()}`;
+  });
+
   protected readonly valido = computed(() => {
     if (!this.profId() || !this.de() || !this.ate()) return false;
     if (this.ate() < this.de()) return false;

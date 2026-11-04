@@ -32,7 +32,7 @@ const SITUACAO: Record<string, { rotulo: string; classe: string }> = {
           <p class="banner" style="margin-top: 16px">O WhatsApp ainda não está configurado neste ambiente. O resto do Hora H funciona normalmente.</p>
         }
 
-        <div class="wa">
+        <div class="wa" [class.wa--qr]="c.status === 'AGUARDANDO_QR'">
           <section class="card wa__situacao">
             <div class="row">
               <span class="row__main"><span class="row__title">Situação</span></span>

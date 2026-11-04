@@ -101,6 +101,7 @@ const ETAPAS: Etapa[] = ['quem', 'servico', 'quando', 'dados', 'pronto'];
                   } @else {
                     <hh-seletor-horario [dias]="dias()" [selecionado]="slot()?.inicio ?? ''" [buscar]="buscarHorarios" [observacao]="observacaoFuso()" (escolher)="escolherHorario($event)" />
                   }
+                  @if (ocupado()) { <p class="pub-aviso pub-aviso--erro" role="alert">{{ ocupado() }}</p> }
                   @if (erro()) { <p class="pub-aviso pub-aviso--erro" role="alert">{{ erro() }}</p> }
                 </main>
               }
@@ -169,6 +170,8 @@ export class PublicoPage {
   protected readonly naoEncontrado = signal(false);
   protected readonly erroGeral = signal('');
   protected readonly erro = signal('');
+  /** Aviso de horário tomado por outra pessoa: fica na etapa "quando" até a pessoa escolher outro. */
+  protected readonly ocupado = signal('');
   protected readonly salao = signal<SalaoPublicoDto | null>(null);
 
   /** Onde começa quando a URL não diz: pula o que já está decidido (um profissional só, ou link de "marcar outro"). */
@@ -289,6 +292,7 @@ export class PublicoPage {
   protected escolherHorario(slot: SlotDto): void {
     this.slot.set(slot);
     this.erro.set('');
+    this.ocupado.set('');
     void this.ir('dados');
   }
 
@@ -324,11 +328,14 @@ export class PublicoPage {
       this.feito.set(f);
       await this.ir('pronto', true);
     } catch (e) {
-      this.erro.set(mensagemDeErro(e));
       if (e instanceof HttpErrorResponse && e.status === 409) {
         // Horário tomado por outra pessoa (ou teto de agendamentos): volta para escolher de novo.
+        // O aviso vai num sinal à parte, porque ao entrar na etapa "quando" o erro comum é limpo.
+        this.ocupado.set(mensagemDeErro(e, 'Esse horário acabou de ser ocupado. Escolha outro.'));
         this.slot.set(null);
         await this.ir('quando', true);
+      } else {
+        this.erro.set(mensagemDeErro(e));
       }
     } finally {
       this.enviando.set(false);
